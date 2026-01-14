@@ -408,4 +408,13 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+
+    <!-- Icon: Cloud Download (Update) -->
+    <DrawingImage x:Key="icon.cloud-download">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H640 V0 H0 Z">
+                <GeometryDrawing Brush="#3B82F6" Geometry="F1 M640,512z M0,0z M537.6,226.6C531.2,163.7 477.4,114.9 411.3,114.9 409.7,114.9 408.3,115 407.1,115 393.1,52 334.3,4.3 263.9,4.3 173.2,4.3 98.6,76.5 96.1,167.3 43.1,173.2 2.7,219.7 2.7,276.5 2.7,338.4 51.5,389.1 112.5,391.1L248.6,391.1 248.6,323.2 188.4,323.2 320.6,183.1 452.9,323.2 392.6,323.2 392.6,391.1 534.9,391.1C592.5,391.1 639.2,343.4 639.2,284.5 639.2,254.8 626.8,227.2 607.4,207.2 588,187.3 562.5,176.3 537.6,226.6z M320.6,499.7L224.6,396.9 288.6,396.9 288.6,288 352.6,288 352.6,396.9 416.6,396.9 320.6,499.7z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>

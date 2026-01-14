@@ -1,0 +1,39 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\MainWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ManageAliasesWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ManageFavoritesWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\MultiInputWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewAliasWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewConfigurationWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewFavoriteWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\OptionsWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\PopupNotificationWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ScanWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\StatusHistoryWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\TraceRouteWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\UsageWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\HelpWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\IsolatedPingWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+
+ERROR al compilar.
+
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\MainWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ManageAliasesWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ManageFavoritesWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\MultiInputWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewAliasWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewConfigurationWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\NewFavoriteWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\OptionsWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\PopupNotificationWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\ScanWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\StatusHistoryWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\TraceRouteWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\UsageWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\HelpWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+CSC : error CS2001: No se encontró el archivo de origen 'C:\xampp\htdocs\VMPing G\vmPing\obj\Debug\net472\UI\IsolatedPingWindow.g.cs'. [C:\xampp\htdocs\VMPing G\vmPing\vmPing_opc5qsyh_wpftmp.csproj]
+    0 Advertencia(s)
+    15 Errores
+
+Tiempo transcurrido 00:00:14.09

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using vmPing.Classes;
 using vmPing.Properties;
+using AutoUpdaterDotNET;
 
 namespace vmPing.UI
 {
@@ -242,6 +243,13 @@ namespace vmPing.UI
             StatusHistoryMenu.Command = StatusHistoryCommand;
             FullScreenMenu.Command = FullScreenCommand;
             CompactModeMenu.Command = CompactModeCommand;
+            
+            // Vincular el comando al evento del menú
+            UpdateMenu.Click += (s, args) => 
+            {
+               AutoUpdater.ReportErrors = true; // Mostrar errores si falla al buscar (solo cuando es manual)
+               AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
+            };
         }
 
         private void FullScreenExecute(object sender, ExecutedRoutedEventArgs e)

@@ -297,6 +297,12 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
+                <!-- Menu: Update -->
+                <MenuItem Header="Buscar Actualizaciones" x:Name="UpdateMenu">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource icon.cloud-download}" VerticalAlignment="Center" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <!-- Menu: Help -->
                 <MenuItem Header="Ayuda" x:Name="HelpMenu" InputGestureText="F1">
                     <MenuItem.Icon>
@@ -311,68 +317,97 @@
                 Background="{DynamicResource Theme.Card.Background}" 
                 BorderThickness="0,0,0,1" 
                 BorderBrush="{DynamicResource Theme.Card.Border}"
-                Height="80"
+                Height="90"
                 Name="DashboardBorder"
                 Visibility="Visible">
-            <Grid Margin="20,0">
+            <Grid Margin="20,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Total Nodes -->
-                <Border Grid.Column="0" Background="#FFFFFF" Margin="0,10,8,10" Padding="15,5" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Background="#F1F5F9" CornerRadius="8" Padding="8" Margin="0,0,12,0">
-                            <Image Source="{StaticResource icon.columns-grid}" Width="20" Height="20" Opacity="0.6"/>
-                        </Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="TOTAL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Secondary}"/>
-                            <TextBlock Name="Dash_TotalNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+                <!-- Left: Circular Health Indicator (Simulated) -->
+                <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="12" Margin="0,0,15,0" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Donut Chart Visualization -->
+                        <Grid Grid.Column="0" Margin="15,5">
+                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="#E2E8F0"/>
+                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="#3B82F6" StrokeDashArray="3 1" RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform>
+                                    <RotateTransform Angle="-90"/>
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding ElementName=Dash_TotalNodes, Path=Text}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#1E293B"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                            <TextBlock Text="Estado General" FontSize="11" Foreground="#64748B" FontWeight="SemiBold" TextTransform="Uppercase"/>
+                            <TextBlock Text="Monitoreo Activo" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Ellipse Width="8" Height="8" Fill="#10B981" Margin="0,0,6,0"/>
+                                <TextBlock Text="Sistema en línea" FontSize="11" Foreground="#10B981"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Active Nodes -->
-                <Border Grid.Column="1" Background="#FFFFFF" Margin="4,10,4,10" Padding="15,5" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Background="#ECFDF5" CornerRadius="8" Padding="8" Margin="0,0,12,0">
-                            <Image Source="{StaticResource icon.check-circle-green}" Width="20" Height="20"/>
-                        </Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="ACTIVOS" FontSize="10" FontWeight="Bold" Foreground="#10B981" Opacity="0.8"/>
-                            <TextBlock Name="Dash_UpNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#10B981"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                <!-- Right: Detailed Stats Cards -->
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Down Nodes -->
-                <Border Grid.Column="2" Background="#FFFFFF" Margin="4,10,4,10" Padding="15,5" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Background="#FEF2F2" CornerRadius="8" Padding="8" Margin="0,0,12,0">
-                            <Image Source="{StaticResource icon.exclamation-circle}" Width="20" Height="20"/>
-                        </Border>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="CAÍDOS" FontSize="10" FontWeight="Bold" Foreground="#EF4444" Opacity="0.8"/>
-                            <TextBlock Name="Dash_DownNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#EF4444"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                    <!-- Active -->
+                    <Border Grid.Column="0" Background="#F0FDF4" CornerRadius="10" Margin="0,0,8,0" Padding="12" BorderThickness="1" BorderBrush="#BBF7D0">
+                        <DockPanel>
+                            <Border Background="#DCFCE7" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <Image Source="{StaticResource icon.check-circle-green}" Width="16" Height="16"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                <TextBlock Text="ACTIVOS" FontSize="10" FontWeight="Bold" Foreground="#15803D" Opacity="0.8"/>
+                                <TextBlock Name="Dash_UpNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#15803D"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
 
-                <!-- Latency -->
-                <Border Grid.Column="3" Background="#FFFFFF" Margin="8,10,0,10" Padding="15,5" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0" HorizontalAlignment="Right">
-                            <TextBlock Text="LATENCIA" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Secondary}" HorizontalAlignment="Right"/>
-                            <TextBlock Name="Dash_AvgLatency" Text="0 ms" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Accent}" HorizontalAlignment="Right"/>
-                        </StackPanel>
-                        <Border Background="#EEF2FF" CornerRadius="8" Padding="8">
-                            <Image Source="{StaticResource icon.route}" Width="20" Height="20" Opacity="0.8"/>
-                        </Border>
-                    </StackPanel>
-                </Border>
+                    <!-- Down -->
+                    <Border Grid.Column="1" Background="#FEF2F2" CornerRadius="10" Margin="4,0,4,0" Padding="12" BorderThickness="1" BorderBrush="#FECACA">
+                        <DockPanel>
+                            <Border Background="#FEE2E2" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <Image Source="{StaticResource icon.exclamation-circle}" Width="16" Height="16"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                <TextBlock Text="CAÍDOS" FontSize="10" FontWeight="Bold" Foreground="#B91C1C" Opacity="0.8"/>
+                                <TextBlock Name="Dash_DownNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#B91C1C"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Latency -->
+                    <Border Grid.Column="2" Background="#EFF6FF" CornerRadius="10" Margin="8,0,0,0" Padding="12" BorderThickness="1" BorderBrush="#BFDBFE">
+                        <DockPanel>
+                            <Border Background="#DBEAFE" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <Image Source="{StaticResource icon.route}" Width="16" Height="16" Opacity="0.6"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                <TextBlock Text="LATENCIA" FontSize="10" FontWeight="Bold" Foreground="#1D4ED8" Opacity="0.8"/>
+                                <TextBlock Name="Dash_AvgLatency" Text="0 ms" FontSize="18" FontWeight="Bold" Foreground="#1D4ED8"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    
+                    <!-- Hidden total node for binding -->
+                    <TextBlock Name="Dash_TotalNodes" Visibility="Collapsed" Text="0"/>
+                </Grid>
             </Grid>
         </Border>
 
