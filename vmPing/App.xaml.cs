@@ -35,7 +35,7 @@ namespace vmPing
 
             // Initialize AutoUpdater
             // Reemplaza la URL con la dirección raw de tu archivo update.xml en GitHub
-            AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/VMPing/main/update.xml");
+            AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
             AutoUpdater.Synchronous = true; // Muestra un mensaje si no hay actualizaciones (opcional, bueno para pruebas)
             AutoUpdater.Mandatory = false; // No obligar a actualizar
             AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
