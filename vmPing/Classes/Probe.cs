@@ -105,7 +105,9 @@ namespace vmPing.Classes
                     history = value;
                     history.CollectionChanged += OnHistoryChanged;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(HistoryAsString));
+                    history.CollectionChanged += OnHistoryChanged;
+                    OnPropertyChanged();
+                    // OnPropertyChanged(nameof(HistoryAsString)); // Only needed if binding to the full string
                 }
             }
         }
@@ -264,8 +266,10 @@ namespace vmPing.Classes
             AddHistory(" ");
         }
 
-        private void OnHistoryChanged(object sender, NotifyCollectionChangedEventArgs e) =>
-            OnPropertyChanged(nameof(HistoryAsString));
+        private void OnHistoryChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+             // OnPropertyChanged(nameof(HistoryAsString));
+        }
 
         public void UpdateLatencyHistory(int latency)
         {
@@ -277,7 +281,8 @@ namespace vmPing.Classes
                     if (LatencyHistory.Count > 50) LatencyHistory.RemoveAt(0);
 
                     if (latency > MaxLatency) MaxLatency = latency;
-                    OnPropertyChanged(nameof(LatencyHistory));
+                    // LatencyHistory is an ObservableCollection, so we don't need to notify the property changed.
+                    // OnPropertyChanged(nameof(LatencyHistory)); 
                 }));
             }
         }
