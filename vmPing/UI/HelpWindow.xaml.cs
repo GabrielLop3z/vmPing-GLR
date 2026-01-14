@@ -22,8 +22,8 @@ namespace vmPing.UI
 
             // Generate copyright text based on the current year.
             //Copyright.Text = $"Copyright \u00a9 {DateTime.Now.Year.ToString()} Ryan Smith";
-            Copyright.Inlines.Clear();
-            Copyright.Inlines.Add(new Run($"Copyright \u00a9 {DateTime.Now.Year.ToString()} Ryan Smith"));
+            //Copyright.Inlines.Clear();
+            //Copyright.Inlines.Add(new Run($"Copyright \u00a9 {DateTime.Now.Year.ToString()} Ryan Smith"));
 
             // Set initial focus to scrollviewer.  That way you can scroll the help window with the keyboard
             // without having to first click in the window.
@@ -99,6 +99,13 @@ namespace vmPing.UI
                 e.Handled = true;
                 Close();
             }
+        }
+
+        private void CheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            // Force check for updates
+            AutoUpdaterDotNET.AutoUpdater.ReportErrors = true; // Show error if something fails (good for manual check)
+            AutoUpdaterDotNET.AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
         }
     }
 }

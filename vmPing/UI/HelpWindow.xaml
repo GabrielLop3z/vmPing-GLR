@@ -1,7 +1,7 @@
 ﻿<Window x:Class="vmPing.UI.HelpWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Ayuda de vmPing"
+        Title="Ayuda de vmPing GLR"
         UseLayoutRounding="True"
         Height="575"
         Width="750"
@@ -121,7 +121,7 @@
                         <Image Source="/vmPing.ico" Width="32" Height="32" Margin="0,0,12,0" />
                         <TextBlock Style="{StaticResource TitleText}"
                                    VerticalAlignment="Center"
-                                   Text="vmPing">
+                                   Text="vmPing GLR">
                             <TextBlock.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.15" BlurRadius="4" />
                             </TextBlock.Effect>
@@ -131,10 +131,10 @@
 
                 <!-- Link to homepage -->
                 <Paragraph TextAlignment="Center">
-                    <Hyperlink NavigateUri="https://github.com/R-Smith/vmPing"
+                    <Hyperlink NavigateUri="https://github.com/GabrielLop3z/vmPing-GLR"
                                RequestNavigate="Hyperlink_RequestNavigate"
                                Style="{StaticResource HyperlinkStyle}">
-                        https://github.com/R-Smith/vmPing
+                        https://github.com/GabrielLop3z/vmPing-GLR
                     </Hyperlink>
                 </Paragraph>
 
@@ -144,18 +144,41 @@
                            Margin="0,3,0,0">
                     Version X.XXXX.XXXX
                 </Paragraph>
-                <Paragraph Name="Copyright"
-                           Style="{StaticResource VersionText}">
-                    Copyright (C) Ryan Smith
-                </Paragraph>
+
                 <Paragraph Style="{StaticResource VersionText}" Margin="0,10,0,0">
-                    <Run Foreground="#3B82F6" FontWeight="Bold">Pro Edition</Run>
+                    <Run Foreground="#3B82F6" FontWeight="Bold" FontSize="16">Pro Edition</Run>
                     <LineBreak/>
                     <Run Foreground="#6B7280" FontSize="12">Redesigned &amp; Optimized by</Run>
                 </Paragraph>
-                <Paragraph Style="{StaticResource VersionText}" Foreground="#111827" FontWeight="ExtraBold" FontSize="18">
+                <Paragraph Style="{StaticResource VersionText}" Foreground="#111827" FontWeight="ExtraBold" FontSize="20">
                     &lt; Gabriel /&gt;
                 </Paragraph>
+
+                <Paragraph Name="Copyright"
+                           Style="{StaticResource VersionText}"
+                           Margin="0,5,0,0">
+                    <Run FontSize="10" Foreground="#9CA3AF">Based on vmPing by Ryan Smith</Run>
+                </Paragraph>
+                
+                <BlockUIContainer>
+                    <Button Name="CheckForUpdatesButton" 
+                            Content="Buscar Actualizaciones" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,10,0,0" 
+                            Padding="10,5"
+                            Background="Transparent"
+                            BorderBrush="#3B82F6"
+                            BorderThickness="1"
+                            Foreground="#3B82F6"
+                            Cursor="Hand"
+                            Click="CheckForUpdates_Click">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </BlockUIContainer>
 
                 <!-- Intro section -->
                 <BlockUIContainer>

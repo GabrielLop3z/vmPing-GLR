@@ -127,8 +127,8 @@ Finalmente, edita el archivo `update.xml` en tu código para apuntar a esta nuev
 
 ```xml
 <item>
-    <version>1.3.26</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.3.26/vmPing.zip</url>
+    <version>1.3.27</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.3.27/vmPing.zip</url>
     <mandatory>false</mandatory>
 </item>
 ```
