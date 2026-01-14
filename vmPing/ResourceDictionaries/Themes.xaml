@@ -1,0 +1,125 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- CRYSTAL THEME -> REPLACED WITH "PROFESSIONAL LIGHT" (Default) -->
+    <!-- Solid, clean colors. No transparency. Friendly blue accent. -->
+    <!-- PROFESSIONAL LIGHT (Glass) -->
+    <!-- PROFESSIONAL LIGHT (Default) -->
+    <!-- Usage: Clean, modern, high-contrast but soft on eyes. Inspired by Vercel/Stripe. -->
+    <ResourceDictionary x:Key="CrystalTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#F3F4F6"/>  <!-- Cool Gray 100 (Main App Background) -->
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/> <!-- White (Title Bars/Overlays) -->
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#0F172A"/>  <!-- Slate 900 -->
+        
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#E2E8F0"/>        <!-- Slate 200 -->
+        
+        <SolidColorBrush x:Key="Theme.Accent" Color="#0EA5E9"/>             <!-- Sky 500 (Vibrant Blue) -->
+        
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#0F172A"/>       <!-- Slate 900 -->
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#64748B"/>     <!-- Slate 500 -->
+        
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- PROFESSIONAL DARK -->
+    <!-- Usage: Deep blue-grays, high readability, reduced eye strain. -->
+    <ResourceDictionary x:Key="DarkTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#020617"/>  <!-- Slate 950 (Deepest) -->
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#0F172A"/> <!-- Slate 900 -->
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#F8FAFC"/>  <!-- Slate 50 -->
+        
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#1E293B"/>    <!-- Slate 800 -->
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#334155"/>        <!-- Slate 700 -->
+        
+        <SolidColorBrush x:Key="Theme.Accent" Color="#38BDF8"/>             <!-- Sky 400 -->
+        
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#F1F5F9"/>       <!-- Slate 100 -->
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#94A3B8"/>     <!-- Slate 400 -->
+        
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- CLASSIC ENTERPRISE -->
+    <ResourceDictionary x:Key="LightTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#000000"/>
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="Theme.Accent" Color="#2563EB"/>
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#111827"/>
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#6B7280"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- MODERN VIBRANT -->
+    <ResourceDictionary x:Key="ColorfulTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#F0F9FF"/>
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#E0F2FE"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#0C4A6E"/>
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#7DD3FC"/>
+        <LinearGradientBrush x:Key="Theme.Accent" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#0EA5E9" Offset="0"/>
+            <GradientStop Color="#6366F1" Offset="1"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#0F172A"/>
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#334155"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- OCEAN BLUE -->
+    <ResourceDictionary x:Key="OceanTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#EFF6FF"/>   <!-- Blue 50 -->
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#172554"/>   <!-- Blue 950 -->
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#BFDBFE"/>         <!-- Blue 200 -->
+        <SolidColorBrush x:Key="Theme.Accent" Color="#2563EB"/>              <!-- Blue 600 -->
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#1E3A8A"/>        <!-- Blue 900 -->
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#64748B"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- SUNSET ORANGE -->
+    <ResourceDictionary x:Key="SunsetTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#FFF7ED"/>   <!-- Orange 50 -->
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#431407"/>   <!-- Orange 950 -->
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#FED7AA"/>         <!-- Orange 200 -->
+        <SolidColorBrush x:Key="Theme.Accent" Color="#EA580C"/>              <!-- Orange 600 -->
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#7C2D12"/>        <!-- Orange 900 -->
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#8D4326"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- CRIMSON RED -->
+    <ResourceDictionary x:Key="RedTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#FEF2F2"/>   <!-- Red 50 -->
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#450A0A"/>   <!-- Red 950 -->
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#FECACA"/>         <!-- Red 200 -->
+        <SolidColorBrush x:Key="Theme.Accent" Color="#DC2626"/>              <!-- Red 600 -->
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#7F1D1D"/>        <!-- Red 900 -->
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#7F3535"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+    <!-- HACKING (Matrix) -->
+    <ResourceDictionary x:Key="HackingTheme">
+        <SolidColorBrush x:Key="Theme.Window.Background" Color="#000000"/>
+        <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#000000"/>
+        <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#00FF00"/>
+        <SolidColorBrush x:Key="Theme.Card.Background" Color="#0A0A0A"/>
+        <SolidColorBrush x:Key="Theme.Card.Border" Color="#003300"/>
+        <SolidColorBrush x:Key="Theme.Accent" Color="#00FF00"/>
+        <SolidColorBrush x:Key="Theme.Text.Primary" Color="#00FF00"/>
+        <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#00AA00"/>
+        <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
+    </ResourceDictionary>
+
+</ResourceDictionary>

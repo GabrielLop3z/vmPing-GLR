@@ -1,0 +1,944 @@
+﻿<Window x:Class="vmPing.UI.OptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Opciones"
+        UseLayoutRounding="True"
+        Height="540"
+        Width="580"
+        MinHeight="500"
+        MinWidth="580"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        Background="#F9FAFB"
+        SourceInitialized="Window_SourceInitialized">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Regular"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Foreground" Value="#374151"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}" x:Key="OptionSubHeaderTextStyle">
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Foreground" Value="#2563EB"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TabControl TabStripPlacement="Left" HorizontalContentAlignment="Left">
+            <!-- Tab: General -->
+            <TabItem Header="General" Name="GeneralTab">
+                <DockPanel Margin="20,0" LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Opciones de Sonda"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+                    <!-- Ping interval -->
+                    <!-- Ping interval -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,10,0,0">
+                        <TextBlock Text="Intervalo de ping:"
+                                   Width="110"/>
+                        <TextBox Name="PingInterval"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 Width="60"
+                                 MaxLength="5"/>
+                        <ComboBox Name="PingIntervalUnits" Width="100" Margin="10,0,0,0">
+                            <ComboBoxItem Content="segundos" IsSelected="True"/>
+                            <ComboBoxItem Content="minutos"/>
+                            <ComboBoxItem Content="horas"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Ping timeout -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,10,0,0">
+                        <TextBlock Text="Tiempo de espera:"
+                                   Width="110"/>
+                        <TextBox Name="PingTimeout"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 Width="60"
+                                 MaxLength="2"/>
+                        <TextBlock Text="segundos"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <Separator DockPanel.Dock="Top" Height="1" Background="#ccc" Margin="0,20,0,5"/>
+
+                    <!-- Alert threshold -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,10,0,0">
+                        <TextBlock Text="Umbral de alerta:"
+                                   Width="110"/>
+                        <TextBox Name="AlertThreshold"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 Width="60"
+                                 MaxLength="2"/>
+                        <TextBlock Text="pings perdidos"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Startup header -->
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Inicio"
+                               Margin="0,25,0,10"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Elija cómo debe iniciar vmPing:"
+                               Margin="0,0,0,5"/>
+                    <!-- Startup mode selection -->
+                    <ComboBox DockPanel.Dock="Top"
+                               Name="StartupMode"
+                               Width="200">
+                        <ComboBoxItem Content="En blanco (predeterminado)" Tag="Standard" IsSelected="True"/>
+                        <ComboBoxItem Content="Ventana de lista de entrada" Tag="Standard"/>
+                        <ComboBoxItem Content="Cargar un favorito" Tag="Favorite"/>
+                    </ComboBox>
+                    <!-- Initial probe / column count -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,13,0,0">
+                        <!-- Style to control visibility based on selected startup mode -->
+                        <StackPanel.Style>
+                            <Style>
+                                <Setter Property="StackPanel.Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=StartupMode, Path=SelectedItem.Tag}" Value="Standard">
+                                        <Setter Property="StackPanel.Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <!-- Probe count -->
+                        <StackPanel Margin="0,0,30,0">
+                            <TextBlock Text="Conteo de sondas:"
+                                       Margin="0,0,0,4"/>
+                            <TextBox Name="InitialProbeCount"
+                                     PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                     Width="60"
+                                     HorizontalAlignment="Left"
+                                     MaxLength="2"/>
+                        </StackPanel>
+                        <!-- Column count-->
+                        <StackPanel>
+                            <TextBlock Text="Conteo de columnas:"
+                                       Margin="0,0,0,4"/>
+                            <TextBox Name="InitialColumnCount"
+                                     PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                     Width="60"
+                                     HorizontalAlignment="Left"
+                                     MaxLength="2"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <!-- Select a favorite -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,13,0,0">
+                        <!-- Style to control visibility based on selected startup mode -->
+                        <StackPanel.Style>
+                            <Style>
+                                <Setter Property="StackPanel.Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=StartupMode, Path=SelectedItem.Tag}" Value="Favorite">
+                                        <Setter Property="StackPanel.Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <!-- Favorite selection -->
+                        <StackPanel Margin="0,0,35,0">
+                            <TextBlock Text="Seleccione un favorito:"
+                                       Margin="0,0,0,4"/>
+                            <ComboBox DockPanel.Dock="Top"
+                                      Name="InitialFavorite"
+                                      Width="250">
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab: Advanced -->
+            <TabItem Header="Avanzado" Name="AdvancedTab">
+                <DockPanel Margin="20,0" LastChildFill="False">
+
+                    <!-- Header -->
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Opciones Avanzadas ICMP"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                    <!-- TTL -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0,10,0,0">
+                        <TextBlock Text="Tiempo de vida (TTL):"
+                                   Width="110"/>
+                        <TextBox Name="TTL"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 Width="80"
+                                 MaxLength="3"/>
+                        <TextBlock Text="saltos"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Separator -->
+                    <Separator DockPanel.Dock="Top" Height="1" Background="#ccc" Margin="0,20"/>
+
+                    <!-- Packet size -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Orientation="Horizontal"
+                                Margin="0">
+                        <RadioButton GroupName="IcmpData"
+                                     Content="Tamaño de datos del paquete"
+                                     Name="PacketSizeOption"
+                                     Checked="PacketSizeOption_Checked"
+                                     IsChecked="True"
+                                     Width="180"/>
+                        <TextBox Name="PacketSize"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 TextChanged="PacketData_TextChanged"
+                                 Width="80"
+                                 MaxLength="5"
+                                 Visibility="{Binding IsChecked, ElementName=PacketSizeOption, Converter={StaticResource BooleanToHiddenVisibilityConverter}}"/>
+                        <TextBlock Text="bytes" Margin="10,0,0,0"
+                                   Visibility="{Binding IsChecked, ElementName=PacketSizeOption, Converter={StaticResource BooleanToHiddenVisibilityConverter}}"/>
+                    </StackPanel>
+
+                    <!-- Packet data -->
+                    <DockPanel DockPanel.Dock="Top"
+                                Margin="0,7,0,0">
+                        <RadioButton GroupName="IcmpData"
+                                     Content="Datos de paquete personalizados"
+                                     Name="UseCustomPacketOption"
+                                     Checked="UseCustomPacketOption_Checked"
+                                     DockPanel.Dock="Left"
+                                     VerticalAlignment="Top"
+                                     Width="200"/>
+                        <TextBox Name="PacketData"
+                                 TextChanged="PacketData_TextChanged"
+                                 Height="80"
+                                 DockPanel.Dock="Right"
+                                 VerticalContentAlignment="Top"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 MaxLength="65500"
+                                 Visibility="{Binding IsChecked, ElementName=UseCustomPacketOption, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </DockPanel>
+
+                    <!-- Total packet size -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,15,0,0">
+                        <TextBlock Foreground="#0e70c0"
+                                   Text="Tamaño total del paquete:"/>
+                        <TextBlock Foreground="#dc322f"
+                                   Name="Bytes"
+                                   Margin="6,0,4,0"
+                                   Text="64"/>
+                        <TextBlock Foreground="#dc322f"
+                                   Text="bytes"/>
+                    </StackPanel>
+
+                    <!-- Separator -->
+                    <Separator DockPanel.Dock="Top" Height="1" Background="#ccc" Margin="0,20"/>
+
+                    <!-- Fragment / Don't fragment -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <CheckBox DockPanel.Dock="Left"
+                                  Name="DontFragment"
+                                  Content="No fragmentar"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            <TextBlock>
+                                La bandera de no fragmentar indica a los enrutadores que descarten el paquete si es demasiado grande.
+                                <LineBreak/>
+                                <LineBreak/>
+                                Su unidad máxima de transmisión (MTU) se puede determinar habilitando esta opción y ajustando el tamaño de los datos del paquete.
+                            </TextBlock>
+                        </Label>
+                    </DockPanel>
+                </DockPanel>
+            </TabItem>
+            
+            <!-- Tab: Popup Alerts -->
+            <TabItem Header="Notificaciones" Name="PopupAlertsTab">
+                <DockPanel Margin="20,0" LastChildFill="False">
+
+                    <!-- Header -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="Alertas Emergentes"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            <TextBlock>
+                                Las alertas emergentes aparecen en la esquina inferior derecha de su pantalla cuando un monitor de host cambia de estado (caída o subida).
+                                <LineBreak/>
+                                <LineBreak/>
+                                Puede mostrar alertas emergentes siempre, solo cuando vmPing está minimizado, o desactivarlas por completo.
+                            </TextBlock>
+                        </Label>
+                    </DockPanel>
+
+
+                    <!-- Popup notification option radio button group -->
+                    <RadioButton DockPanel.Dock="Top"
+                                 GroupName="PopupAlerts"
+                                 Content="Desactivado"
+                                 Name="PopupsDisabledOption"
+                                 Margin="0,15,0,0"/>
+                    <RadioButton DockPanel.Dock="Top"
+                                 GroupName="PopupAlerts"
+                                 Content="Mostrar cuando minimizado"
+                                 Name="PopupsMinimizedOption"
+                                 Margin="0,6"/>
+                    <RadioButton DockPanel.Dock="Top"
+                                 GroupName="PopupAlerts"
+                                 Content="Mostrar siempre"
+                                 Name="PopupsAlwaysOption"
+                                 IsChecked="True"/>
+
+                    <!-- Auto-dismiss enabled checkbox -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,20,0,5">
+                        <CheckBox DockPanel.Dock="Left"
+                                  Name="IsAutoDismissEnabled"
+                                  Content="Cerrar notificaciones automáticamente"
+                                  IsChecked="True"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            Cierra automáticamente las alertas emergentes después del número especificado de segundos.
+                        </Label>
+                    </DockPanel>
+
+                    <!-- Auto-dismiss interval textbox -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Visibility="{Binding IsChecked, ElementName=IsAutoDismissEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="50,0,0,0"
+                                Orientation="Horizontal">
+                        <TextBox Name="AutoDismissInterval"
+                                 PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                 Width="60"
+                                 MaxLength="2"/>
+                        <TextBlock Text="segundos"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Webhook Alerts Header -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,25,0,0">
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="Alertas Webhook"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            <TextBlock>
+                                Enviar notificaciones a Slack, Discord o Webhooks genéricos cuando un host cambie de estado.
+                                <LineBreak/>
+                                Ingrese la URL del Webhook a continuación.
+                            </TextBlock>
+                        </Label>
+                    </DockPanel>
+
+                    <!-- Webhook Enabled Checkbox -->
+                    <CheckBox DockPanel.Dock="Top"
+                              Name="IsWebhookEnabled"
+                              Content="Habilitar alertas Webhook"
+                              Margin="0,15,0,0"/>
+
+                    <!-- Webhook URL Input -->
+                    <StackPanel DockPanel.Dock="Top"
+                                Visibility="{Binding IsChecked, ElementName=IsWebhookEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="0,10,0,0">
+                        <TextBlock Text="URL del Webhook (Slack/Discord/Otros):"/>
+                        <TextBox Name="WebhookUrl" Margin="0,5,0,0"/>
+                        <TextBlock Text="Soporta cargas JSON. Envía {'text': '...'} y {'content': '...'}"
+                                   FontSize="11" Foreground="Gray" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab: Email Alerts -->
+            <TabItem Header="Email" Name="EmailAlertsTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,15">
+
+                        <!-- Header -->
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Alertas por Correo"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,15,0,15">
+                            <CheckBox DockPanel.Dock="Top"
+                                      Name="IsEmailAlertsEnabled"
+                                      Content="Habilitar alertas por correo"
+                                      Click="IsEmailAlertsEnabled_Click"
+                                      IsChecked="True"/>
+                            <Label Style="{StaticResource LabelToolTip}">
+                                Habilite esta opción para enviar una alerta por correo electrónico cada vez que un host cambie de estado (caída o subida).
+                            </Label>
+                        </StackPanel>
+
+                        <DockPanel LastChildFill="False"
+                                   DockPanel.Dock="Top"
+                                   Margin="0"
+                                   Visibility="{Binding IsChecked, ElementName=IsEmailAlertsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <DockPanel.Resources>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="0,0,12,0"/>
+                                </Style>
+                                <Style TargetType="{x:Type DockPanel}">
+                                    <Setter Property="Margin" Value="0,3,0,3"/>
+                                    <Setter Property="DockPanel.Dock" Value="Top"/>
+                                </Style>
+                            </DockPanel.Resources>
+
+                            <!-- Server information subheading -->
+                            <TextBlock DockPanel.Dock="Top"
+                                       Text="Información del Servidor"
+                                       Style="{StaticResource OptionSubHeaderTextStyle}"/>
+
+                            <!-- SMTP Server-->
+                            <DockPanel>
+                                <Grid Width="120">
+                                    <TextBlock Text="Servidor SMTP"/>
+                                </Grid>
+                                <TextBox Name="SmtpServer"/>
+                            </DockPanel>
+
+                            <!-- Smtp Port -->
+                            <DockPanel>
+                                <Grid Width="120">
+                                    <TextBlock Text="Puerto"/>
+                                </Grid>
+                                <TextBox Name="SmtpPort"
+                                         PreviewTextInput="NumericTextbox_PreviewTextInput"
+                                         HorizontalAlignment="Left"
+                                         MaxLength="5"
+                                         Width="75"/>
+                                <CheckBox Name="IsSmtpSslEnabled"
+                                          Content="Habilitar SSL/TLS"
+                                          FontSize="13"
+                                          Margin="50,0,0,0"/>
+                            </DockPanel>
+
+                            <!-- Authentication section -->
+                            <!-- Smtp Authentication -->
+                            <CheckBox DockPanel.Dock="Top"
+                                      Name="IsSmtpAuthenticationRequired"
+                                      Content="Este servidor requiere autenticación"
+                                      Click="IsSmtpAuthenticationRequired_Click"
+                                      Foreground="#888"
+                                      FontSize="13"
+                                      Margin="120,8,0,0"/>
+                            <StackPanel DockPanel.Dock="Top"
+                                        Visibility="{Binding IsChecked, ElementName=IsSmtpAuthenticationRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <!-- Smtp User -->
+                                <DockPanel>
+                                    <Grid Width="120">
+                                        <TextBlock Text="Usuario"/>
+                                    </Grid>
+                                    <TextBox Name="SmtpUsername"/>
+                                </DockPanel>
+
+                                <!-- Smtp Password -->
+                                <DockPanel>
+                                    <Grid Width="120">
+                                        <TextBlock Text="Contraseña"/>
+                                    </Grid>
+                                    <PasswordBox Name="SmtpPassword"/>
+                                </DockPanel>
+                            </StackPanel>
+
+                            <!-- Email addresses subheading -->
+                            <TextBlock DockPanel.Dock="Top"
+                                       Text="Direcciones de Correo"
+                                       Margin="0,12,0,5"
+                                       Style="{StaticResource OptionSubHeaderTextStyle}"/>
+
+                            <!-- Recipient Address-->
+                            <DockPanel>
+                                <Grid Width="120">
+                                    <TextBlock Text="Destinatario"/>
+                                </Grid>
+                                <TextBox Name="EmailRecipientAddress"
+                                         LostFocus="EmailRecipientAddress_LostFocus"/>
+                            </DockPanel>
+
+                            <!-- From Address-->
+                            <DockPanel>
+                                <Grid Width="120">
+                                    <TextBlock Text="Remitente"/>
+                                </Grid>
+                                <TextBox Name="EmailFromAddress"/>
+                            </DockPanel>
+
+                            <!-- Test button -->
+                            <Button Style="{StaticResource ButtonStandardStyle}"
+                                    Name="TestEmailButton"
+                                    Visibility="{Binding IsChecked, ElementName=IsEmailAlertsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    DockPanel.Dock="Top"
+                                    Click="TestEmail_Click"
+                                    Width="85"
+                                    Margin="0,18,0,0"
+                                    Content="Probar"
+                                    HorizontalAlignment="Left"/>
+                        </DockPanel>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Tab: Audio Alerts -->
+            <TabItem Header="Sonidos" Name="AudioAlertTab">
+                <DockPanel Margin="20,0">
+
+                    <!-- Header -->
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Alertas de Audio"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                    <!-- Audio Alert Down: checkbox / tooltip -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,15,0,0">
+                        <CheckBox Name="IsAudioDownAlertEnabled"
+                                  Click="IsAudioDownAlertEnabled_Click"
+                                  Content="Habilitar alerta de audio: host caído"
+                                  IsChecked="True"/>
+                        <Label Style="{StaticResource LabelToolTip}">
+                            Habilite esta opción para reproducir un sonido cuando un host se cae.
+                        </Label>
+                    </StackPanel>
+
+                    <!-- Audio Alert Down: Filepath / play button / browse button -->
+                    <Grid DockPanel.Dock="Top"
+                          Margin="30,10,0,0"
+                          VerticalAlignment="Top"
+                          Visibility="{Binding IsChecked, ElementName=IsAudioDownAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Ruta del archivo de audio"/>
+                            <TextBox Name="AudioDownFilePath"
+                                     Margin="0,4,0,8"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <!-- Browse button -->
+                                <Button Style="{StaticResource ButtonStandardStyle}"
+                                        Click="AudioDownBrowse_Click"
+                                        Width="85"
+                                        Content="Buscar..."/>
+                                <!-- Play button -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text.Length, ElementName=AudioDownFilePath}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Button Style="{StaticResource ButtonStandardStyle}"
+                                            Click="AudioDownPlay_Click"
+                                            Width="85"
+                                            Margin="10,0,0,0"
+                                            Content="Probar">
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Hidden separator -->
+                    <Separator DockPanel.Dock="Top" Height="1" Background="Transparent" Margin="0,20,0,0"
+                               Visibility="{Binding IsChecked, ElementName=IsAudioDownAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <!-- Audio Alert Up: checkbox / tooltip -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,15,0,0">
+                        <CheckBox Name="IsAudioUpAlertEnabled"
+                                  Click="IsAudioUpAlertEnabled_Click"
+                                  Content="Habilitar alerta de audio: host arriba"
+                                  IsChecked="True"/>
+                        <Label Style="{StaticResource LabelToolTip}">
+                            Habilite esta opción para reproducir un sonido cuando un host se recupera.
+                        </Label>
+                    </StackPanel>
+
+                    <!-- Audio Alert Down: Filepath / play button / browse button -->
+                    <Grid DockPanel.Dock="Top"
+                          Margin="30,10,0,0"
+                          VerticalAlignment="Top"
+                          Visibility="{Binding IsChecked, ElementName=IsAudioUpAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Ruta del archivo de audio"/>
+                            <TextBox Name="AudioUpFilePath"
+                                     Margin="0,4,0,8"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <!-- Browse button -->
+                                <Button Style="{StaticResource ButtonStandardStyle}"
+                                        Click="AudioUpBrowse_Click"
+                                        Width="85"
+                                        Content="Buscar..."/>
+                                <!-- Play button -->
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text.Length, ElementName=AudioUpFilePath}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Button Style="{StaticResource ButtonStandardStyle}"
+                                            Click="AudioUpPlay_Click"
+                                            Width="85"
+                                            Margin="10,0,0,0"
+                                            Content="Probar">
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab: Logging -->
+            <TabItem Header="Registro" Name="LogOutputTab">
+                <DockPanel Margin="20,0">
+
+                    <!-- Header -->
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Registro de Salida"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                    <!-- Log all ping output -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,15,0,0">
+                        <CheckBox Name="IsLogOutputEnabled"
+                                  Content="Escribir salida de ping a archivos texto"
+                                  IsChecked="True"/>
+                        <Label Style="{StaticResource LabelToolTip}">
+                            Si esta opción está habilitada, toda la salida de ping se escribe en un archivo de texto.
+                            Especifique el directorio base, y vmPing generará un archivo de registro separado para cada host (host.txt).
+                        </Label>
+                    </StackPanel>
+                    <Grid DockPanel.Dock="Top"
+                          Margin="30,10,0,0"
+                          VerticalAlignment="Top"
+                          Visibility="{Binding IsChecked, ElementName=IsLogOutputEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Ruta del registro (directorio base)"/>
+                            <TextBox Name="LogPath"
+                                     Margin="0,4,0,8"/>
+                            <Button Style="{StaticResource ButtonStandardStyle}"
+                                    Click="BrowseLogPath_Click"
+                                    Width="85"
+                                    Content="Buscar..."
+                                    HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Hidden separator -->
+                    <Separator DockPanel.Dock="Top" Height="1" Background="Transparent" Margin="0,20,0,0"
+                               Visibility="{Binding IsChecked, ElementName=IsLogOutputEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <!-- Log status changes -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,15,0,0">
+                        <CheckBox Name="IsLogStatusChangesEnabled"
+                                  Content="Registrar cambios de estado en archivo"
+                                  IsChecked="True"/>
+                        <Label Style="{StaticResource LabelToolTip}">
+                            Cuando está habilitado, esta opción escribe todos los cambios de estado en un archivo de texto.
+                            Un cambio de estado es cuando un host que está haciendo ping baja, o un host caído vuelve a subir.
+                        </Label>
+                    </StackPanel>
+                    <Grid DockPanel.Dock="Top"
+                          Margin="30,10,0,0"
+                          VerticalAlignment="Top"
+                          Visibility="{Binding IsChecked, ElementName=IsLogStatusChangesEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Ruta del registro"/>
+                            <TextBox Name="LogStatusChangesPath"
+                                     Margin="0,4,0,8"/>
+                            <Button Style="{StaticResource ButtonStandardStyle}"
+                                    Click="BrowseLogStatusChangesPath_Click"
+                                    Width="85"
+                                    Content="Buscar..."
+                                    HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </Grid>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab: Display -->
+            <TabItem Header="Pantalla" Name="DisplayTab">
+                <DockPanel Margin="20,0" LastChildFill="False">
+
+                    <!-- Header -->
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Opciones de Pantalla"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                    <!-- Always on top -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,15,0,0">
+                        <CheckBox DockPanel.Dock="Left"
+                                  Name="IsAlwaysOnTopEnabled"
+                                  Content="Siempre visible"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            Mantener la aplicación vmPing encima de otras ventanas.
+                        </Label>
+                    </DockPanel>
+                    <!-- Minimze to tray -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,15,0,0">
+                        <CheckBox DockPanel.Dock="Left"
+                                  Name="IsMinimizeToTrayEnabled"
+                                  Content="Minimizar a la bandeja"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            <TextBlock>
+                                Coloca un icono en la bandeja del sistema cuando vmPing se minimiza.
+                                <LineBreak/>
+                                <LineBreak/>
+                                Para mantener el icono siempre visible:
+                                <LineBreak/>
+                                Clic derecho en la barra de tareas y elija 'Configuración de barra de tareas'.
+                                Busque 'Seleccionar los iconos que aparecen en la barra de tareas'.
+                            </TextBlock>
+                        </Label>
+                    </DockPanel>
+                    <!-- Exit to tray -->
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,15,0,0">
+                        <CheckBox DockPanel.Dock="Left"
+                                  Name="IsExitToTrayEnabled"
+                                  Content="Cerrar a la bandeja"/>
+                        <Label DockPanel.Dock="Left" Style="{StaticResource LabelToolTip}">
+                            <TextBlock>
+                                Al cerrar vmPing, la aplicación se minimizará a la bandeja en lugar de salir. Clic derecho en el icono para salir.
+                            </TextBlock>
+                        </Label>
+                    </DockPanel>
+                </DockPanel>
+            </TabItem>
+            
+            <!-- Tab: Interface -->
+            <TabItem Header="Interfaz" Name="InterfaceTab">
+                <DockPanel Margin="20,0">
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="Apariencia de la App"
+                               Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                    <StackPanel DockPanel.Dock="Top" Margin="0,15,0,0">
+                        <TextBlock Text="Tema de Diseño" Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <ComboBox Name="ThemeComboBox" Width="200" HorizontalAlignment="Left" Margin="0,8,0,0">
+                            <ComboBoxItem Content="Tema Claro"/>
+                            <ComboBoxItem Content="Tema Oscuro"/>
+                            <ComboBoxItem Content="Cristal (Glass)"/>
+                            <ComboBoxItem Content="Colorido (Friendly)"/>
+                            <ComboBoxItem Content="Azul Océano"/>
+                            <ComboBoxItem Content="Hacking (Matrix)"/>
+                            <ComboBoxItem Content="Naranja Atardecer"/>
+                            <ComboBoxItem Content="Rojo Carmesí"/>
+                        </ComboBox>
+                        <TextBlock Text="Elija entre un aspecto clásico claro, un modo oscuro profesional o la nueva interfaz moderna de glassmorphism." 
+                                 FontSize="11" Foreground="#6B7280" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab: Colors -->
+            <TabItem Header="Colores" Name="LayoutTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel LastChildFill="False"
+                               Name="ColorsDockPanel"
+                               Margin="20,0,20,20">
+                        <DockPanel.Resources>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Setter Property="Orientation" Value="Horizontal"/>
+                                <Setter Property="Margin" Value="0,5,0,0"/>
+                                <Setter Property="DockPanel.Dock" Value="Top"/>
+                            </Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource HtmlTextBoxStyle}">
+                                <EventSetter Event="PreviewTextInput" Handler="HtmlColor_PreviewTextInput"/>
+                            </Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="BorderBrush" Value="Black"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Width" Value="80"/>
+                                <Setter Property="Margin" Value="15,0,0,0"/>
+                            </Style>
+                        </DockPanel.Resources>
+
+                        <!-- Header -->
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Colores"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <!-- Probe background colors -->
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Fondo de Sonda"
+                                   Margin="0,10,0,0"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Inactivo"/>
+                            <TextBox Name="BackgroundColor_Probe_Inactive"/>
+                            <Border Background="{Binding ElementName=BackgroundColor_Probe_Inactive, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Arriba (Up)"/>
+                            <TextBox Name="BackgroundColor_Probe_Up"/>
+                            <Border Background="{Binding ElementName=BackgroundColor_Probe_Up, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Abajo (Down)"/>
+                            <TextBox Name="BackgroundColor_Probe_Down"/>
+                            <Border Background="{Binding ElementName=BackgroundColor_Probe_Down, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Indeterminado"/>
+                            <TextBox Name="BackgroundColor_Probe_Indeterminate"/>
+                            <Border Background="{Binding ElementName=BackgroundColor_Probe_Indeterminate, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Error"/>
+                            <TextBox Name="BackgroundColor_Probe_Error"/>
+                            <Border Background="{Binding ElementName=BackgroundColor_Probe_Error, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+
+                        <!-- Probe foreground colors -->
+                        <Separator DockPanel.Dock="Top" Height="1" Width="20" Background="Transparent" Margin="0,20,0,0"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Primer Plano de Sonda"
+                                   Margin="0"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Inactivo"/>
+                            <TextBox Name="ForegroundColor_Probe_Inactive"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Probe_Inactive, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Arriba (Up)"/>
+                            <TextBox Name="ForegroundColor_Probe_Up"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Probe_Up, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Abajo (Down)"/>
+                            <TextBox Name="ForegroundColor_Probe_Down"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Probe_Down, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Indeterminado"/>
+                            <TextBox Name="ForegroundColor_Probe_Indeterminate"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Probe_Indeterminate, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Error"/>
+                            <TextBox Name="ForegroundColor_Probe_Error"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Probe_Error, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+
+                        <!-- Statistics foreground colors -->
+                        <Separator DockPanel.Dock="Top" Height="1" Width="20" Background="Transparent" Margin="0,20,0,0"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Primer Plano de Estadísticas"
+                                   Margin="0"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Inactivo"/>
+                            <TextBox Name="ForegroundColor_Stats_Inactive"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Stats_Inactive, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Arriba (Up)"/>
+                            <TextBox Name="ForegroundColor_Stats_Up"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Stats_Up, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Abajo (Down)"/>
+                            <TextBox Name="ForegroundColor_Stats_Down"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Stats_Down, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Indeterminado"/>
+                            <TextBox Name="ForegroundColor_Stats_Indeterminate"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Stats_Indeterminate, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,10">
+                            <TextBlock Width="150" Text="Error"/>
+                            <TextBox Name="ForegroundColor_Stats_Error"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Stats_Error, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+
+                        <!-- Alias foreground colors -->
+                        <Separator DockPanel.Dock="Top" Height="1" Width="20" Background="Transparent" Margin="0,20,0,0"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Primer Plano de Alias"
+                                   Margin="0"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Inactivo"/>
+                            <TextBox Name="ForegroundColor_Alias_Inactive"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Alias_Inactive, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Arriba (Up)"/>
+                            <TextBox Name="ForegroundColor_Alias_Up"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Alias_Up, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Abajo (Down)"/>
+                            <TextBox Name="ForegroundColor_Alias_Down"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Alias_Down, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Width="150" Text="Indeterminado"/>
+                            <TextBox Name="ForegroundColor_Alias_Indeterminate"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Alias_Indeterminate, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,5,0,10">
+                            <TextBlock Width="150" Text="Error"/>
+                            <TextBox Name="ForegroundColor_Alias_Error"/>
+                            <Border Background="{Binding ElementName=ForegroundColor_Alias_Error, Path=Text, Converter={StaticResource StringToBrushConverter}}"/>
+                        </StackPanel>
+
+                        <!-- Restore defaults button -->
+                        <Grid DockPanel.Dock="Top" Margin="0,15,0,0">
+                            <Button Style="{StaticResource ButtonStandardStyle}"
+                                    Click="RestoreDefaultColors_Click"
+                                    Padding="15,5"
+                                    Content="Restaurar Predeterminados"
+                                    HorizontalAlignment="Left"/>
+                        </Grid>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+
+
+        <!-- Button Section -->
+        <Border Grid.Row="1" BorderBrush="#dfdfdf" Background="#f0f0f0" BorderThickness="0,1,0,0">
+            <DockPanel Margin="9" HorizontalAlignment="Right">
+                <CheckBox DockPanel.Dock="Top"
+                          Name="SaveAsDefaults"
+                          Content="Guardar como predeterminados de vmPing"
+                          FontSize="13"
+                          Foreground="#111"
+                          HorizontalAlignment="Right"/>
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,9,0,0" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource ButtonStandardStyle}"
+                            Click="OK_Click"
+                            Margin="0,0,9,0"
+                            IsDefault="True"
+                            Width="85"
+                            Content="OK"/>
+                    <Button Style="{StaticResource ButtonStandardStyle}"
+                            IsCancel="True"
+                            Width="85"
+                            Content="Cancelar"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
