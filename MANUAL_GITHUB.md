@@ -84,3 +84,52 @@ git commit -m "Mis cambios"
 # 4. Subir
 git push
 ```
+
+---
+
+## 5. Gestión de Versiones (Tags y Releases)
+
+Para que el sistema de actualizaciones automáticas funcione (y para mantener un historial ordenado), debes crear "Tags" (etiquetas) que marquen versiones específicas (ej. `v1.3.26`).
+
+### Paso 1: Crear la Etiqueta (Tag) Localmente
+Una vez que hayas guardado (commit) todos tus cambios para la nueva versión, crea la etiqueta:
+
+```powershell
+# Sintaxis: git tag -a [VERSION] -m "[MENSAJE]"
+git tag -a v1.3.26 -m "Lanzamiento versión 1.3.26 con mejoras"
+```
+
+### Paso 2: Subir la Etiqueta a GitHub
+Las etiquetas no se suben automáticamente con un `git push` normal. Debes subirlas explícitamente:
+
+```powershell
+git push --tags
+```
+
+o para una etiqueta específica:
+```powershell
+git push origin v1.3.26
+```
+
+### Paso 3: Crear la "Release" en GitHub (Importante para Auto-Update)
+El archivo `update.xml` de tu proyecto apunta a las descargas en GitHub Releases. Para que esto funcione:
+
+1.  Ve a la página de tu repositorio en GitHub: https://github.com/GabrielLop3z/vmPing-GLR
+2.  Haz clic en **"Releases"** (a la derecha) o ve a **"Tags"**.
+3.  Verás tu nuevo tag `v1.3.26`. Haz clic en los tres puntos o en el tag y selecciona **"Create release"** (o "Draft a new release" y selecciona el tag existente).
+4.  Escribe un título (ej. "v1.3.26") y una descripción de los cambios.
+5.  **MUY IMPORTANTE**: En la sección de "Assets" (Archivos adjuntos), debes **subir el archivo compilado** (ej. `vmPing.zip` o `vmPing.exe`).
+    *   *Nota: Tu `update.xml` busca un archivo llamado específicamente `vmPing.zip` en esa versión.*
+6.  Haz clic en **"Publish release"**.
+
+### Paso 4: Actualizar `update.xml`
+Finalmente, edita el archivo `update.xml` en tu código para apuntar a esta nueva versión y súbelo:
+
+```xml
+<item>
+    <version>1.3.26</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.3.26/vmPing.zip</url>
+    <changelog>https://github.com/GabrielLop3z/vmPing-GLR/releases/tag/v1.3.26</changelog>
+    <mandatory>false</mandatory>
+</item>
+```
