@@ -390,6 +390,15 @@ namespace vmPing.UI
         public static readonly DependencyProperty ViewColumnCountProperty =
             DependencyProperty.Register("ViewColumnCount", typeof(int), typeof(MainWindow), new PropertyMetadata(2));
 
+        public double GlobalTextScale
+        {
+            get { return (double)GetValue(GlobalTextScaleProperty); }
+            set { SetValue(GlobalTextScaleProperty, value); }
+        }
+
+        public static readonly DependencyProperty GlobalTextScaleProperty =
+            DependencyProperty.Register("GlobalTextScale", typeof(double), typeof(MainWindow), new PropertyMetadata(1.0));
+
         private void ColumnCount_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Update the dependency property which the UniformGrid uses.
