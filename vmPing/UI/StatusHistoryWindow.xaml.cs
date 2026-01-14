@@ -149,7 +149,7 @@ namespace vmPing.UI
             _statusHistoryView.Refresh();
         }
 
-        private void Export_Click(object sender, RoutedEventArgs e)
+        private async void Export_Click(object sender, RoutedEventArgs e)
         {
             using (System.Windows.Forms.SaveFileDialog exportDialog = new System.Windows.Forms.SaveFileDialog())
             {
@@ -160,39 +160,63 @@ namespace vmPing.UI
                 exportDialog.AutoUpgradeEnabled = true;
                 exportDialog.Filter = "CSV (Comma delimited)|*.csv|HTML Report|*.html|Text (Tab delimited)|*.txt|Text (Space delimited)|*.txt";
                 exportDialog.FileName = "status-history.csv";
+
                 if (exportDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && exportDialog.FileName != "")
                 {
-                    switch (exportDialog.FilterIndex)
+                    Cursor = Cursors.Wait;
+                    try
                     {
-                        // Note: FilterIndex is not zero-based. The first index is 1.
-                        case 1:
-                            // CSV.
-                            WriteCollectionToFile(filePath: exportDialog.FileName, delimeter: ',');
-                            break;
-                        case 2:
-                            // HTML.
-                            WriteCollectionToHtml(filePath: exportDialog.FileName);
-                            break;
-                        case 3:
-                            // Tab Delimited.
-                            WriteCollectionToFile(filePath: exportDialog.FileName, delimeter: '\t');
-                            break;
-                        case 4:
-                            // Space delimited.
-                            WriteCollectionToFile(filePath: exportDialog.FileName, delimeter: ' ');
-                            break;
-                        default:
-                            break;
+                        var itemsToExport = new System.Collections.Generic.List<StatusChangeLog>();
+                        foreach (StatusChangeLog item in _statusHistoryView)
+                        {
+                            itemsToExport.Add(item);
+                        }
+
+                        string filePath = exportDialog.FileName;
+                        int filterIndex = exportDialog.FilterIndex;
+
+                        await System.Threading.Tasks.Task.Run(() =>
+                        {
+                            switch (filterIndex)
+                            {
+                                // Note: FilterIndex is not zero-based. The first index is 1.
+                                case 1:
+                                    // CSV.
+                                    WriteCollectionToFile(filePath, ',', itemsToExport);
+                                    break;
+                                case 2:
+                                    // HTML.
+                                    WriteCollectionToHtml(filePath, itemsToExport);
+                                    break;
+                                case 3:
+                                    // Tab Delimited.
+                                    WriteCollectionToFile(filePath, '\t', itemsToExport);
+                                    break;
+                                case 4:
+                                    // Space delimited.
+                                    WriteCollectionToFile(filePath, ' ', itemsToExport);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        DialogWindow.ErrorWindow($"Export failed. {ex.Message}");
+                    }
+                    finally
+                    {
+                        Cursor = Cursors.Arrow;
                     }
                 }
             }
         }
 
-        private void WriteCollectionToFile(string filePath, char delimeter)
+        private void WriteCollectionToFile(string filePath, char delimeter, System.Collections.Generic.IEnumerable<StatusChangeLog> items)
         {
-            Cursor = Cursors.Wait;
             StringBuilder sb = new StringBuilder();
-            foreach (StatusChangeLog s in _statusHistoryView)
+            foreach (StatusChangeLog s in items)
             {
                 sb.AppendLine($"{s.Timestamp}{delimeter}{s.Hostname}{delimeter}{s.Alias?.Replace(",", "")}{delimeter}{s.StatusAsString}");
             }
@@ -206,14 +230,12 @@ namespace vmPing.UI
             }
             catch (Exception ex)
             {
-                DialogWindow.ErrorWindow($"Failed to write to '{filePath}'. {ex.Message}");
+                Application.Current.Dispatcher.Invoke(() => DialogWindow.ErrorWindow($"Failed to write to '{filePath}'. {ex.Message}"));
             }
-            Cursor = Cursors.Arrow;
         }
 
-        private void WriteCollectionToHtml(string filePath)
+        private void WriteCollectionToHtml(string filePath, System.Collections.Generic.IEnumerable<StatusChangeLog> items)
         {
-            Cursor = Cursors.Wait;
             var sb = new StringBuilder();
             sb.AppendLine("<!DOCTYPE html><html><head><title>vmPing Report</title>");
             sb.AppendLine("<style>body{font-family:'Segoe UI',sans-serif;background:#f3f4f6;color:#1f2937} table{width:100%;border-collapse:collapse;background:white;box-shadow:0 4px 6px rgba(0,0,0,0.1)} th,td{padding:12px;text-align:left;border-bottom:1px solid #e5e7eb} th{background:#2563eb;color:white} .Up{color:#10b981} .Down{color:#ef4444}</style>");
@@ -221,7 +243,7 @@ namespace vmPing.UI
             sb.AppendLine($"<h1 style='text-align:center'>vmPing Status Report</h1><p style='text-align:center'>{DateTime.Now}</p>");
             sb.AppendLine("<table><thead><tr><th>Timestamp</th><th>Address</th><th>Alias</th><th>Status</th></tr></thead><tbody>");
 
-            foreach (StatusChangeLog s in _statusHistoryView)
+            foreach (StatusChangeLog s in items)
             {
                 string statusClass = s.Status == ProbeStatus.Up ? "Up" : (s.Status == ProbeStatus.Down ? "Down" : "");
                 sb.AppendLine($"<tr><td>{s.Timestamp}</td><td>{s.Hostname}</td><td>{s.Alias}</td><td class='{statusClass}'>{s.StatusAsString}</td></tr>");
@@ -234,9 +256,8 @@ namespace vmPing.UI
             }
             catch (Exception ex)
             {
-                DialogWindow.ErrorWindow($"Failed to write to '{filePath}'. {ex.Message}");
+                Application.Current.Dispatcher.Invoke(() => DialogWindow.ErrorWindow($"Failed to write to '{filePath}'. {ex.Message}"));
             }
-            Cursor = Cursors.Arrow;
         }
 
         private void Window_StateChanged(object sender, System.EventArgs e)
