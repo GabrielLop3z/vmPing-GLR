@@ -64,18 +64,32 @@ namespace vmPing.UI
         {
             if (_ProbeCollection == null) return;
 
-            Dash_TotalNodes.Text = _ProbeCollection.Count.ToString();
-            Dash_UpNodes.Text = _ProbeCollection.Count(p => p.Status == ProbeStatus.Up).ToString();
-            Dash_DownNodes.Text = _ProbeCollection.Count(p => p.Status == ProbeStatus.Down || p.Status == ProbeStatus.Error).ToString();
+            int total = _ProbeCollection.Count;
+            int up = 0;
+            int down = 0;
+            long totalLatency = 0;
+            int latencyCount = 0;
 
-            var latencies = _ProbeCollection
-                .Where(p => p.IsActive && p.LatencyHistory.Count > 0)
-                .Select(p => p.LatencyHistory.Last())
-                .Where(l => l >= 0)
-                .ToList();
+            foreach (var p in _ProbeCollection)
+            {
+                if (p.Status == ProbeStatus.Up) up++;
+                else if (p.Status == ProbeStatus.Down || p.Status == ProbeStatus.Error) down++;
 
-            double avg = latencies.Any() ? latencies.Average() : 0;
-            Dash_AvgLatency.Text = $"{avg:F1} ms";
+                if (p.IsActive && p.LatencyHistory.Count > 0)
+                {
+                    var last = p.LatencyHistory.Last();
+                    if (last >= 0)
+                    {
+                        totalLatency += last;
+                        latencyCount++;
+                    }
+                }
+            }
+
+            Dash_TotalNodes.Text = total.ToString();
+            Dash_UpNodes.Text = up.ToString();
+            Dash_DownNodes.Text = down.ToString();
+            Dash_AvgLatency.Text = latencyCount > 0 ? $"{(double)totalLatency / latencyCount:F1} ms" : "0 ms";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

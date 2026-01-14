@@ -348,7 +348,7 @@
                         </Grid>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
-                            <TextBlock Text="Estado General" FontSize="11" Foreground="#64748B" FontWeight="SemiBold" TextTransform="Uppercase"/>
+                            <TextBlock Text="ESTADO GENERAL" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="Monitoreo Activo" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
                             <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                 <Ellipse Width="8" Height="8" Fill="#10B981" Margin="0,0,6,0"/>
@@ -436,7 +436,7 @@
                                 <Style TargetType="Border">
                                     <Setter Property="Effect">
                                         <Setter.Value>
-                                            <DropShadowEffect BlurRadius="10" Color="#000000" Opacity="0.05" ShadowDepth="2" Direction="270"/>
+                                            <DropShadowEffect BlurRadius="10" Color="#000000" Opacity="0.05" ShadowDepth="2" Direction="270" RenderingBias="Performance"/>
                                         </Setter.Value>
                                     </Setter>
                                     <Style.Triggers>
@@ -446,7 +446,6 @@
                                                     <Storyboard>
                                                         <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.02" Duration="0:0:0.2"/>
                                                         <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.02" Duration="0:0:0.2"/>
-                                                        <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="20" Duration="0:0:0.2"/>
                                                         <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0.15" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
@@ -456,7 +455,6 @@
                                                     <Storyboard>
                                                         <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.0" Duration="0:0:0.2"/>
                                                         <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.0" Duration="0:0:0.2"/>
-                                                        <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="10" Duration="0:0:0.2"/>
                                                         <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0.05" Duration="0:0:0.2"/>
                                                     </Storyboard>
                                                 </BeginStoryboard>
