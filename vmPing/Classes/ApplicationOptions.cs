@@ -97,6 +97,9 @@ namespace vmPing.Classes
         public static bool IsExitToTrayEnabled { get; set; } = false;
         public static AppTheme CurrentTheme { get; set; } = AppTheme.Crystal;
 
+        // Onboarding.
+        public static bool IsWelcomeShown { get; set; } = false;
+
         // Fonts.
         public static int FontSize_Probe { get; set; } = 11;
         public static int FontSize_Scanner { get; set; } = 16;

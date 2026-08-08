@@ -166,7 +166,7 @@
                             TickPlacement="BottomRight"
                             IsSnapToTickEnabled="True"
                             Width="200"
-                            Foreground="#202020"
+                            Foreground="{DynamicResource Theme.Text.Primary}"
                             Margin="0,8"/>
                 </StackPanel>
             </MenuItem>
@@ -299,6 +299,48 @@
                     <Separator />
                 </MenuItem>
                 <Separator />
+                <!-- Menu: Tools Submenu -->
+                <MenuItem Header="Herramientas" x:Name="ToolsMenu">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource icon.options}" VerticalAlignment="Center" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                    <MenuItem Header="Escáner de Puertos" Click="PortScanner_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.route}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="MTR (Ping + Ruta)" Click="Mtr_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.status-history}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Info de Red Local" Click="LocalNetworkInfo_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.info-circle}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Consulta DNS (Lookup)" Click="DnsLookup_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.question-circle}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Calculadora de Subred" Click="SubnetCalculator_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.columns-grid}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Wake on LAN (WoL)" Click="WakeOnLan_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.play}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Reportes de Hosts" Click="Reports_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.file-code}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <Separator />
                 <!-- Menu: Traceroute -->
                 <MenuItem Header="Trazar Ruta" x:Name="TracerouteMenu" InputGestureText="Ctrl-T">
                     <MenuItem.Icon>
@@ -336,6 +378,12 @@
                         <Image Source="{StaticResource icon.question-circle}" VerticalAlignment="Center" Width="16" Height="16"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <!-- Menu: Welcome -->
+                <MenuItem Header="Bienvenida" x:Name="WelcomeMenu">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource icon.vmping-logo-simple}" VerticalAlignment="Center" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -354,7 +402,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: Circular Health Indicator (Simulated) -->
-                <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="12" Margin="0,0,15,0" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
+                <Border Grid.Column="0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="12" Margin="0,0,15,0" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -363,23 +411,23 @@
                         
                         <!-- Donut Chart Visualization -->
                         <Grid Grid.Column="0" Margin="15,5">
-                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="#E2E8F0"/>
-                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="#3B82F6" StrokeDashArray="3 1" RenderTransformOrigin="0.5,0.5">
+                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="{DynamicResource Theme.Card.Border}"/>
+                            <Ellipse Width="50" Height="50" StrokeThickness="6" Stroke="{DynamicResource Theme.Accent}" StrokeDashArray="3 1" RenderTransformOrigin="0.5,0.5">
                                 <Ellipse.RenderTransform>
                                     <RotateTransform Angle="-90"/>
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock Text="{Binding ElementName=Dash_TotalNodes, Path=Text}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#1E293B"/>
+                                <TextBlock Text="{Binding ElementName=Dash_TotalNodes, Path=Text}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{DynamicResource Theme.Text.Primary}"/>
                             </StackPanel>
                         </Grid>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
-                            <TextBlock Text="ESTADO GENERAL" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="Monitoreo Activo" FontSize="14" FontWeight="Bold" Foreground="#0F172A"/>
+                            <TextBlock Text="ESTADO GENERAL" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="SemiBold"/>
+                            <TextBlock Text="Monitoreo Activo" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
                             <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                <Ellipse Width="8" Height="8" Fill="#10B981" Margin="0,0,6,0"/>
-                                <TextBlock Text="Sistema en línea" FontSize="11" Foreground="#10B981"/>
+                                <Ellipse Width="8" Height="8" Fill="{DynamicResource Theme.Status.Up.Foreground}" Margin="0,0,6,0"/>
+                                <TextBlock Text="Sistema en línea" FontSize="11" Foreground="{DynamicResource Theme.Status.Up.Foreground}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -394,40 +442,40 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Active -->
-                    <Border Grid.Column="0" Background="#F0FDF4" CornerRadius="10" Margin="0,0,8,0" Padding="12" BorderThickness="1" BorderBrush="#BBF7D0">
+                    <Border Grid.Column="0" Background="{DynamicResource Theme.Status.Up.Background}" CornerRadius="10" Margin="0,0,8,0" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
                         <DockPanel>
-                            <Border Background="#DCFCE7" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                            <Border Background="{DynamicResource Theme.Status.Up.Foreground}" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
                                 <Image Source="{StaticResource icon.check-circle-green}" Width="16" Height="16"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
-                                <TextBlock Text="ACTIVOS" FontSize="10" FontWeight="Bold" Foreground="#15803D" Opacity="0.8"/>
-                                <TextBlock Name="Dash_UpNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#15803D"/>
+                                <TextBlock Text="ACTIVOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Up.Foreground}" Opacity="0.8"/>
+                                <TextBlock Name="Dash_UpNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Up.Foreground}"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
 
                     <!-- Down -->
-                    <Border Grid.Column="1" Background="#FEF2F2" CornerRadius="10" Margin="4,0,4,0" Padding="12" BorderThickness="1" BorderBrush="#FECACA">
+                    <Border Grid.Column="1" Background="{DynamicResource Theme.Status.Down.Background}" CornerRadius="10" Margin="4,0,4,0" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
                         <DockPanel>
-                            <Border Background="#FEE2E2" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                            <Border Background="{DynamicResource Theme.Status.Down.Foreground}" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
                                 <Image Source="{StaticResource icon.exclamation-circle}" Width="16" Height="16"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
-                                <TextBlock Text="CAÍDOS" FontSize="10" FontWeight="Bold" Foreground="#B91C1C" Opacity="0.8"/>
-                                <TextBlock Name="Dash_DownNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="#B91C1C"/>
+                                <TextBlock Text="CAÍDOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Down.Foreground}" Opacity="0.8"/>
+                                <TextBlock Name="Dash_DownNodes" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Down.Foreground}"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
 
                     <!-- Latency -->
-                    <Border Grid.Column="2" Background="#EFF6FF" CornerRadius="10" Margin="8,0,0,0" Padding="12" BorderThickness="1" BorderBrush="#BFDBFE">
+                    <Border Grid.Column="2" Background="{DynamicResource Theme.Status.Info.Background}" CornerRadius="10" Margin="8,0,0,0" Padding="12" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
                         <DockPanel>
-                            <Border Background="#DBEAFE" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
-                                <Image Source="{StaticResource icon.route}" Width="16" Height="16" Opacity="0.6"/>
+                            <Border Background="{DynamicResource Theme.Status.Info.Foreground}" Width="32" Height="32" CornerRadius="8" DockPanel.Dock="Left" VerticalAlignment="Center">
+                                <Image Source="{StaticResource icon.route}" Width="16" Height="16" Opacity="0.9"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
-                                <TextBlock Text="LATENCIA" FontSize="10" FontWeight="Bold" Foreground="#1D4ED8" Opacity="0.8"/>
-                                <TextBlock Name="Dash_AvgLatency" Text="0 ms" FontSize="18" FontWeight="Bold" Foreground="#1D4ED8"/>
+                                <TextBlock Text="LATENCIA" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Info.Foreground}" Opacity="0.8"/>
+                                <TextBlock Name="Dash_AvgLatency" Text="0 ms" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Info.Foreground}"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>
@@ -493,7 +541,7 @@
                                                 <Setter Property="Background" Value="Transparent"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding ElementName=gridItemsControl, Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Background" Value="#0DFFFFFF"/>
+                                                        <Setter Property="Background" Value="{DynamicResource Theme.Hover}"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -534,9 +582,9 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="controlButton_border" Property="Background" Value="#EF4444"/>
-                                                            <Setter TargetName="controlButton_image" Property="Source" Value="{StaticResource icon.window-close-white}"/>
-                                                            <Setter TargetName="controlButton_image" Property="Opacity" Value="1"/>
+                                                        <Setter TargetName="controlButton_border" Property="Background" Value="{DynamicResource Theme.Status.Down.Foreground}"/>
+                                                        <Setter TargetName="controlButton_image" Property="Source" Value="{StaticResource icon.window-close-white}"/>
+                                                        <Setter TargetName="controlButton_image" Property="Opacity" Value="1"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
@@ -562,7 +610,7 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="controlButton_border" Property="Background" Value="#3B82F6"/>
+                                                            <Setter TargetName="controlButton_border" Property="Background" Value="{DynamicResource Theme.Accent}"/>
                                                             <Setter Property="Foreground" Value="White"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
@@ -589,7 +637,7 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="controlButton_border" Property="Background" Value="#10B981"/>
+                                                            <Setter TargetName="controlButton_border" Property="Background" Value="{DynamicResource Theme.Status.Up.Foreground}"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
@@ -629,26 +677,26 @@
                                         </Grid.Style>
 
                                         <!-- ENV Badge -->
-                                        <Border Grid.Column="0" Background="#F3F4F6" CornerRadius="6" Padding="6,2" Margin="0,0,4,0">
+                                        <Border Grid.Column="0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="6" Padding="6,2" Margin="0,0,4,0">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="ENV" FontSize="9" FontWeight="Bold" Foreground="#6B7280" Margin="0,0,4,0"/>
-                                                <TextBlock Text="{Binding Statistics.Sent}" FontSize="10" FontWeight="Bold" Foreground="#374151"/>
+                                                <TextBlock Text="ENV" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,4,0"/>
+                                                <TextBlock Text="{Binding Statistics.Sent}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
                                             </StackPanel>
                                         </Border>
 
                                         <!-- REC Badge -->
-                                        <Border Grid.Column="1" Background="#ECFDF5" CornerRadius="6" Padding="6,2" Margin="0,0,4,0">
+                                        <Border Grid.Column="1" Background="{DynamicResource Theme.Status.Up.Background}" CornerRadius="6" Padding="6,2" Margin="0,0,4,0">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="REC" FontSize="9" FontWeight="Bold" Foreground="#10B981" Margin="0,0,4,0"/>
-                                                <TextBlock Text="{Binding Statistics.Received}" FontSize="10" FontWeight="Bold" Foreground="#059669"/>
+                                                <TextBlock Text="REC" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Up.Foreground}" Margin="0,0,4,0"/>
+                                                <TextBlock Text="{Binding Statistics.Received}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Up.Foreground}"/>
                                             </StackPanel>
                                         </Border>
 
                                         <!-- PERD Badge -->
-                                        <Border Grid.Column="2" Background="#FEF2F2" CornerRadius="6" Padding="6,2">
+                                        <Border Grid.Column="2" Background="{DynamicResource Theme.Status.Down.Background}" CornerRadius="6" Padding="6,2">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="PERD" FontSize="9" FontWeight="Bold" Foreground="#EF4444" Margin="0,0,4,0"/>
-                                                <TextBlock Text="{Binding Statistics.Lost}" FontSize="10" FontWeight="Bold" Foreground="#B91C1C"/>
+                                                <TextBlock Text="PERD" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Down.Foreground}" Margin="0,0,4,0"/>
+                                                <TextBlock Text="{Binding Statistics.Lost}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Down.Foreground}"/>
                                             </StackPanel>
                                         </Border>
                                     </Grid>
@@ -740,11 +788,11 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
     
-                                    <Border Grid.ColumnSpan="4" Background="#F9FAFB" CornerRadius="6" BorderThickness="1" BorderBrush="#E5E7EB"/>
-    
+                                    <Border Grid.ColumnSpan="4" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}"/>
+
                                     <!-- Status glyph -->
                                     <TextBlock Grid.Column="0" Text="{Binding Status, Converter={StaticResource ProbeStatusToGlyphConverter}}"
-                                               FontSize="12" FontFamily="Marlett" VerticalAlignment="Center" Foreground="#4B5563" Padding="8,0,0,0"/>
+                                               FontSize="12" FontFamily="Marlett" VerticalAlignment="Center" Foreground="{DynamicResource Theme.Text.Secondary}" Padding="8,0,0,0"/>
     
                                     <!-- Hostname textbox -->
                                     <TextBox Name="Hostname" Grid.Column="1" FontWeight="Medium" FontSize="13" VerticalContentAlignment="Center"
@@ -782,7 +830,7 @@
                                     <Button Click="ProbeStartStop_Click" Grid.Column="3" Margin="4">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
-                                                <Border Name="pingButton_border" CornerRadius="4" Padding="12,4" Background="#3B82F6">
+                                                <Border Name="pingButton_border" CornerRadius="4" Padding="12,4" Background="{DynamicResource Theme.Accent}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <Image Source="{Binding IsActive, Converter={StaticResource BooleanToImageConverter}}" Width="12" Height="12"/>
                                                         <TextBlock Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}}" Visibility="{Binding ElementName=History, Path=ActualWidth, Converter={StaticResource ButtonTextVisibilityConverter}}"
@@ -791,10 +839,10 @@
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="pingButton_border" Property="Background" Value="#2563EB"/>
+                                                        <Setter TargetName="pingButton_border" Property="Background" Value="{DynamicResource Theme.Status.Info.Foreground}"/>
                                                     </Trigger>
                                                     <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                        <Setter TargetName="pingButton_border" Property="Background" Value="#EF4444"/>
+                                                        <Setter TargetName="pingButton_border" Property="Background" Value="{DynamicResource Theme.Status.Down.Foreground}"/>
                                                     </DataTrigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -813,7 +861,7 @@
         <!-- Modal Overlay -->
         <Grid Name="ProbeDetailsModal" Visibility="Collapsed" Panel.ZIndex="1000">
              <Border Background="#80000000" MouseLeftButtonUp="CloseModal_Click"/>
-             <Border Background="White" CornerRadius="16" Width="700" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
+             <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="16" Width="700" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
                  <Border.RenderTransform>
                     <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                  </Border.RenderTransform>
@@ -843,7 +891,7 @@
                     </Style>
                  </Border.Style>
                  <Border.Effect>
-                    <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.3" Color="#1E293B" RenderingBias="Performance"/>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.3" Color="#000000" RenderingBias="Performance"/>
                  </Border.Effect>
                  <Grid ClipToBounds="True">
                     <Grid.RowDefinitions>
@@ -854,15 +902,15 @@
                     </Grid.RowDefinitions>
                     
                     <!-- Header -->
-                    <Border Grid.Row="0" Background="#F8FAFC" Padding="20" BorderThickness="0,0,0,1" BorderBrush="#E2E8F0">
+                    <Border Grid.Row="0" Background="{DynamicResource Theme.Badge.Background}" Padding="20" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Theme.Card.Border}">
                         <DockPanel>
-                            <Button DockPanel.Dock="Right" Click="CloseModal_Click" Content="✕" FontSize="16" Background="Transparent" BorderThickness="0" Foreground="#64748B"/>
+                            <Button DockPanel.Dock="Right" Click="CloseModal_Click" Content="✕" FontSize="16" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource Theme.Text.Secondary}"/>
                              <StackPanel Orientation="Horizontal">
                                 <Image Source="{StaticResource icon.vmping-logo-simple}" Width="32" Height="32" Margin="0,0,15,0"/>
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Hostname}" FontSize="24" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,10,0"/>
-                                        <Button Content="Copiar" FontSize="10" Padding="8,2" Background="#E2E8F0" Foreground="#475569" BorderThickness="0" Click="CopyHostname_Click" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Hostname}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}" Margin="0,0,10,0"/>
+                                        <Button Content="Copiar" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHostname_Click" VerticalAlignment="Center">
                                             <Button.Resources>
                                                 <Style TargetType="Border">
                                                     <Setter Property="CornerRadius" Value="10"/>
@@ -872,8 +920,8 @@
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Status}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource ProbeStatusToForegroundBrushConverter}}"/>
-                                        <TextBlock Text=" - " Foreground="#94A3B8"/>
-                                        <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="#64748B"/>
+                                        <TextBlock Text=" - " Foreground="{DynamicResource Theme.Text.Muted}"/>
+                                        <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="{DynamicResource Theme.Text.Secondary}"/>
                                     </StackPanel>
                                 </StackPanel>
                              </StackPanel>
@@ -888,34 +936,34 @@
                              <ColumnDefinition Width="*"/>
                          </Grid.ColumnDefinitions>
                          <!-- Big Stats Blocks -->
-                         <Border Grid.Column="0" Background="#F0FDF4" CornerRadius="10" Margin="5" Padding="15">
+                         <Border Grid.Column="0" Background="{DynamicResource Theme.Status.Up.Background}" CornerRadius="10" Margin="5" Padding="15">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="ENVIADOS" FontSize="12" Foreground="#15803D" FontWeight="Bold"/>
-                                 <TextBlock Text="{Binding Statistics.Sent}" FontSize="32" Foreground="#166534" HorizontalAlignment="Center" FontWeight="Light"/>
+                                 <TextBlock Text="ENVIADOS" FontSize="12" Foreground="{DynamicResource Theme.Status.Up.Foreground}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.Sent}" FontSize="32" Foreground="{DynamicResource Theme.Status.Up.Foreground}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
-                         <Border Grid.Column="1" Background="#ECFEFF" CornerRadius="10" Margin="5" Padding="15">
+                         <Border Grid.Column="1" Background="{DynamicResource Theme.Status.Info.Background}" CornerRadius="10" Margin="5" Padding="15">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="RECIBIDOS" FontSize="12" Foreground="#0E7490" FontWeight="Bold"/>
-                                 <TextBlock Text="{Binding Statistics.Received}" FontSize="32" Foreground="#155E75" HorizontalAlignment="Center" FontWeight="Light"/>
+                                 <TextBlock Text="RECIBIDOS" FontSize="12" Foreground="{DynamicResource Theme.Status.Info.Foreground}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.Received}" FontSize="32" Foreground="{DynamicResource Theme.Status.Info.Foreground}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
-                         <Border Grid.Column="2" Background="#FEF2F2" CornerRadius="10" Margin="5" Padding="15">
+                         <Border Grid.Column="2" Background="{DynamicResource Theme.Status.Down.Background}" CornerRadius="10" Margin="5" Padding="15">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="PERDIDOS" FontSize="12" Foreground="#B91C1C" FontWeight="Bold"/>
-                                 <TextBlock Text="{Binding Statistics.Lost}" FontSize="32" Foreground="#991B1B" HorizontalAlignment="Center" FontWeight="Light"/>
+                                 <TextBlock Text="PERDIDOS" FontSize="12" Foreground="{DynamicResource Theme.Status.Down.Foreground}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.Lost}" FontSize="32" Foreground="{DynamicResource Theme.Status.Down.Foreground}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
                     </Grid>
 
                     <!-- Tools Section: Quick Actions -->
-                    <Border Grid.Row="2" Margin="25,0" Padding="10" Background="#F1F5F9" CornerRadius="8">
+                    <Border Grid.Row="2" Margin="25,0" Padding="10" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Port:" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,5,0"/>
+                            <TextBlock Text="Port:" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,5,0"/>
                             <TextBox Name="txtPortNumber" Text="80" Width="50" Padding="4" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
                             
                             <!-- Test Port -->
-                            <Button Content="Test" Padding="12,5" Background="#3B82F6" Foreground="White" BorderThickness="0" Click="TestPort_Click" Margin="0,0,1,0">
+                            <Button Content="Test" Padding="12,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="TestPort_Click" Margin="0,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -924,7 +972,7 @@
                             </Button>
 
                             <!-- Telnet -->
-                            <Button Content="Telnet" Padding="12,5" Background="#475569" Foreground="White" BorderThickness="0" Click="Telnet_Click" Margin="5,0,1,0">
+                            <Button Content="Telnet" Padding="12,5" Background="{DynamicResource Theme.Text.Secondary}" Foreground="White" BorderThickness="0" Click="Telnet_Click" Margin="5,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -933,7 +981,7 @@
                             </Button>
 
                             <!-- RDP -->
-                            <Button Content="RDP" Padding="12,5" Background="#0EA5E9" Foreground="White" BorderThickness="0" Click="RDP_Click" Margin="5,0,1,0">
+                            <Button Content="RDP" Padding="12,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="RDP_Click" Margin="5,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -951,7 +999,7 @@
                             </Button>
                             
                              <!-- Web -->
-                            <Button Content="Web" Padding="12,5" Background="#10B981" Foreground="White" BorderThickness="0" Click="Web_Click" Margin="5,0,1,0">
+                            <Button Content="Web" Padding="12,5" Background="{DynamicResource Theme.Status.Up.Foreground}" Foreground="White" BorderThickness="0" Click="Web_Click" Margin="5,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -978,7 +1026,7 @@
                             </Button>
 
                             <!-- Traceroute -->
-                            <Button Content="Traceroute" Padding="12,5" Background="#64748B" Foreground="White" BorderThickness="0" Click="Traceroute_Click" Margin="5,0,10,0">
+                            <Button Content="Traceroute" Padding="12,5" Background="{DynamicResource Theme.Text.Secondary}" Foreground="White" BorderThickness="0" Click="Traceroute_Click" Margin="5,0,10,0">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
@@ -991,9 +1039,9 @@
                     </Border>
                     
                     <!-- History Log area -->
-                    <Grid Grid.Row="3" Background="#F8FAFC" Margin="0,10,0,0">
+                    <Grid Grid.Row="3" Background="{DynamicResource Theme.Badge.Background}" Margin="0,10,0,0">
                          <c:AutoScrollListBox BorderThickness="0" Background="Transparent" ItemsSource="{Binding History}" FontFamily="Consolas" FontSize="13" Margin="10" 
-                                              Foreground="#334155"/>
+                                              Foreground="{DynamicResource Theme.Text.Primary}"/>
                     </Grid>
                  </Grid>
              </Border>
@@ -1002,22 +1050,22 @@
         <!-- ADD PROBE MODAL -->
         <Grid Name="AddProbeModal" Visibility="Collapsed" Panel.ZIndex="1100">
             <Border Background="#80000000" MouseLeftButtonUp="AddProbe_Cancel_Click"/>
-            <Border Background="White" CornerRadius="12" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
+            <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="12" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.2"/>
                 </Border.Effect>
                 <StackPanel>
-                     <TextBlock Text="Añadir Host" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" Foreground="#1E293B"/>
+                     <TextBlock Text="Añadir Host" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" Foreground="{DynamicResource Theme.Text.Primary}"/>
                      
-                     <TextBlock Text="Hostname / IP" Foreground="#64748B" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                     <TextBox Name="txtAddHostname" Padding="10" FontSize="14" Margin="0,0,0,15" Background="#F1F5F9" BorderThickness="0" TextChanged="AddHostname_TextChanged"/>
+                     <TextBlock Text="Hostname / IP" Foreground="{DynamicResource Theme.Text.Secondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                     <TextBox Name="txtAddHostname" Padding="10" FontSize="14" Margin="0,0,0,15" Background="{DynamicResource Theme.Badge.Background}" BorderThickness="0" TextChanged="AddHostname_TextChanged"/>
                      
-                     <TextBlock Text="Alias (Opcional)" Foreground="#64748B" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                     <TextBox Name="txtAddAlias" Padding="10" FontSize="14" Margin="0,0,0,25" Background="#F1F5F9" BorderThickness="0"/>
+                     <TextBlock Text="Alias (Opcional)" Foreground="{DynamicResource Theme.Text.Secondary}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                     <TextBox Name="txtAddAlias" Padding="10" FontSize="14" Margin="0,0,0,25" Background="{DynamicResource Theme.Badge.Background}" BorderThickness="0"/>
                      
                      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                         <Button Content="Cancelar" Click="AddProbe_Cancel_Click" Background="Transparent" Foreground="#64748B" BorderThickness="0" Margin="0,0,10,0" Padding="10,5"/>
-                         <Button Content="Añadir" Click="AddProbe_Save_Click" Background="#3B82F6" Foreground="White" Padding="20,10" BorderThickness="0" FontWeight="SemiBold">
+                         <Button Content="Cancelar" Click="AddProbe_Cancel_Click" Background="Transparent" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Margin="0,0,10,0" Padding="10,5"/>
+                         <Button Content="Añadir" Click="AddProbe_Save_Click" Background="{DynamicResource Theme.Accent}" Foreground="White" Padding="20,10" BorderThickness="0" FontWeight="SemiBold">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="6"/>

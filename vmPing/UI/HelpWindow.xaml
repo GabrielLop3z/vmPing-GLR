@@ -99,6 +99,7 @@
                     </Style.Triggers>
                 </Style>
             </TreeView.ItemContainerStyle>
+            <TreeViewItem Header="Bienvenida" Selected="Welcome_Selected" />
             <TreeViewItem Header="Introducción" Selected="Intro_Selected" IsSelected="True" />
             <TreeViewItem Header="Uso Básico" Selected="BasicUsage_Selected" />
             <TreeViewItem Header="Funciones Extra" Selected="ExtraFeatures_Selected" />

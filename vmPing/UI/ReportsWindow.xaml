@@ -1,0 +1,89 @@
+<Window x:Class="vmPing.UI.ReportsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Reportes de vmPing - vmPing GLR"
+        Height="560" Width="860"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Theme.Window.Background}"
+        Foreground="{DynamicResource Theme.Window.Foreground}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Reportes de Hosts" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+            <TextBlock Text="Resumen de estadísticas de ping, exportación a Excel e HTML" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+        </StackPanel>
+
+        <!-- Summary Card -->
+        <Border Grid.Row="1" Background="{DynamicResource Theme.Card.Background}" BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Total Hosts" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="lblTotal" Text="0" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Activos" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="lblUp" Text="0" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Up.Foreground}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Caídos" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="lblDown" Text="0" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Down.Foreground}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3">
+                    <TextBlock Text="Latencia Promedio" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="lblAvgLatency" Text="0 ms" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Status.Info.Foreground}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="2" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Exportar a Excel (.xlsx)" Padding="14,7"
+                        Background="{DynamicResource Theme.Status.Info.Foreground}" Foreground="White" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Click="BtnExportExcel_Click" Margin="0,0,10,0"/>
+                <Button Content="Exportar a HTML" Padding="14,7"
+                        Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Click="BtnExportHtml_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Probes DataGrid -->
+        <DataGrid x:Name="dgProbes" Grid.Row="2" Grid.RowSpan="2" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Theme.Card.Border}"
+                  Background="{DynamicResource Theme.Card.Background}" Foreground="{DynamicResource Theme.Text.Primary}" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}"
+                  Margin="0,0,0,12">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Hostname" Binding="{Binding Hostname}" Width="200"/>
+                <DataGridTextColumn Header="Alias" Binding="{Binding Alias}" Width="140"/>
+                <DataGridTextColumn Header="Estado" Binding="{Binding Status}" Width="110"/>
+                <DataGridTextColumn Header="Enviados" Binding="{Binding Sent, StringFormat={}{0:N0}}" Width="80"/>
+                <DataGridTextColumn Header="Recibidos" Binding="{Binding Received, StringFormat={}{0:N0}}" Width="80"/>
+                <DataGridTextColumn Header="Perdidos" Binding="{Binding Lost, StringFormat={}{0:N0}}" Width="80"/>
+                <DataGridTextColumn Header="Error" Binding="{Binding Error, StringFormat={}{0:N0}}" Width="70"/>
+                <DataGridTextColumn Header="Min RTT (ms)" Binding="{Binding MinRtt, StringFormat={}{0:N0}}" Width="90"/>
+                <DataGridTextColumn Header="Prom RTT (ms)" Binding="{Binding AvgRtt, StringFormat={}{0:N2}}" Width="100"/>
+                <DataGridTextColumn Header="Max RTT (ms)" Binding="{Binding MaxRtt, StringFormat={}{0:N0}}" Width="90"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status -->
+        <StatusBar Grid.Row="3" Background="Transparent" Margin="0,0,0,10">
+            <StatusBarItem>
+                <TextBlock x:Name="lblStatus" Text="Listo" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

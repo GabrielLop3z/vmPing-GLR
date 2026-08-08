@@ -29,6 +29,7 @@ namespace vmPing.UI
         public static RoutedCommand AddProbeCommand = new RoutedCommand();
         public static RoutedCommand MultiInputCommand = new RoutedCommand();
         public static RoutedCommand StatusHistoryCommand = new RoutedCommand();
+        public static RoutedCommand WelcomeCommand = new RoutedCommand();
         public static RoutedCommand FullScreenCommand = new RoutedCommand();
         public static RoutedCommand CompactModeCommand = new RoutedCommand();
 
@@ -211,6 +212,7 @@ namespace vmPing.UI
             CommandBindings.Add(new CommandBinding(StatusHistoryCommand, StatusHistoryExecute));
             CommandBindings.Add(new CommandBinding(FullScreenCommand, FullScreenExecute));
             CommandBindings.Add(new CommandBinding(CompactModeCommand, CompactModeExecute));
+            CommandBindings.Add(new CommandBinding(WelcomeCommand, WelcomeExecute));
             
             InputBindings.Add(new InputBinding(
                 OptionsCommand,
@@ -258,6 +260,7 @@ namespace vmPing.UI
             StatusHistoryMenu.Command = StatusHistoryCommand;
             FullScreenMenu.Command = FullScreenCommand;
             CompactModeMenu.Command = CompactModeCommand;
+            WelcomeMenu.Command = WelcomeCommand;
             
             // Vincular el comando al evento del menú
             UpdateMenu.Click += (s, args) => 
@@ -517,6 +520,54 @@ namespace vmPing.UI
             }
         }
 
+        private void WelcomeExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (WelcomeWindow._OpenWindow == null)
+            {
+                new WelcomeWindow { Owner = this }.Show();
+            }
+            else
+            {
+                WelcomeWindow._OpenWindow.Activate();
+            }
+        }
+
+        private void PortScanner_Click(object sender, RoutedEventArgs e)
+        {
+            new PortScannerWindow { Owner = this }.Show();
+        }
+
+        private void Mtr_Click(object sender, RoutedEventArgs e)
+        {
+            new MtrWindow { Owner = this }.Show();
+        }
+
+        private void LocalNetworkInfo_Click(object sender, RoutedEventArgs e)
+        {
+            new LocalNetworkInfoWindow { Owner = this }.Show();
+        }
+
+        private void DnsLookup_Click(object sender, RoutedEventArgs e)
+        {
+            new DnsLookupWindow { Owner = this }.Show();
+        }
+
+        private void SubnetCalculator_Click(object sender, RoutedEventArgs e)
+        {
+            new SubnetCalculatorWindow { Owner = this }.Show();
+        }
+
+        private void WakeOnLan_Click(object sender, RoutedEventArgs e)
+        {
+            new WakeOnLanWindow { Owner = this }.Show();
+        }
+
+        private void Reports_Click(object sender, RoutedEventArgs e)
+        {
+            var wnd = new ReportsWindow(_ProbeCollection) { Owner = this };
+            wnd.Show();
+        }
+
         private void NewInstanceExecute(object sender, ExecutedRoutedEventArgs e)
         {
             try
@@ -579,8 +630,15 @@ namespace vmPing.UI
                 };
                 _ProbeCollection.Add(probe);
                 probe.StartStop(); 
-                RefreshColumnCount();
+            RefreshColumnCount();
+
+            // Show the welcome window on first run.
+            if (!ApplicationOptions.IsWelcomeShown)
+            {
+                var welcome = new WelcomeWindow { Owner = this };
+                welcome.Show();
             }
+        }
             AddProbeModal.Visibility = Visibility.Collapsed;
         }
 

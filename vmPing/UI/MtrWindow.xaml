@@ -1,0 +1,69 @@
+<Window x:Class="vmPing.UI.MtrWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MTR (Ping + Route Trace) - vmPing GLR"
+        Height="550" Width="760"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Theme.Window.Background}"
+        Foreground="{DynamicResource Theme.Window.Foreground}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="MTR - Diagnóstico de Ruta Continuo" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+            <TextBlock Text="Mide pérdida de paquetes y latencia en cada salto del trayecto" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+        </StackPanel>
+
+        <!-- Control Bar -->
+        <Border Grid.Row="1" Background="{DynamicResource Theme.Card.Background}" BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1" CornerRadius="10" Padding="15" Margin="0,0,0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Host:" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,8,0"/>
+                    <TextBox x:Name="txtHost" Width="260" Padding="8,6" FontSize="13" Background="{DynamicResource Theme.Badge.Background}" Foreground="{DynamicResource Theme.Text.Primary}" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}"/>
+                </StackPanel>
+
+                <Button x:Name="btnStart" Grid.Column="1" Content="Iniciar" Padding="20,8" Margin="10,0,0,0"
+                        Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnStart_Click"/>
+
+                <Button x:Name="btnReset" Grid.Column="2" Content="Reiniciar Stats" Padding="15,8" Margin="10,0,0,0"
+                        Background="{DynamicResource Theme.Badge.Background}" Foreground="{DynamicResource Theme.Text.Primary}" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}" Cursor="Hand" Click="BtnReset_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- MTR Table -->
+        <DataGrid x:Name="dgMtr" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Theme.Card.Border}"
+                  Background="{DynamicResource Theme.Card.Background}" Foreground="{DynamicResource Theme.Text.Primary}" BorderThickness="1" BorderBrush="{DynamicResource Theme.Card.Border}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding Hop}" Width="45"/>
+                <DataGridTextColumn Header="Host / IP" Binding="{Binding HostName}" Width="220"/>
+                <DataGridTextColumn Header="Pérdida %" Binding="{Binding LossPercent, StringFormat={}{0:F1}%}" Width="80"/>
+                <DataGridTextColumn Header="Enviados" Binding="{Binding Sent}" Width="75"/>
+                <DataGridTextColumn Header="Último" Binding="{Binding LastMs, StringFormat={}{0} ms}" Width="75"/>
+                <DataGridTextColumn Header="Prom" Binding="{Binding AvgMs, StringFormat={}{0:F1} ms}" Width="75"/>
+                <DataGridTextColumn Header="Mín" Binding="{Binding BestMs, StringFormat={}{0} ms}" Width="70"/>
+                <DataGridTextColumn Header="Máx" Binding="{Binding WorstMs, StringFormat={}{0} ms}" Width="70"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status bar -->
+        <StatusBar Grid.Row="3" Background="Transparent" Margin="0,10,0,0">
+            <StatusBarItem>
+                <TextBlock x:Name="lblStatus" Text="Detenido" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

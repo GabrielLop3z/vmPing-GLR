@@ -52,6 +52,18 @@ namespace vmPing.UI
             Intro?.BringIntoView();
         }
 
+        private void Welcome_Selected(object sender, RoutedEventArgs e)
+        {
+            if (WelcomeWindow._OpenWindow == null)
+            {
+                new WelcomeWindow { Owner = this }.Show();
+            }
+            else
+            {
+                WelcomeWindow._OpenWindow.Activate();
+            }
+        }
+
         private void BasicUsage_Selected(object sender, RoutedEventArgs e)
         {
             BasicUsage?.BringIntoView();

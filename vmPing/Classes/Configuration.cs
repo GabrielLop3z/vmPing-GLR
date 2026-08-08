@@ -195,7 +195,8 @@ namespace vmPing.Classes
                 Node("IsAlwaysOnTopEnabled", ApplicationOptions.IsAlwaysOnTopEnabled),
                 Node("IsMinimizeToTrayEnabled", ApplicationOptions.IsMinimizeToTrayEnabled),
                 Node("IsExitToTrayEnabled", ApplicationOptions.IsExitToTrayEnabled),
-                Node("Theme", ApplicationOptions.CurrentTheme)
+                Node("Theme", ApplicationOptions.CurrentTheme),
+                Node("IsWelcomeShown", ApplicationOptions.IsWelcomeShown)
             );
         }
 
@@ -503,6 +504,10 @@ namespace vmPing.Classes
                 {
                     ApplicationOptions.CurrentTheme = theme;
                 }
+            }
+            if (options.TryGetValue("IsWelcomeShown", out optionValue))
+            {
+                ApplicationOptions.IsWelcomeShown = bool.Parse(optionValue);
             }
         }
     }

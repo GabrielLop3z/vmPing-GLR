@@ -1,0 +1,139 @@
+<Window x:Class="vmPing.UI.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bienvenido a vmPing GLR"
+        UseLayoutRounding="True"
+        Height="560"
+        Width="640"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Theme.Window.Background}"
+        Foreground="{DynamicResource Theme.Window.Foreground}"
+        Closed="Window_Closed">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI, Arial" />
+        </Style>
+        <Style x:Key="FeatureTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Primary}" />
+        </Style>
+        <Style x:Key="FeatureTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Secondary}" />
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24,32,24">
+
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <Image Source="/vmPing.ico" Width="48" Height="48" Margin="0,0,16,0" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="vmPing GLR" FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource Theme.Text.Primary}" />
+                    <TextBlock x:Name="VersionText" FontSize="12"
+                               Foreground="{DynamicResource Theme.Text.Muted}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Welcome message -->
+            <Border Background="{DynamicResource Theme.Card.Background}"
+                    BorderBrush="{DynamicResource Theme.Card.Border}"
+                    BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,16">
+                <TextBlock TextWrapping="Wrap" FontSize="14" LineHeight="22"
+                           Foreground="{DynamicResource Theme.Text.Primary}">
+                    Bienvenido a <Bold>vmPing GLR</Bold>, una utilidad de red para monitorear en tiempo real
+                    la disponibilidad de múltiples hosts. Escriba una dirección IP o nombre de host y presione
+                    Enter para comenzar a monitorear.
+                </TextBlock>
+            </Border>
+
+            <!-- Feature grid -->
+            <TextBlock Text="Novedades de esta versión" FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource Theme.Text.Primary}" Margin="0,0,0,8" />
+
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="Panel de control" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="Resumen visual con total de hosts activos, caídos y latencia promedio." />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="Herramientas de red" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="Escáner de puertos, MTR, información de red local, DNS Lookup, calculadora de subred y Wake on LAN." />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="Reportes" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="Exporta estadísticas de los hosts a Excel (.xlsx) o HTML, incluyendo el escáner de red." />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="8 temas profesionales" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="Cambia la apariencia desde Opciones → Interfaz: claro, oscuro, océano, atardecer, rojo, hacker y más." />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="Alertas flexibles" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="Notificaciones emergentes, correo y webhooks cuando un host cambia de estado." />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Style="{StaticResource FeatureTitleStyle}" Text="Actualizaciones automáticas" />
+                        <TextBlock Style="{StaticResource FeatureTextStyle}"
+                                   Text="vmPing revisa actualizaciones en segundo plano sin interrumpir tu trabajo." />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <!-- Footer -->
+            <Border Background="{DynamicResource Theme.Card.Background}"
+                    BorderBrush="{DynamicResource Theme.Card.Border}"
+                    BorderThickness="1" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" LineHeight="20"
+                               Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,0,12">
+                        Visita <Hyperlink NavigateUri="https://github.com/GabrielLop3z/vmPing-GLR"
+                                          RequestNavigate="Hyperlink_RequestNavigate"
+                                          Foreground="{DynamicResource Theme.Accent}">github.com/GabrielLop3z/vmPing-GLR</Hyperlink>
+                        para reportar problemas, sugerir funciones o consultar la documentación completa.
+                    </TextBlock>
+
+                    <CheckBox x:Name="ShowOnStartupCheckBox"
+                              Content="Mostrar esta ventana en cada inicio"
+                              FontSize="13"
+                              Foreground="{DynamicResource Theme.Text.Primary}"
+                              IsChecked="True"
+                              Margin="0,0,0,12" />
+
+                    <Button Content="Comenzar"
+                            HorizontalAlignment="Right"
+                            Padding="22,7"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="White"
+                            Cursor="Hand"
+                            Click="Start_Click">
+                        <Button.Background>
+                            <DynamicResource ResourceKey="Theme.Accent" />
+                        </Button.Background>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

@@ -4,22 +4,36 @@
 
     <!-- CRYSTAL THEME -> REPLACED WITH "PROFESSIONAL LIGHT" (Default) -->
     <!-- Solid, clean colors. No transparency. Friendly blue accent. -->
-    <!-- PROFESSIONAL LIGHT (Glass) -->
     <!-- PROFESSIONAL LIGHT (Default) -->
     <!-- Usage: Clean, modern, high-contrast but soft on eyes. Inspired by Vercel/Stripe. -->
     <ResourceDictionary x:Key="CrystalTheme">
         <SolidColorBrush x:Key="Theme.Window.Background" Color="#F3F4F6"/>  <!-- Cool Gray 100 (Main App Background) -->
         <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#FFFFFF"/> <!-- White (Title Bars/Overlays) -->
         <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#0F172A"/>  <!-- Slate 900 -->
-        
+
         <SolidColorBrush x:Key="Theme.Card.Background" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="Theme.Card.Border" Color="#E2E8F0"/>        <!-- Slate 200 -->
-        
+
         <SolidColorBrush x:Key="Theme.Accent" Color="#0EA5E9"/>             <!-- Sky 500 (Vibrant Blue) -->
-        
+
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#0F172A"/>       <!-- Slate 900 -->
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#64748B"/>     <!-- Slate 500 -->
-        
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#94A3B8"/>         <!-- Slate 400 -->
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#ECFDF5"/>   <!-- Emerald 50 -->
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>   <!-- Emerald 700 -->
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEF2F2"/> <!-- Red 50 -->
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/> <!-- Red 700 -->
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FFFBEB"/> <!-- Amber 50 -->
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/> <!-- Amber 700 -->
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFF7ED"/>  <!-- Orange 50 -->
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>  <!-- Orange 700 -->
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#EFF6FF"/>   <!-- Blue 50 -->
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#1D4ED8"/>   <!-- Blue 700 -->
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F1F5F9"/>    <!-- Slate 100 -->
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0D0EA5E9"/>             <!-- Sky 500 @ 8% -->
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -29,15 +43,30 @@
         <SolidColorBrush x:Key="Theme.Window.Background" Color="#020617"/>  <!-- Slate 950 (Deepest) -->
         <SolidColorBrush x:Key="Theme.Window.GlassBackground" Color="#0F172A"/> <!-- Slate 900 -->
         <SolidColorBrush x:Key="Theme.Window.Foreground" Color="#F8FAFC"/>  <!-- Slate 50 -->
-        
+
         <SolidColorBrush x:Key="Theme.Card.Background" Color="#1E293B"/>    <!-- Slate 800 -->
         <SolidColorBrush x:Key="Theme.Card.Border" Color="#334155"/>        <!-- Slate 700 -->
-        
+
         <SolidColorBrush x:Key="Theme.Accent" Color="#38BDF8"/>             <!-- Sky 400 -->
-        
+
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#F1F5F9"/>       <!-- Slate 100 -->
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#94A3B8"/>     <!-- Slate 400 -->
-        
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#64748B"/>         <!-- Slate 500 -->
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#064E3B"/>   <!-- Emerald 900 -->
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#6EE7B7"/>   <!-- Emerald 300 -->
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#7F1D1D"/> <!-- Red 900 -->
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#FCA5A5"/> <!-- Red 300 -->
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#78350F"/> <!-- Amber 900 -->
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#FCD34D"/> <!-- Amber 300 -->
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#7C2D12"/>  <!-- Orange 900 -->
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#FDBA74"/>  <!-- Orange 300 -->
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#1E3A8A"/>   <!-- Blue 900 -->
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#93C5FD"/>   <!-- Blue 300 -->
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#334155"/>    <!-- Slate 700 -->
+        <SolidColorBrush x:Key="Theme.Hover" Color="#14FFFFFF"/>             <!-- White @ 8% -->
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -51,6 +80,22 @@
         <SolidColorBrush x:Key="Theme.Accent" Color="#2563EB"/>
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#111827"/>
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#6B7280"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#9CA3AF"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFEDD5"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#DBEAFE"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#1D4ED8"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F3F4F6"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0D2563EB"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -67,6 +112,22 @@
         </LinearGradientBrush>
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#0F172A"/>
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#334155"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#64748B"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFEDD5"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#E0F2FE"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#0369A1"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0D0EA5E9"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -80,6 +141,22 @@
         <SolidColorBrush x:Key="Theme.Accent" Color="#2563EB"/>              <!-- Blue 600 -->
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#1E3A8A"/>        <!-- Blue 900 -->
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#64748B"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#94A3B8"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFEDD5"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#DBEAFE"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#1D4ED8"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0D2563EB"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -93,6 +170,22 @@
         <SolidColorBrush x:Key="Theme.Accent" Color="#EA580C"/>              <!-- Orange 600 -->
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#7C2D12"/>        <!-- Orange 900 -->
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#8D4326"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#A8A29E"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFEDD5"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#DBEAFE"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#1D4ED8"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0DEA580C"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -106,6 +199,22 @@
         <SolidColorBrush x:Key="Theme.Accent" Color="#DC2626"/>              <!-- Red 600 -->
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#7F1D1D"/>        <!-- Red 900 -->
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#7F3535"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#9CA3AF"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#047857"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#B45309"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#FFEDD5"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#C2410C"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#DBEAFE"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#1D4ED8"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0DDC2626"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 
@@ -119,6 +228,22 @@
         <SolidColorBrush x:Key="Theme.Accent" Color="#00FF00"/>
         <SolidColorBrush x:Key="Theme.Text.Primary" Color="#00FF00"/>
         <SolidColorBrush x:Key="Theme.Text.Secondary" Color="#00AA00"/>
+        <SolidColorBrush x:Key="Theme.Text.Muted" Color="#008800"/>
+
+        <SolidColorBrush x:Key="Theme.Status.Up.Background" Color="#001A00"/>
+        <SolidColorBrush x:Key="Theme.Status.Up.Foreground" Color="#00FF00"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Background" Color="#1A0000"/>
+        <SolidColorBrush x:Key="Theme.Status.Down.Foreground" Color="#FF4444"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Background" Color="#1A1A00"/>
+        <SolidColorBrush x:Key="Theme.Status.Warning.Foreground" Color="#FFFF00"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Background" Color="#1A0000"/>
+        <SolidColorBrush x:Key="Theme.Status.Error.Foreground" Color="#FF5555"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Background" Color="#001A1A"/>
+        <SolidColorBrush x:Key="Theme.Status.Info.Foreground" Color="#00FFFF"/>
+
+        <SolidColorBrush x:Key="Theme.Badge.Background" Color="#0A0A0A"/>
+        <SolidColorBrush x:Key="Theme.Hover" Color="#0F00FF00"/>
+
         <sys:Double x:Key="Theme.Card.Blur">0</sys:Double>
     </ResourceDictionary>
 

@@ -64,11 +64,14 @@ namespace vmPing.Classes
                                 OnStatusChange(ProbeStatus.Up, "up");
                             }
 
-                            // Update minimum RTT.
-                            if (reply.RoundtripTime < MinRtt)
-                            {
-                                MinRtt = reply.RoundtripTime;
-                            }
+                        // Record RTT sample into aggregated statistics (min/avg/max).
+                        Statistics.AddRttSample((long)reply.RoundtripTime);
+
+                        // Update minimum RTT.
+                        if (reply.RoundtripTime < MinRtt)
+                        {
+                            MinRtt = reply.RoundtripTime;
+                        }
 
                             // Check latency.
                             if ((ApplicationOptions.LatencyDetectionMode == ApplicationOptions.LatencyMode.Fixed &&
