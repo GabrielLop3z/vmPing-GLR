@@ -117,9 +117,14 @@
         <!-- Menu bar -->
         <Menu x:Name="MenuBar" DockPanel.Dock="Top"
               FontStretch="Normal"
-              Background="Transparent"
+              FontSize="13"
+              Background="{DynamicResource Theme.Card.GlassBackground}"
               BorderThickness="0,0,0,1"
-              BorderBrush="{DynamicResource Theme.Card.Border}">
+              BorderBrush="{DynamicResource Theme.Card.Border}"
+              SnapsToDevicePixels="True">
+            <Menu.Effect>
+                <DropShadowEffect BlurRadius="6" ShadowDepth="1" Direction="270" Opacity="0.18" Color="#000000" RenderingBias="Performance"/>
+            </Menu.Effect>
             <Menu.Resources>
                 <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}"/>
             </Menu.Resources>
@@ -197,13 +202,23 @@
                 </MenuItem.Icon>
             </MenuItem>
 
-            <!-- Menu: Main menu dropdown -->
-            <MenuItem Width="40"
+            <!-- Menu: Main menu dropdown (rounded button) -->
+            <MenuItem x:Name="OptionsMenuButton"
+                      MinWidth="120"
                       DockPanel.Dock="Right"
+                      Margin="4,4,8,4"
+                      FontSize="13"
+                      Foreground="{DynamicResource Theme.Text.Primary}"
+                      Background="{DynamicResource Theme.Badge.Background}"
+                      BorderBrush="{DynamicResource Theme.Card.Border}"
+                      BorderThickness="1"
                       Template="{StaticResource TopLevelHeaderNoPaddingTemplate}">
                 <MenuItem.Icon>
                     <Image Source="{StaticResource icon.chevron-circle-down}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16"/>
                 </MenuItem.Icon>
+                <MenuItem.Header>
+                    <TextBlock Text="Más" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,0,0" />
+                </MenuItem.Header>
 
                 <!-- Menu: Font Size Slider -->
                 <MenuItem>
