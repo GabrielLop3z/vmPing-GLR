@@ -34,11 +34,12 @@ namespace vmPing
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
             // Initialize AutoUpdater
-            // Reemplaza la URL con la dirección raw de tu archivo update.xml en GitHub
-            AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
-            AutoUpdater.Synchronous = true; // Muestra un mensaje si no hay actualizaciones (opcional, bueno para pruebas)
+            // El update.xml se sirve desde el CDN de jsDelivr porque raw.githubusercontent.com
+            // no es accesible desde todas las redes y congelaba la app en la búsqueda manual.
             AutoUpdater.Mandatory = false; // No obligar a actualizar
             AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
+            // Con Synchronous = false (por defecto) la revisión corre en segundo plano y no bloquea la UI.
+            AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
         }
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

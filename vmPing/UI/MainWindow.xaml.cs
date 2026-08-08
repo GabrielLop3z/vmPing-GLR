@@ -263,7 +263,7 @@ namespace vmPing.UI
             UpdateMenu.Click += (s, args) => 
             {
                AutoUpdater.ReportErrors = true; // Mostrar errores si falla al buscar (solo cuando es manual)
-               AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
+               AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
             };
         }
 

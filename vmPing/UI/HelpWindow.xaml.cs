@@ -105,7 +105,7 @@ namespace vmPing.UI
         {
             // Force check for updates
             AutoUpdaterDotNET.AutoUpdater.ReportErrors = true; // Show error if something fails (good for manual check)
-            AutoUpdaterDotNET.AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
+            AutoUpdaterDotNET.AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
         }
     }
 }
