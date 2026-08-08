@@ -171,6 +171,16 @@
                 </StackPanel>
             </MenuItem>
 
+            <!-- Menu: Save loaded favorite -->
+            <MenuItem x:Name="SaveFavoriteMenu" IsEnabled="False" Click="SaveFavorite_Click">
+                <MenuItem.Header>
+                    <AccessText Text="Guardar" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Image Source="{StaticResource icon.new-favorite}" VerticalAlignment="Center" Width="14" Height="14"/>
+                </MenuItem.Icon>
+            </MenuItem>
+
             <!-- Menu: Start/Stop All -->
             <MenuItem x:Name="StartStopMenu">
                 <MenuItem.Header>

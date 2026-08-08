@@ -17,6 +17,7 @@ namespace vmPing.UI
         private Dictionary<string, string> _Aliases = new Dictionary<string, string>();
         private System.Windows.Forms.NotifyIcon NotifyIcon;
         private System.Windows.Threading.DispatcherTimer _dashboardTimer;
+        private string _currentFavoriteTitle = null;
 
         public static RoutedCommand OptionsCommand = new RoutedCommand();
         public static RoutedCommand StartStopCommand = new RoutedCommand();
@@ -459,6 +460,10 @@ namespace vmPing.UI
             {
                 RemoveAllProbes();
 
+                // The probe set was replaced entirely, so it is no longer bound to a loaded favorite.
+                _currentFavoriteTitle = null;
+                UpdateSaveButtonState();
+
                 if (wnd.Addresses.Count < 1)
                 {
                     AddProbe();
@@ -653,6 +658,9 @@ namespace vmPing.UI
         {
             RemoveAllProbes();
 
+            _currentFavoriteTitle = favoriteTitle;
+            UpdateSaveButtonState();
+
             var favorite = Favorite.Load(favoriteTitle);
             if (favorite.Hostnames.Count < 1)
             {
@@ -674,6 +682,37 @@ namespace vmPing.UI
             ColumnCount.Value = 1;  // Ensure window's grid column binding is updated, if needed.
             ColumnCount.Value = favorite.ColumnCount;
             this.Title = $"{favoriteTitle} - vmPing";
+        }
+
+        private void UpdateSaveButtonState()
+        {
+            if (SaveFavoriteMenu != null)
+            {
+                SaveFavoriteMenu.IsEnabled = !string.IsNullOrWhiteSpace(_currentFavoriteTitle);
+            }
+        }
+
+        private void SaveFavorite_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_currentFavoriteTitle))
+            {
+                return;
+            }
+
+            var hostnames = _ProbeCollection
+                .Select(x => x.Hostname?.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToList();
+
+            if (hostnames.Count < 1)
+            {
+                Util.ShowError("No hay hosts en la pantalla. Agrega al menos un host antes de guardar.");
+                return;
+            }
+
+            Favorite.Save(_currentFavoriteTitle, hostnames, (int)ColumnCount.Value);
+            LoadFavorites();
+            Util.ShowInfo($"Favorito \"{_currentFavoriteTitle}\" actualizado con {hostnames.Count} host(s).");
         }
 
         private void Card_Click(object sender, MouseButtonEventArgs e)
@@ -970,6 +1009,13 @@ namespace vmPing.UI
             if (newFavoriteWindow.ShowDialog() == true)
             {
                 LoadFavorites();
+
+                // After saving, the current probe set is now the saved favorite.
+                // The favorite window updates the window title with the saved name.
+                _currentFavoriteTitle = Title.EndsWith(favTitle)
+                    ? Title.Remove(Title.Length - favTitle.Length)
+                    : null;
+                UpdateSaveButtonState();
             }
         }
 
