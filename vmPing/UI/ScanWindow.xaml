@@ -64,6 +64,7 @@
 
         <!-- Actions -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="Export to Excel (.xlsx)" Click="BtnExport_Click" Margin="0,0,10,0"/>
             <Button Content="Add Active Hosts to Monitor" Click="BtnAdd_Click"/>
         </StackPanel>
     </Grid>

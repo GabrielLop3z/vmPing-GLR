@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ClosedXML.Excel;
 using vmPing.Classes;
 
 namespace vmPing.UI
@@ -110,6 +111,57 @@ namespace vmPing.UI
                 var hosts = active.Select(r => !string.IsNullOrEmpty(r.Hostname) ? r.Hostname : r.IP).ToList();
                 mw.AddHostList(hosts);
                 this.Close();
+            }
+        }
+
+        private void BtnExport_Click(object sender, RoutedEventArgs e)
+        {
+            if (Results.Count == 0)
+            {
+                MessageBox.Show(this, "No hay resultados para exportar.", "Export to Excel",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Exportar resultados del escaneo a Excel",
+                Filter = "Libro de Excel (*.xlsx)|*.xlsx",
+                DefaultExt = ".xlsx",
+                FileName = $"NetworkScan_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+            };
+
+            if (dialog.ShowDialog() != true) return;
+
+            try
+            {
+                using (var workbook = new XLWorkbook())
+                {
+                    var ws = workbook.Worksheets.Add("Scan Results");
+
+                    ws.Cell(1, 1).Value = "IP Address";
+                    ws.Cell(1, 2).Value = "Status";
+                    ws.Cell(1, 3).Value = "Hostname";
+                    ws.Range(1, 1, 1, 3).Style.Font.Bold = true;
+
+                    for (int i = 0; i < Results.Count; i++)
+                    {
+                        ws.Cell(i + 2, 1).Value = Results[i].IP;
+                        ws.Cell(i + 2, 2).Value = Results[i].Status;
+                        ws.Cell(i + 2, 3).Value = Results[i].Hostname ?? "";
+                    }
+
+                    ws.Columns().AdjustToContents();
+                    workbook.SaveAs(dialog.FileName);
+                }
+
+                MessageBox.Show(this, $"Exportación completada.\n\n{dialog.FileName}", "Export to Excel",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Error al exportar a Excel:\n\n{ex.Message}", "Export to Excel",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
