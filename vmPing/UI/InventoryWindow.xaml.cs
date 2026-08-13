@@ -17,10 +17,6 @@ namespace vmPing.UI
         private List<DeviceInventory> _devices = new List<DeviceInventory>();
         private CancellationTokenSource _cancellation;
 
-        private static string InventoryFilePath => Path.Combine(
-            Path.GetDirectoryName(Configuration.FilePath) ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "inventory.xml");
-
         public InventoryWindow(List<string> hosts)
         {
             InitializeComponent();
@@ -71,7 +67,7 @@ namespace vmPing.UI
             lblSubtitle.Text = $"{_hosts.Count} equipo(s). Disponible: {devices.Count(d => d.IsReachable)} - Sin datos: {devices.Count(d => !d.IsReachable)}";
 
             dgInventory.ItemsSource = devices;
-            SaveToDisk();
+            InventoryStore.Save(devices);
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
@@ -100,23 +96,6 @@ namespace vmPing.UI
                 Owner = this
             };
             window.ShowDialog();
-        }
-
-        private void SaveToDisk()
-        {
-            try
-            {
-                var doc = new System.Xml.Linq.XDocument(
-                    new System.Xml.Linq.XElement("inventory",
-                        new System.Xml.Linq.XElement("generated", DateTime.UtcNow.ToString("o")),
-                        new System.Xml.Linq.XElement("devices",
-                            _devices.Select(d => d.ToXml()))));
-                doc.Save(InventoryFilePath);
-            }
-            catch
-            {
-                // Persistence is best-effort.
-            }
         }
 
         private void BtnExportExcel_Click(object sender, RoutedEventArgs e)

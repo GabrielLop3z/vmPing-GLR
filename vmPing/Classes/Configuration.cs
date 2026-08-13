@@ -210,7 +210,17 @@ namespace vmPing.Classes
                 Node("InventorySnmpCommunity", ApplicationOptions.InventorySnmpCommunity),
                 Node("InventorySnmpPort", ApplicationOptions.InventorySnmpPort),
                 Node("InventoryTimeoutSeconds", ApplicationOptions.InventoryTimeoutSeconds),
-                Node("InventoryConcurrency", ApplicationOptions.InventoryConcurrency)
+                Node("InventoryConcurrency", ApplicationOptions.InventoryConcurrency),
+                new XComment(" Active Directory "),
+                Node("AdEnabled", ApplicationOptions.AdEnabled),
+                Node("AdLdapPath", ApplicationOptions.AdLdapPath),
+                Node("AdUsername", string.IsNullOrWhiteSpace(ApplicationOptions.AdUsername)
+                    ? string.Empty
+                    : Util.EncryptStringAES(ApplicationOptions.AdUsername)),
+                Node("AdPassword", string.IsNullOrWhiteSpace(ApplicationOptions.AdPassword)
+                    ? string.Empty
+                    : Util.EncryptStringAES(ApplicationOptions.AdPassword)),
+                Node("AdTimeoutSeconds", ApplicationOptions.AdTimeoutSeconds)
             );
         }
 
@@ -574,6 +584,42 @@ namespace vmPing.Classes
             if (options.TryGetValue("InventoryConcurrency", out optionValue))
             {
                 ApplicationOptions.InventoryConcurrency = int.Parse(optionValue);
+            }
+            if (options.TryGetValue("AdEnabled", out optionValue))
+            {
+                ApplicationOptions.AdEnabled = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("AdLdapPath", out optionValue))
+            {
+                ApplicationOptions.AdLdapPath = optionValue.Length > 0 ? optionValue : null;
+            }
+            if (options.TryGetValue("AdUsername", out optionValue))
+            {
+                if (optionValue.Length > 0)
+                {
+                    try { ApplicationOptions.AdUsername = Util.DecryptStringAES(optionValue); }
+                    catch { ApplicationOptions.AdUsername = null; }
+                }
+                else
+                {
+                    ApplicationOptions.AdUsername = null;
+                }
+            }
+            if (options.TryGetValue("AdPassword", out optionValue))
+            {
+                if (optionValue.Length > 0)
+                {
+                    try { ApplicationOptions.AdPassword = Util.DecryptStringAES(optionValue); }
+                    catch { ApplicationOptions.AdPassword = null; }
+                }
+                else
+                {
+                    ApplicationOptions.AdPassword = null;
+                }
+            }
+            if (options.TryGetValue("AdTimeoutSeconds", out optionValue))
+            {
+                ApplicationOptions.AdTimeoutSeconds = int.Parse(optionValue);
             }
         }
     }

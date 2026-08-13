@@ -61,6 +61,15 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <!-- Font Awesome: server-solid -->
+    <DrawingImage x:Key="icon.server">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <GeometryDrawing Brush="#0088CC" Geometry="F1 M512,512z M0,0z M480,160H32c-17.673,0-32-14.327-32-32V64c0-17.673,14.327-32,32-32h448c17.673,0,32,14.327,32,32v64c0,17.673-14.327,32-32,32z M480,320H32c-17.673,0-32-14.327-32-32v-64c0-17.673,14.327-32,32-32h448c17.673,0,32,14.327,32,32v64c0,17.673-14.327,32-32,32z M480,480H32c-17.673,0-32-14.327-32-32v-64c0-17.673,14.327-32,32-32h448c17.673,0,32,14.327,32,32v64c0,17.673-14.327,32-32,32z M48,64c-8.837,0-16,7.163-16,16s7.163,16,16,16h384c8.837,0,16-7.163,16-16s-7.163-16-16-16H48z M432,272c8.837,0,16-7.163,16-16s-7.163-16-16-16H48c-8.837,0-16,7.163-16,16s7.163,16,16,16h384z M432,432c8.837,0,16-7.163,16-16s-7.163-16-16-16H48c-8.837,0-16,7.163-16-16s7.163-16,16-16h384z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <!-- Font Awesome: question-circle-solid-->
     <DrawingImage x:Key="icon.question-circle">
         <DrawingImage.Drawing>

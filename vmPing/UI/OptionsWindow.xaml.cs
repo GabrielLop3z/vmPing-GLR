@@ -38,6 +38,7 @@ namespace vmPing.UI
             PopulateLayoutOptions();
             PopulateInterfaceOptions();
             PopulateInventoryOptions();
+            PopulateAdOptions();
         }
 
         private bool? ShowError(string message, TabItem tabItem, Control control, bool isWarning = false)
@@ -226,6 +227,7 @@ namespace vmPing.UI
             if (SaveDisplayOptions() == false) return;
             if (SaveInterfaceOptions() == false) return;
             if (SaveInventoryOptions() == false) return;
+            if (SaveAdOptions() == false) return;
 
             if (SaveAsDefaults.IsChecked == true)
             {
@@ -299,6 +301,43 @@ namespace vmPing.UI
             ApplicationOptions.InventorySnmpPort = port;
             ApplicationOptions.InventoryTimeoutSeconds = timeout;
             ApplicationOptions.InventoryConcurrency = concurrency;
+            return true;
+        }
+
+        private void PopulateAdOptions()
+        {
+            AdEnabledCheck.IsChecked = ApplicationOptions.AdEnabled;
+            AdLdapPathBox.Text = ApplicationOptions.AdLdapPath ?? string.Empty;
+            AdUsernameBox.Text = ApplicationOptions.AdUsername ?? string.Empty;
+            AdPasswordBox.Password = ApplicationOptions.AdPassword ?? string.Empty;
+            AdTimeoutBox.Text = ApplicationOptions.AdTimeoutSeconds.ToString();
+        }
+
+        private bool SaveAdOptions()
+        {
+            int timeout = 15;
+            if (!int.TryParse(AdTimeoutBox.Text, out timeout) || timeout < 5 || timeout > 120)
+            {
+                ShowError("Por favor ingrese un timeout válido (5-120 segundos).", AdTab, AdTimeoutBox);
+                return false;
+            }
+
+            var ldapPath = AdLdapPathBox.Text?.Trim();
+            if (!string.IsNullOrEmpty(ldapPath) && !ldapPath.StartsWith("LDAP://", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowError("La ruta LDAP debe comenzar con 'LDAP://' (ejemplo: LDAP://dc=daxmexico,dc=mx).", AdTab, AdLdapPathBox);
+                return false;
+            }
+
+            ApplicationOptions.AdEnabled = AdEnabledCheck.IsChecked == true;
+            ApplicationOptions.AdLdapPath = string.IsNullOrEmpty(ldapPath) ? null : ldapPath;
+            ApplicationOptions.AdUsername = string.IsNullOrWhiteSpace(AdUsernameBox.Text)
+                ? null
+                : AdUsernameBox.Text.Trim();
+            ApplicationOptions.AdPassword = string.IsNullOrWhiteSpace(AdPasswordBox.Password)
+                ? null
+                : AdPasswordBox.Password;
+            ApplicationOptions.AdTimeoutSeconds = timeout;
             return true;
         }
 

@@ -992,6 +992,16 @@ namespace vmPing.UI
             new InventoryWindow(hosts) { Owner = this }.Show();
         }
 
+        private void Ad_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ApplicationOptions.AdEnabled)
+            {
+                Util.ShowInfo("Las consultas a Active Directory están deshabilitadas. Active la opción en Preferencias > Active Directory.");
+                return;
+            }
+            new AdWindow { Owner = this }.Show();
+        }
+
         private async void InventoryModal_Click(object sender, RoutedEventArgs e)
         {
             if (ProbeDetailsModal.DataContext is Probe probe && !string.IsNullOrEmpty(probe.Hostname))

@@ -824,6 +824,56 @@
                 </ScrollViewer>
             </TabItem>
 
+            <!-- Tab: Active Directory -->
+            <TabItem Header="Active Directory" Name="AdTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Active Directory"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Correlacione las computadoras del dominio con el inventario WMI, y consulte usuarios, unidades organizativas y estado de las cuentas."
+                                   Margin="0,12,0,8"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   Foreground="#6B7280"/>
+
+                        <CheckBox DockPanel.Dock="Top" Name="AdEnabledCheck"
+                                  Content="Habilitar consultas a Active Directory"
+                                  Margin="0,0,0,8"/>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Width="160" Text="Ruta LDAP (opcional)"/>
+                            <TextBox Name="AdLdapPathBox" Width="300"
+                                     ToolTip="Ejemplo: LDAP://dc=daxmexico,dc=mx. Si se deja vacío se usa el dominio del usuario actual."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="160" Text="Usuario (opcional)"/>
+                            <TextBox Name="AdUsernameBox" Width="300"
+                                     ToolTip="usuario@dominio o dominio\\usuario. Vacío = usuario actual de Windows."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="160" Text="Contraseña"/>
+                            <PasswordBox Name="AdPasswordBox" Width="300"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,16,0,0">
+                            <TextBlock Width="160" Text="Timeout por consulta (seg)"/>
+                            <TextBox Name="AdTimeoutBox" Width="300"/>
+                        </StackPanel>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Nota: la consulta de computadoras puede tardar en dominios grandes. Se muestran todas las computadoras (Habilitadas y Deshabilitadas) con su OU y último inicio de sesión."
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- Tab: Colors -->
             <TabItem Header="Colores" Name="LayoutTab">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

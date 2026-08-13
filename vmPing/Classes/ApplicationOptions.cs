@@ -95,6 +95,13 @@ namespace vmPing.Classes
         public static int InventorySnmpPort { get; set; } = 161;
         public static int InventoryTimeoutSeconds { get; set; } = 5;
         public static int InventoryConcurrency { get; set; } = 50;
+
+        // Active Directory.
+        public static bool AdEnabled { get; set; } = true;
+        public static string AdLdapPath { get; set; }
+        public static string AdUsername { get; set; }
+        public static string AdPassword { get; set; }
+        public static int AdTimeoutSeconds { get; set; } = 15;
         
         // Startup options.
         public static StartMode InitialStartMode { get; set; } = StartMode.Blank;
