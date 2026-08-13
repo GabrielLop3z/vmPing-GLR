@@ -102,6 +102,11 @@ namespace vmPing.Classes
         public static string AdUsername { get; set; }
         public static string AdPassword { get; set; }
         public static int AdTimeoutSeconds { get; set; } = 15;
+
+        // Live health monitoring (CPU / RAM / disk via WMI).
+        public static bool HealthEnabled { get; set; } = true;
+        public static int HealthIntervalSeconds { get; set; } = 5;
+        public static int HealthHistoryPoints { get; set; } = 60;
         
         // Startup options.
         public static StartMode InitialStartMode { get; set; } = StartMode.Blank;

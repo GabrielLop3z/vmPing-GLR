@@ -220,7 +220,11 @@ namespace vmPing.Classes
                 Node("AdPassword", string.IsNullOrWhiteSpace(ApplicationOptions.AdPassword)
                     ? string.Empty
                     : Util.EncryptStringAES(ApplicationOptions.AdPassword)),
-                Node("AdTimeoutSeconds", ApplicationOptions.AdTimeoutSeconds)
+                Node("AdTimeoutSeconds", ApplicationOptions.AdTimeoutSeconds),
+                new XComment(" Salud en vivo "),
+                Node("HealthEnabled", ApplicationOptions.HealthEnabled),
+                Node("HealthIntervalSeconds", ApplicationOptions.HealthIntervalSeconds),
+                Node("HealthHistoryPoints", ApplicationOptions.HealthHistoryPoints)
             );
         }
 
@@ -620,6 +624,18 @@ namespace vmPing.Classes
             if (options.TryGetValue("AdTimeoutSeconds", out optionValue))
             {
                 ApplicationOptions.AdTimeoutSeconds = int.Parse(optionValue);
+            }
+            if (options.TryGetValue("HealthEnabled", out optionValue))
+            {
+                ApplicationOptions.HealthEnabled = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("HealthIntervalSeconds", out optionValue))
+            {
+                ApplicationOptions.HealthIntervalSeconds = int.Parse(optionValue);
+            }
+            if (options.TryGetValue("HealthHistoryPoints", out optionValue))
+            {
+                ApplicationOptions.HealthHistoryPoints = int.Parse(optionValue);
             }
         }
     }

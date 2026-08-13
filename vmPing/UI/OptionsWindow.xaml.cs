@@ -39,6 +39,7 @@ namespace vmPing.UI
             PopulateInterfaceOptions();
             PopulateInventoryOptions();
             PopulateAdOptions();
+            PopulateHealthOptions();
         }
 
         private bool? ShowError(string message, TabItem tabItem, Control control, bool isWarning = false)
@@ -228,6 +229,7 @@ namespace vmPing.UI
             if (SaveInterfaceOptions() == false) return;
             if (SaveInventoryOptions() == false) return;
             if (SaveAdOptions() == false) return;
+            if (SaveHealthOptions() == false) return;
 
             if (SaveAsDefaults.IsChecked == true)
             {
@@ -311,6 +313,35 @@ namespace vmPing.UI
             AdUsernameBox.Text = ApplicationOptions.AdUsername ?? string.Empty;
             AdPasswordBox.Password = ApplicationOptions.AdPassword ?? string.Empty;
             AdTimeoutBox.Text = ApplicationOptions.AdTimeoutSeconds.ToString();
+        }
+
+        private void PopulateHealthOptions()
+        {
+            HealthEnabledCheck.IsChecked = ApplicationOptions.HealthEnabled;
+            HealthIntervalBox.Text = ApplicationOptions.HealthIntervalSeconds.ToString();
+            HealthHistoryBox.Text = ApplicationOptions.HealthHistoryPoints.ToString();
+        }
+
+        private bool SaveHealthOptions()
+        {
+            int interval = 5;
+            if (!int.TryParse(HealthIntervalBox.Text, out interval) || interval < 2 || interval > 120)
+            {
+                ShowError("Por favor ingrese un intervalo válido (2-120 segundos).", HealthTab, HealthIntervalBox);
+                return false;
+            }
+
+            int history = 60;
+            if (!int.TryParse(HealthHistoryBox.Text, out history) || history < 10 || history > 240)
+            {
+                ShowError("Por favor ingrese un número de puntos de historial válido (10-240).", HealthTab, HealthHistoryBox);
+                return false;
+            }
+
+            ApplicationOptions.HealthEnabled = HealthEnabledCheck.IsChecked == true;
+            ApplicationOptions.HealthIntervalSeconds = interval;
+            ApplicationOptions.HealthHistoryPoints = history;
+            return true;
         }
 
         private bool SaveAdOptions()

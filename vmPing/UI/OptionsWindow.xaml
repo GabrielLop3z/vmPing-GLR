@@ -874,6 +874,48 @@
                 </ScrollViewer>
             </TabItem>
 
+            <!-- Tab: Salud -->
+            <TabItem Header="Salud" Name="HealthTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Salud en Vivo"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Monitoree en tiempo real el uso de CPU, memoria y disco de los equipos mediante WMI. Las tendencias se muestran como mini-gráficas (sparklines)."
+                                   Margin="0,12,0,8"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   Foreground="#6B7280"/>
+
+                        <CheckBox DockPanel.Dock="Top" Name="HealthEnabledCheck"
+                                  Content="Habilitar monitoreo de salud en vivo"
+                                  Margin="0,0,0,8"/>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Width="160" Text="Intervalo de muestreo (seg)"/>
+                            <TextBox Name="HealthIntervalBox" Width="300"
+                                     ToolTip="Intervalo entre muestras de CPU, memoria y disco (2-120 segundos). Default: 5."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="160" Text="Puntos de historial"/>
+                            <TextBox Name="HealthHistoryBox" Width="300"
+                                     ToolTip="Cantidad de puntos que conserva cada sparkline por equipo (10-240). Default: 60."/>
+                        </StackPanel>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Nota: la recolección usa las mismas credenciales WMI y timeout configurados en la pestaña 'Inventario'. Para modificar la recolección en vivo de un equipo abierto, ajuste el intervalo dentro de la ventana de Salud."
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- Tab: Colors -->
             <TabItem Header="Colores" Name="LayoutTab">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
