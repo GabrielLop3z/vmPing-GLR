@@ -38,6 +38,9 @@ namespace vmPing
             // no es accesible desde todas las redes y congelaba la app en la búsqueda manual.
             AutoUpdater.Mandatory = false; // No obligar a actualizar
             AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
+            // Mantener el formulario de actualización por encima de las demás ventanas (si no,
+            // con la opción "siempre visible" vmPing lo tapa y parece que no pasa nada).
+            AutoUpdater.TopMost = true;
             // Con Synchronous = false (por defecto) la revisión corre en segundo plano y no bloquea la UI.
             AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
         }

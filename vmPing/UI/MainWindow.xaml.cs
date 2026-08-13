@@ -40,6 +40,10 @@ namespace vmPing.UI
         {
             InitializeComponent();
             InitializeAplication();
+
+            // El formulario de actualización de AutoUpdater.NET debe tener como dueña la
+            // ventana principal; si no, se queda detrás de vmPing (o de otras apps) al aparecer.
+            AutoUpdater.SetOwner(this);
         }
 
         private void InitializeAplication()
@@ -265,6 +269,7 @@ namespace vmPing.UI
             // Vincular el comando al evento del menú
             UpdateMenu.Click += (s, args) => 
             {
+               AutoUpdater.SetOwner(this); // Asegurar que el formulario aparezca frente a vmPing
                AutoUpdater.ReportErrors = true; // Mostrar errores si falla al buscar (solo cuando es manual)
                AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
             };
