@@ -775,12 +775,46 @@ namespace vmPing.UI
 
         private void Card_Click(object sender, MouseButtonEventArgs e)
         {
+            // Ignore clicks originating from interactive card controls (edit alias, remove, isolated view, hostname).
+            var original = e.OriginalSource as DependencyObject;
+            if (FindAncestor<System.Windows.Controls.Button>(original) != null) return;
+            if (FindAncestor<System.Windows.Controls.Primitives.TextBoxBase>(original) != null) return;
+
             if (sender is Border border && border.DataContext is Probe probe)
             {
-                // Assign logic if we want to toggle isolated view or not.
-                // For now, simple Modal.
                 ProbeDetailsModal.DataContext = probe;
                 ProbeDetailsModal.Visibility = Visibility.Visible;
+                ResolveProbeIp(probe);
+            }
+        }
+
+        private static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            while (current != null)
+            {
+                if (current is T match)
+                {
+                    return match;
+                }
+                current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+            }
+            return null;
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                if (ProbeDetailsModal.Visibility == Visibility.Visible)
+                {
+                    CloseModal_Click(null, null);
+                    e.Handled = true;
+                }
+                else if (AddProbeModal.Visibility == Visibility.Visible)
+                {
+                    AddProbe_Cancel_Click(null, null);
+                    e.Handled = true;
+                }
             }
         }
 
@@ -790,18 +824,194 @@ namespace vmPing.UI
             ProbeDetailsModal.DataContext = null;
         }
 
+        private async void ResolveProbeIp(Probe probe)
+        {
+            try
+            {
+                txtModalIP.Text = "Resolviendo...";
+                var ips = await System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        return System.Net.Dns.GetHostAddresses(probe.Hostname);
+                    }
+                    catch
+                    {
+                        return new System.Net.IPAddress[0];
+                    }
+                });
+                var ipv4 = ips.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                           ?? ips.FirstOrDefault();
+                txtModalIP.Text = ipv4 != null ? ipv4.ToString() : "Sin resolver";
+            }
+            catch
+            {
+                txtModalIP.Text = "Sin resolver";
+            }
+        }
+
+        private void CopyIp_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtModalIP.Text) && txtModalIP.Text != "Resolviendo..." && txtModalIP.Text != "Sin resolver")
+            {
+                Clipboard.SetText(txtModalIP.Text);
+            }
+            else if (ProbeDetailsModal.DataContext is Probe probe && !string.IsNullOrWhiteSpace(probe.Hostname))
+            {
+                Clipboard.SetText(probe.Hostname);
+            }
+        }
+
+        private void CopyHistory_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe && probe.History != null && probe.History.Count > 0)
+            {
+                Clipboard.SetText(probe.HistoryAsString);
+                lblPortStatus.Text = "Historial copiado";
+            }
+        }
+
+        private void EditAliasModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                if (string.IsNullOrEmpty(probe.Hostname))
+                {
+                    return;
+                }
+                probe.Alias = _Aliases.ContainsKey(probe.Hostname.ToLower())
+                    ? _Aliases[probe.Hostname.ToLower()]
+                    : string.Empty;
+
+                var wnd = new EditAliasWindow(probe) { Owner = this };
+                if (wnd.ShowDialog() == true)
+                {
+                    LoadAliases();
+                }
+                Focus();
+            }
+        }
+
+        private void SSH_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                if (TryLaunch("ssh.exe", probe.Hostname)) return;
+                if (TryLaunch("putty.exe", $"-ssh {probe.Hostname}")) return;
+                Util.ShowError("No se encontró OpenSSH (ssh.exe) ni PuTTY (putty.exe). Instala uno de ellos e inténtalo de nuevo.");
+            }
+        }
+
+        private void PowerShell_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                TryLaunch("powershell.exe", $"-NoExit -Command \"Enter-PSSession -ComputerName '{probe.Hostname}'\"");
+            }
+        }
+
+        private void Admin_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("compmgmt.msc", $"/computer:{probe.Hostname}");
+                }
+                catch { }
+            }
+        }
+
+        private void PingIsolatedModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                if (probe.IsolatedWindow == null || probe.IsolatedWindow.IsLoaded == false)
+                {
+                    new IsolatedPingWindow(probe).Show();
+                }
+                else if (probe.IsolatedWindow.IsLoaded)
+                {
+                    probe.IsolatedWindow.Focus();
+                }
+            }
+        }
+
+        private void MtrModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                new MtrWindow(probe.Hostname) { Owner = this }.Show();
+            }
+        }
+
+        private void PortScanModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                new PortScannerWindow(probe.Hostname) { Owner = this }.Show();
+            }
+        }
+
+        private void DnsModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                new DnsLookupWindow(probe.Hostname) { Owner = this }.Show();
+            }
+        }
+
+        private void SubnetModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe)
+            {
+                if (System.Net.IPAddress.TryParse(probe.Hostname, out _))
+                {
+                    new SubnetCalculatorWindow(probe.Hostname) { Owner = this }.Show();
+                }
+                else
+                {
+                    Util.ShowInfo("La calculadora de subred requiere una dirección IP. El host actual no es una IP.");
+                }
+            }
+        }
+
+        private static bool TryLaunch(string fileName, string arguments)
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = arguments,
+                    UseShellExecute = false
+                };
+                System.Diagnostics.Process.Start(psi);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static System.Windows.Media.Brush ThemeBrush(string key)
+        {
+            return Application.Current.Resources[key] as System.Windows.Media.Brush ?? System.Windows.Media.Brushes.Transparent;
+        }
+
         private async void TestPort_Click(object sender, RoutedEventArgs e)
         {
             if (ProbeDetailsModal.DataContext is Probe probe)
             {
                 lblPortStatus.Text = "Checking...";
-                lblPortStatus.Foreground = System.Windows.Media.Brushes.Gray;
+                lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
                 
                 int port = 80;
                 if (!int.TryParse(txtPortNumber.Text, out port))
                 {
                     lblPortStatus.Text = "Invalid Port";
-                    lblPortStatus.Foreground = System.Windows.Media.Brushes.Orange;
+                    lblPortStatus.Foreground = ThemeBrush("Theme.Status.Warning.Foreground");
                     return;
                 }
 
@@ -823,7 +1033,7 @@ namespace vmPing.UI
                                 Dispatcher.Invoke(() => 
                                 {
                                     lblPortStatus.Text = $"Port {port} TIMEOUT";
-                                    lblPortStatus.Foreground = System.Windows.Media.Brushes.Red;
+                                    lblPortStatus.Foreground = ThemeBrush("Theme.Status.Down.Foreground");
                                 });
                             }
                             else
@@ -835,7 +1045,7 @@ namespace vmPing.UI
                                     Dispatcher.Invoke(() => 
                                     { 
                                         lblPortStatus.Text = $"Port {port} OPEN";
-                                        lblPortStatus.Foreground = System.Windows.Media.Brushes.Green;
+                                        lblPortStatus.Foreground = ThemeBrush("Theme.Status.Up.Foreground");
                                     });
                                 }
                                 catch
@@ -844,7 +1054,7 @@ namespace vmPing.UI
                                     Dispatcher.Invoke(() => 
                                     {
                                         lblPortStatus.Text = $"Port {port} CLOSED";
-                                        lblPortStatus.Foreground = System.Windows.Media.Brushes.Red;
+                                        lblPortStatus.Foreground = ThemeBrush("Theme.Status.Down.Foreground");
                                     });
                                 }
                             }
@@ -855,7 +1065,7 @@ namespace vmPing.UI
                          Dispatcher.Invoke(() => 
                          {
                             lblPortStatus.Text = "Error";
-                            lblPortStatus.Foreground = System.Windows.Media.Brushes.Red;
+                            lblPortStatus.Foreground = ThemeBrush("Theme.Status.Down.Foreground");
                          });
                     }
                 });

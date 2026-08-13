@@ -14,6 +14,7 @@
         Closing="Window_Closing"
         ContentRendered="Window_ContentRendered"
         IsVisibleChanged="Window_IsVisibleChanged"
+        PreviewKeyDown="Window_PreviewKeyDown"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -876,7 +877,7 @@
         <!-- Modal Overlay -->
         <Grid Name="ProbeDetailsModal" Visibility="Collapsed" Panel.ZIndex="1000">
              <Border Background="#80000000" MouseLeftButtonUp="CloseModal_Click"/>
-             <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="16" Width="700" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
+             <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="16" Width="780" Height="610" MaxWidth="{Binding ActualWidth, ElementName=ProbeDetailsModal, Converter={StaticResource ModalWidthConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
                  <Border.RenderTransform>
                     <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                  </Border.RenderTransform>
@@ -913,6 +914,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
@@ -921,10 +924,10 @@
                         <DockPanel>
                             <Button DockPanel.Dock="Right" Click="CloseModal_Click" Content="✕" FontSize="16" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource Theme.Text.Secondary}"/>
                              <StackPanel Orientation="Horizontal">
-                                <Image Source="{StaticResource icon.vmping-logo-simple}" Width="32" Height="32" Margin="0,0,15,0"/>
+                                <Image Source="{StaticResource icon.vmping-logo-simple}" Width="32" Height="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Hostname}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}" Margin="0,0,10,0"/>
+                                        <TextBlock Text="{Binding Hostname}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}" Margin="0,0,10,0" TextTrimming="CharacterEllipsis" MaxWidth="380"/>
                                         <Button Content="Copiar" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHostname_Click" VerticalAlignment="Center">
                                             <Button.Resources>
                                                 <Style TargetType="Border">
@@ -932,25 +935,43 @@
                                                 </Style>
                                             </Button.Resources>
                                         </Button>
+                                        <Button Content="Editar alias" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="EditAliasModal_Click" VerticalAlignment="Center" Margin="5,0,0,0">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="10"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                         <TextBlock Text="{Binding Status}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource ProbeStatusToForegroundBrushConverter}}"/>
                                         <TextBlock Text=" - " Foreground="{DynamicResource Theme.Text.Muted}"/>
-                                        <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="{DynamicResource Theme.Text.Secondary}" TextTrimming="CharacterEllipsis" MaxWidth="240"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                        <TextBlock Text="IP:" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" VerticalAlignment="Center"/>
+                                        <TextBlock Name="txtModalIP" Text="Resolviendo..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="4,0,8,0" VerticalAlignment="Center"/>
+                                        <Button Content="Copiar IP" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyIp_Click" VerticalAlignment="Center">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="10"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+                                        <TextBlock Text="{Binding Category}" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" Margin="10,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </StackPanel>
                              </StackPanel>
                         </DockPanel>
                     </Border>
                     
-                    <!-- Stats Body -->
-                    <Grid Grid.Row="1" Margin="20,20,20,10">
+                    <!-- Stats Row 1: Sent / Received / Lost -->
+                    <Grid Grid.Row="1" Margin="20,16,20,0">
                          <Grid.ColumnDefinitions>
                              <ColumnDefinition Width="*"/>
                              <ColumnDefinition Width="*"/>
                              <ColumnDefinition Width="*"/>
                          </Grid.ColumnDefinitions>
-                         <!-- Big Stats Blocks -->
                          <Border Grid.Column="0" Background="{DynamicResource Theme.Status.Up.Background}" CornerRadius="10" Margin="5" Padding="15">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                  <TextBlock Text="ENVIADOS" FontSize="12" Foreground="{DynamicResource Theme.Status.Up.Foreground}" FontWeight="Bold"/>
@@ -971,90 +992,166 @@
                          </Border>
                     </Grid>
 
+                    <!-- Stats Row 2: Latency + ratios -->
+                    <Grid Grid.Row="2" Margin="20,0,20,0">
+                         <Grid.ColumnDefinitions>
+                             <ColumnDefinition Width="*"/>
+                             <ColumnDefinition Width="*"/>
+                             <ColumnDefinition Width="*"/>
+                             <ColumnDefinition Width="*"/>
+                         </Grid.ColumnDefinitions>
+                         <Border Grid.Column="0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
+                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                 <TextBlock Text="LATENCIA MÍN" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.MinRtt, StringFormat={}{0} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
+                             </StackPanel>
+                         </Border>
+                         <Border Grid.Column="1" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
+                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                 <TextBlock Text="LATENCIA PROM" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.AvgRtt, StringFormat={}{0:0.##} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
+                             </StackPanel>
+                         </Border>
+                         <Border Grid.Column="2" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
+                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                 <TextBlock Text="LATENCIA MÁX" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="{Binding Statistics.MaxRtt, StringFormat={}{0} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
+                             </StackPanel>
+                         </Border>
+                         <Border Grid.Column="3" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
+                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                 <TextBlock Text="DISPONIBILIDAD" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" FontWeight="Light">
+                                     <TextBlock.Text>
+                                         <MultiBinding Converter="{StaticResource AvailabilityPercentageConverter}">
+                                             <Binding Path="Statistics.Received"/>
+                                             <Binding Path="Statistics.Sent"/>
+                                         </MultiBinding>
+                                     </TextBlock.Text>
+                                 </TextBlock>
+                                 <TextBlock HorizontalAlignment="Center" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" FontWeight="Bold">
+                                     <TextBlock.Text>
+                                         <MultiBinding Converter="{StaticResource LossPercentageConverter}">
+                                             <Binding Path="Statistics.Lost"/>
+                                             <Binding Path="Statistics.Sent"/>
+                                         </MultiBinding>
+                                     </TextBlock.Text>
+                                 </TextBlock>
+                             </StackPanel>
+                         </Border>
+                    </Grid>
+
+                    <!-- Sparkline -->
+                    <Border Grid.Row="3" Margin="25,10,25,0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
+                        <Grid>
+                            <Polyline Points="{Binding LatencyHistory, Converter={StaticResource LatencyHistoryToPointsConverter}}"
+                                      Stroke="{Binding Status, Converter={StaticResource ProbeStatusToStatisticsBrushConverter}}"
+                                      StrokeThickness="2"
+                                      Stretch="Fill"
+                                      Height="42"
+                                      Margin="10,4"
+                                      IsHitTestVisible="False"/>
+                            <TextBlock Text="Latencia en vivo (ms)" FontSize="11" Foreground="{DynamicResource Theme.Text.Muted}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,10,0"/>
+                        </Grid>
+                    </Border>
+
                     <!-- Tools Section: Quick Actions -->
-                    <Border Grid.Row="2" Margin="25,0" Padding="10" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Grid.Row="4" Margin="25,10,25,0" Padding="10" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
+                        <WrapPanel>
                             <TextBlock Text="Port:" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,5,0"/>
-                            <TextBox Name="txtPortNumber" Text="80" Width="50" Padding="4" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
-                            
-                            <!-- Test Port -->
-                            <Button Content="Test" Padding="12,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="TestPort_Click" Margin="0,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
+                            <TextBox Name="txtPortNumber" Text="80" Width="50" Padding="4" VerticalContentAlignment="Center" Margin="0,0,8,0"/>
 
-                            <!-- Telnet -->
-                            <Button Content="Telnet" Padding="12,5" Background="{DynamicResource Theme.Text.Secondary}" Foreground="White" BorderThickness="0" Click="Telnet_Click" Margin="5,0,1,0">
+                            <Button Content="Test" Padding="10,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="TestPort_Click" Margin="0,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <!-- RDP -->
-                            <Button Content="RDP" Padding="12,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="RDP_Click" Margin="5,0,1,0">
+                            <Button Content="Telnet" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="Telnet_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <!-- VNC -->
-                            <Button Content="VNC" Padding="12,5" Background="#E11D48" Foreground="White" BorderThickness="0" Click="VNC_Click" Margin="5,0,1,0">
+                            <Button Content="RDP" Padding="10,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="RDP_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-                            
-                             <!-- Web -->
-                            <Button Content="Web" Padding="12,5" Background="{DynamicResource Theme.Status.Up.Foreground}" Foreground="White" BorderThickness="0" Click="Web_Click" Margin="5,0,1,0">
+                            <Button Content="VNC" Padding="10,5" Background="{DynamicResource Theme.Tool.Vnc.Background}" Foreground="White" BorderThickness="0" Click="VNC_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <!-- Folder C$ -->
-                            <Button Content="Disco C" Padding="12,5" Background="#F59E0B" Foreground="White" BorderThickness="0" Click="Explorer_Click" Margin="5,0,1,0">
+                            <Button Content="Web" Padding="10,5" Background="{DynamicResource Theme.Tool.Web.Background}" Foreground="White" BorderThickness="0" Click="Web_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <!-- Shares -->
-                            <Button Content="Compartido" Padding="12,5" Background="#8B5CF6" Foreground="White" BorderThickness="0" Click="Shares_Click" Margin="5,0,1,0">
+                            <Button Content="SSH" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="SSH_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <!-- Traceroute -->
-                            <Button Content="Traceroute" Padding="12,5" Background="{DynamicResource Theme.Text.Secondary}" Foreground="White" BorderThickness="0" Click="Traceroute_Click" Margin="5,0,10,0">
+                            <Button Content="PowerShell" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="PowerShell_Click" Margin="5,0,1,0">
                                 <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4"/>
-                                    </Style>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-
-                            <TextBlock Name="lblPortStatus" Text="" VerticalAlignment="Center" FontWeight="Bold"/>
-                        </StackPanel>
+                            <Button Content="Admin" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="Admin_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Disco C" Padding="10,5" Background="{DynamicResource Theme.Tool.Folder.Background}" Foreground="White" BorderThickness="0" Click="Explorer_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Compartido" Padding="10,5" Background="{DynamicResource Theme.Tool.Shares.Background}" Foreground="White" BorderThickness="0" Click="Shares_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Traceroute" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="Traceroute_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Ping aislado" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="PingIsolatedModal_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="MTR" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="MtrModal_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Puertos" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="PortScanModal_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="DNS" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="DnsModal_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Subred" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="SubnetModal_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Copiar historial" Padding="10,5" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHistory_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <TextBlock Name="lblPortStatus" Text="" VerticalAlignment="Center" FontWeight="Bold" Margin="10,0,0,0"/>
+                        </WrapPanel>
                     </Border>
                     
                     <!-- History Log area -->
-                    <Grid Grid.Row="3" Background="{DynamicResource Theme.Badge.Background}" Margin="0,10,0,0">
+                    <Grid Grid.Row="5" Background="{DynamicResource Theme.Badge.Background}" Margin="0,10,0,0">
                          <c:AutoScrollListBox BorderThickness="0" Background="Transparent" ItemsSource="{Binding History}" FontFamily="Consolas" FontSize="13" Margin="10" 
                                               Foreground="{DynamicResource Theme.Text.Primary}"/>
                     </Grid>

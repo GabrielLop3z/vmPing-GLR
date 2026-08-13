@@ -24,4 +24,7 @@
     <classes:StringToBrushConverter x:Key="StringToBrushConverter" />
     <classes:StringLengthToBoolConverter x:Key="StringLengthToBoolConverter" />
     <classes:LatencyHistoryToPointsConverter x:Key="LatencyHistoryToPointsConverter" />
+    <classes:LossPercentageConverter x:Key="LossPercentageConverter" />
+    <classes:AvailabilityPercentageConverter x:Key="AvailabilityPercentageConverter" />
+    <classes:ModalWidthConverter x:Key="ModalWidthConverter" />
 </ResourceDictionary>

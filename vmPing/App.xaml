@@ -28,6 +28,13 @@
                 <ResourceDictionary Source="ResourceDictionaries/Themes.xaml"/>
                 <ResourceDictionary Source="ResourceDictionaries/SliderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Tool button brand colors (consistent across all themes) -->
+            <SolidColorBrush x:Key="Theme.Tool.Secondary.Background" Color="#475569"/>
+            <SolidColorBrush x:Key="Theme.Tool.Vnc.Background" Color="#E11D48"/>
+            <SolidColorBrush x:Key="Theme.Tool.Folder.Background" Color="#F59E0B"/>
+            <SolidColorBrush x:Key="Theme.Tool.Shares.Background" Color="#7C3AED"/>
+            <SolidColorBrush x:Key="Theme.Tool.Web.Background" Color="#059669"/>
         </ResourceDictionary>
 
     </Application.Resources>

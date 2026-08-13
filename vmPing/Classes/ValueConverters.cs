@@ -454,6 +454,62 @@ namespace vmPing.Classes
         }
     }
 
+    public class ModalWidthConverter : IValueConverter
+    {
+        // Caps the modal width to the overlay width minus padding so it fits small windows.
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is double d) || double.IsNaN(d) || d <= 0)
+            {
+                return 780d;
+            }
+            return Math.Max(340, d - 48);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
+    }
+
+    public class LossPercentageConverter : IMultiValueConverter
+    {
+        // values: [0]=Lost, [1]=Sent  -> returns loss %
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2) return "0%";
+            double lost = 0, sent = 0;
+            double.TryParse(values[0]?.ToString(), out lost);
+            double.TryParse(values[1]?.ToString(), out sent);
+            if (sent <= 0) return "0%";
+            return $"{100 * lost / sent:0}%";
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class AvailabilityPercentageConverter : IMultiValueConverter
+    {
+        // values: [0]=Received, [1]=Sent  -> returns availability %
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2) return "0%";
+            double received = 0, sent = 0;
+            double.TryParse(values[0]?.ToString(), out received);
+            double.TryParse(values[1]?.ToString(), out sent);
+            if (sent <= 0) return "0%";
+            return $"{100 * received / sent:0.0}%";
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class LatencyHistoryToPointsConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
