@@ -976,6 +976,53 @@ namespace vmPing.UI
             }
         }
 
+        private void Inventory_Click(object sender, RoutedEventArgs e)
+        {
+            var hosts = _ProbeCollection
+                .Where(p => !string.IsNullOrEmpty(p.Hostname))
+                .Select(p => p.Hostname)
+                .ToList();
+
+            if (hosts.Count == 0)
+            {
+                Util.ShowInfo("No hay equipos monitoreados. Agregue sondas primero para poder inventariarlas.");
+                return;
+            }
+
+            new InventoryWindow(hosts) { Owner = this }.Show();
+        }
+
+        private async void InventoryModal_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProbeDetailsModal.DataContext is Probe probe && !string.IsNullOrEmpty(probe.Hostname))
+            {
+                // Reuse a cached detail if the inventory was recently collected for this host.
+                var cached = InventoryCache.Get(probe.Hostname);
+                if (cached != null)
+                {
+                    new DeviceInfoWindow(cached) { Owner = this }.Show();
+                    return;
+                }
+
+                lblPortStatus.Text = "Consultando inventario...";
+                lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
+
+                var devices = await InventoryService.CollectAsync(
+                    new List<string> { probe.Hostname },
+                    null,
+                    System.Threading.CancellationToken.None);
+
+                var device = devices.FirstOrDefault();
+                if (device != null)
+                {
+                    InventoryCache.Set(device);
+                    new DeviceInfoWindow(device) { Owner = this }.Show();
+                }
+
+                lblPortStatus.Text = string.Empty;
+            }
+        }
+
         private static bool TryLaunch(string fileName, string arguments)
         {
             try

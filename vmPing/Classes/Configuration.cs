@@ -196,7 +196,21 @@ namespace vmPing.Classes
                 Node("IsMinimizeToTrayEnabled", ApplicationOptions.IsMinimizeToTrayEnabled),
                 Node("IsExitToTrayEnabled", ApplicationOptions.IsExitToTrayEnabled),
                 Node("Theme", ApplicationOptions.CurrentTheme),
-                Node("IsWelcomeShown", ApplicationOptions.IsWelcomeShown)
+                Node("IsWelcomeShown", ApplicationOptions.IsWelcomeShown),
+                new XComment(" Inventory "),
+                Node("InventoryWmiEnabled", ApplicationOptions.InventoryWmiEnabled),
+                Node("InventoryWmiDomain", ApplicationOptions.InventoryWmiDomain),
+                Node("InventoryWmiUsername", string.IsNullOrWhiteSpace(ApplicationOptions.InventoryWmiUsername)
+                    ? string.Empty
+                    : Util.EncryptStringAES(ApplicationOptions.InventoryWmiUsername)),
+                Node("InventoryWmiPassword", string.IsNullOrWhiteSpace(ApplicationOptions.InventoryWmiPassword)
+                    ? string.Empty
+                    : Util.EncryptStringAES(ApplicationOptions.InventoryWmiPassword)),
+                Node("InventorySnmpEnabled", ApplicationOptions.InventorySnmpEnabled),
+                Node("InventorySnmpCommunity", ApplicationOptions.InventorySnmpCommunity),
+                Node("InventorySnmpPort", ApplicationOptions.InventorySnmpPort),
+                Node("InventoryTimeoutSeconds", ApplicationOptions.InventoryTimeoutSeconds),
+                Node("InventoryConcurrency", ApplicationOptions.InventoryConcurrency)
             );
         }
 
@@ -508,6 +522,58 @@ namespace vmPing.Classes
             if (options.TryGetValue("IsWelcomeShown", out optionValue))
             {
                 ApplicationOptions.IsWelcomeShown = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("InventoryWmiEnabled", out optionValue))
+            {
+                ApplicationOptions.InventoryWmiEnabled = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("InventoryWmiDomain", out optionValue))
+            {
+                ApplicationOptions.InventoryWmiDomain = optionValue.Length > 0 ? optionValue : null;
+            }
+            if (options.TryGetValue("InventoryWmiUsername", out optionValue))
+            {
+                if (optionValue.Length > 0)
+                {
+                    try { ApplicationOptions.InventoryWmiUsername = Util.DecryptStringAES(optionValue); }
+                    catch { ApplicationOptions.InventoryWmiUsername = null; }
+                }
+                else
+                {
+                    ApplicationOptions.InventoryWmiUsername = null;
+                }
+            }
+            if (options.TryGetValue("InventoryWmiPassword", out optionValue))
+            {
+                if (optionValue.Length > 0)
+                {
+                    try { ApplicationOptions.InventoryWmiPassword = Util.DecryptStringAES(optionValue); }
+                    catch { ApplicationOptions.InventoryWmiPassword = null; }
+                }
+                else
+                {
+                    ApplicationOptions.InventoryWmiPassword = null;
+                }
+            }
+            if (options.TryGetValue("InventorySnmpEnabled", out optionValue))
+            {
+                ApplicationOptions.InventorySnmpEnabled = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("InventorySnmpCommunity", out optionValue))
+            {
+                ApplicationOptions.InventorySnmpCommunity = optionValue;
+            }
+            if (options.TryGetValue("InventorySnmpPort", out optionValue))
+            {
+                ApplicationOptions.InventorySnmpPort = int.Parse(optionValue);
+            }
+            if (options.TryGetValue("InventoryTimeoutSeconds", out optionValue))
+            {
+                ApplicationOptions.InventoryTimeoutSeconds = int.Parse(optionValue);
+            }
+            if (options.TryGetValue("InventoryConcurrency", out optionValue))
+            {
+                ApplicationOptions.InventoryConcurrency = int.Parse(optionValue);
             }
         }
     }

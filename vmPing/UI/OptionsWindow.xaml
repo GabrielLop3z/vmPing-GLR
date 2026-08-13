@@ -746,6 +746,84 @@
                 </DockPanel>
             </TabItem>
 
+            <!-- Tab: Inventory -->
+            <TabItem Header="Inventario" Name="InventoryTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Inventario de Equipos"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Consulta información de hardware y sistema de los equipos monitoreados mediante WMI (Windows) y SNMP (switches, impresoras, firewalls)."
+                                   Margin="0,12,0,8"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   Foreground="#6B7280"/>
+
+                        <!-- WMI -->
+                        <TextBlock DockPanel.Dock="Top" Text="WMI / WinRM"
+                                   Margin="0,18,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <CheckBox DockPanel.Dock="Top" Name="InventoryWmiEnabledCheck"
+                                  Content="Habilitar recolección por WMI (computadoras con Windows)"
+                                  Margin="0,0,0,8"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Dominio"/>
+                            <TextBox Name="InventoryWmiDomainBox" Width="280"
+                                     ToolTip="Dominio o equipo como por ejemplo: EMPRESA o EMPRESA\\PC. Vacío = conexión con credenciales de grupo de trabajo (nombre de usuario puede ser 'usuario@dominio')."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Usuario (opcional)"/>
+                            <TextBox Name="InventoryWmiUsernameBox" Width="280"
+                                     ToolTip="Si se deja vacío, se usa la identidad del usuario actual de Windows."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Contraseña"/>
+                            <PasswordBox Name="InventoryWmiPasswordBox" Width="280"/>
+                        </StackPanel>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Para usar credenciales alternativas se requiere que el acceso remoto por WMI (Puerto 135, plus 49152+) y autenticación de credenciales esté habilitado en los equipos destino."
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="480"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+
+                        <!-- SNMP -->
+                        <TextBlock DockPanel.Dock="Top" Text="SNMP"
+                                   Margin="0,22,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <CheckBox DockPanel.Dock="Top" Name="InventorySnmpEnabledCheck"
+                                  Content="Habilitar recolección por SNMP (switches, impresoras, firewalls, UPS)"
+                                  Margin="0,0,0,8"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Community"/>
+                            <TextBox Name="InventorySnmpCommunityBox" Width="200"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Puerto"/>
+                            <TextBox Name="InventorySnmpPortBox" Width="200"/>
+                        </StackPanel>
+
+                        <!-- Rendimiento -->
+                        <TextBlock DockPanel.Dock="Top" Text="Rendimiento"
+                                   Margin="0,22,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Timeout por equipo (seg)"/>
+                            <TextBox Name="InventoryTimeoutBox" Width="200"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="140" Text="Conexiones simultáneas"/>
+                            <TextBox Name="InventoryConcurrencyBox" Width="200"/>
+                        </StackPanel>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- Tab: Colors -->
             <TabItem Header="Colores" Name="LayoutTab">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

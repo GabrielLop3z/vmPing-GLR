@@ -37,6 +37,7 @@ namespace vmPing.UI
             PopulateDisplayOptions();
             PopulateLayoutOptions();
             PopulateInterfaceOptions();
+            PopulateInventoryOptions();
         }
 
         private bool? ShowError(string message, TabItem tabItem, Control control, bool isWarning = false)
@@ -224,6 +225,7 @@ namespace vmPing.UI
             if (SaveLayoutOptions() == false) return;
             if (SaveDisplayOptions() == false) return;
             if (SaveInterfaceOptions() == false) return;
+            if (SaveInventoryOptions() == false) return;
 
             if (SaveAsDefaults.IsChecked == true)
             {
@@ -241,6 +243,62 @@ namespace vmPing.UI
                 ApplicationOptions.CurrentTheme = selectedTheme;
                 App.ApplyTheme(selectedTheme);
             }
+            return true;
+        }
+
+        private void PopulateInventoryOptions()
+        {
+            InventoryWmiEnabledCheck.IsChecked = ApplicationOptions.InventoryWmiEnabled;
+            InventoryWmiDomainBox.Text = ApplicationOptions.InventoryWmiDomain ?? string.Empty;
+            InventoryWmiUsernameBox.Text = ApplicationOptions.InventoryWmiUsername ?? string.Empty;
+            InventoryWmiPasswordBox.Password = ApplicationOptions.InventoryWmiPassword ?? string.Empty;
+            InventorySnmpEnabledCheck.IsChecked = ApplicationOptions.InventorySnmpEnabled;
+            InventorySnmpCommunityBox.Text = ApplicationOptions.InventorySnmpCommunity ?? string.Empty;
+            InventorySnmpPortBox.Text = ApplicationOptions.InventorySnmpPort.ToString();
+            InventoryTimeoutBox.Text = ApplicationOptions.InventoryTimeoutSeconds.ToString();
+            InventoryConcurrencyBox.Text = ApplicationOptions.InventoryConcurrency.ToString();
+        }
+
+        private bool SaveInventoryOptions()
+        {
+            int port = 161;
+            if (!int.TryParse(InventorySnmpPortBox.Text, out port) || port < 1 || port > 65535)
+            {
+                ShowError("Por favor ingrese un puerto SNMP válido.", InventoryTab, InventorySnmpPortBox);
+                return false;
+            }
+
+            int timeout = 5;
+            if (!int.TryParse(InventoryTimeoutBox.Text, out timeout) || timeout < 1 || timeout > 120)
+            {
+                ShowError("Por favor ingrese un timeout válido (1-120 segundos).", InventoryTab, InventoryTimeoutBox);
+                return false;
+            }
+
+            int concurrency = 50;
+            if (!int.TryParse(InventoryConcurrencyBox.Text, out concurrency) || concurrency < 1 || concurrency > 500)
+            {
+                ShowError("Por favor ingrese un número de conexiones simultáneas válido (1-500).", InventoryTab, InventoryConcurrencyBox);
+                return false;
+            }
+
+            ApplicationOptions.InventoryWmiEnabled = InventoryWmiEnabledCheck.IsChecked == true;
+            ApplicationOptions.InventoryWmiDomain = string.IsNullOrWhiteSpace(InventoryWmiDomainBox.Text)
+                ? null
+                : InventoryWmiDomainBox.Text.Trim();
+            ApplicationOptions.InventoryWmiUsername = string.IsNullOrWhiteSpace(InventoryWmiUsernameBox.Text)
+                ? null
+                : InventoryWmiUsernameBox.Text.Trim();
+            ApplicationOptions.InventoryWmiPassword = string.IsNullOrWhiteSpace(InventoryWmiPasswordBox.Password)
+                ? null
+                : InventoryWmiPasswordBox.Password;
+            ApplicationOptions.InventorySnmpEnabled = InventorySnmpEnabledCheck.IsChecked == true;
+            ApplicationOptions.InventorySnmpCommunity = string.IsNullOrWhiteSpace(InventorySnmpCommunityBox.Text)
+                ? "public"
+                : InventorySnmpCommunityBox.Text.Trim();
+            ApplicationOptions.InventorySnmpPort = port;
+            ApplicationOptions.InventoryTimeoutSeconds = timeout;
+            ApplicationOptions.InventoryConcurrency = concurrency;
             return true;
         }
 

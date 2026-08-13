@@ -84,6 +84,17 @@ namespace vmPing.Classes
         public static string LogPath { get; set; }
         public static bool IsLogStatusChangesEnabled { get; set; } = false;
         public static string LogStatusChangesPath { get; set; }
+
+        // Inventory.
+        public static bool InventoryWmiEnabled { get; set; } = true;
+        public static string InventoryWmiDomain { get; set; }
+        public static string InventoryWmiUsername { get; set; }
+        public static string InventoryWmiPassword { get; set; }
+        public static bool InventorySnmpEnabled { get; set; } = true;
+        public static string InventorySnmpCommunity { get; set; } = "public";
+        public static int InventorySnmpPort { get; set; } = 161;
+        public static int InventoryTimeoutSeconds { get; set; } = 5;
+        public static int InventoryConcurrency { get; set; } = 50;
         
         // Startup options.
         public static StartMode InitialStartMode { get; set; } = StartMode.Blank;

@@ -1,0 +1,180 @@
+<Window x:Class="vmPing.UI.DeviceInfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Detalle de Equipo - vmPing GLR"
+        Height="640" Width="860"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Theme.Window.Background}"
+        Foreground="{DynamicResource Theme.Window.Foreground}">
+
+    <Window.Resources>
+        <Style x:Key="DetailCardStyle" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="{DynamicResource Theme.Card.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Theme.Card.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="16,14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+        <Style x:Key="DetailCardHeaderStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Primary}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style x:Key="DetailFieldStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Secondary}"/>
+            <Setter Property="Padding" Value="0,3"/>
+        </Style>
+        <Style x:Key="DetailValueStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Primary}"/>
+            <Setter Property="Padding" Value="0,3"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="lblTitle" Text="Equipo" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+                <Border x:Name="badgeSource" CornerRadius="10" Padding="10,3" VerticalAlignment="Center" Margin="12,0,0,0"
+                        Background="{DynamicResource Theme.Accent}">
+                    <TextBlock x:Name="lblSource" Text="WMI" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                </Border>
+            </StackPanel>
+            <TextBlock x:Name="lblHost" Text="host" FontSize="13" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Sistema -->
+                <Border Style="{StaticResource DetailCardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource DetailCardHeaderStyle}" Text="Sistema"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Fabricante"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtManufacturer"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Modelo"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtModel"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="No. Serie"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtSerial"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="UUID"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtUuid"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Sistema Operativo"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtOs"/>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Último arranque"/>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtBoot"/>
+                            <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Dominio"/>
+                            <TextBlock Grid.Row="6" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtDomain"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Hardware -->
+                <Border Style="{StaticResource DetailCardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource DetailCardHeaderStyle}" Text="Hardware"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Procesador"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtCpu"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Cores"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtCores"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Memoria RAM"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtRam"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Almacenamiento"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtDisk"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Red -->
+                <Border Style="{StaticResource DetailCardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource DetailCardHeaderStyle}" Text="Red"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Hostname DNS"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtDnsHost"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="IPs IPv4"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtIpv4"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="IPs IPv6"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtIpv6"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Direcciones MAC"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtMac"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- SNMP -->
+                <Border Style="{StaticResource DetailCardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource DetailCardHeaderStyle}" Text="SNMP"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="sysName"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtSysName"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="sysDescr"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtSysDescr" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Ubicación"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtLocation"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Contacto"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtContact"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource DetailFieldStyle}" Text="Uptime"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource DetailValueStyle}" x:Name="txtUptime"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

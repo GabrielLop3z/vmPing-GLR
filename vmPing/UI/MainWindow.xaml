@@ -355,6 +355,11 @@
                             <Image Source="{StaticResource icon.file-code}" VerticalAlignment="Center" Width="16" Height="16"/>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Inventario de Equipos" Click="Inventory_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.info-circle}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
                 <Separator />
                 <!-- Menu: Traceroute -->
@@ -1142,6 +1147,11 @@
                                 </Button.Resources>
                             </Button>
                             <Button Content="Copiar historial" Padding="10,5" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHistory_Click" Margin="5,0,1,0">
+                                <Button.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="Inventario" Padding="10,5" Background="{DynamicResource Theme.Tool.Inventory.Background}" Foreground="White" BorderThickness="0" Click="InventoryModal_Click" Margin="5,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>

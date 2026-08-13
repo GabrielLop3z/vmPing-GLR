@@ -1,0 +1,103 @@
+<Window x:Class="vmPing.UI.InventoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Inventario de Equipos - vmPing GLR"
+        Height="640" Width="1020"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Theme.Window.Background}"
+        Foreground="{DynamicResource Theme.Window.Foreground}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="Inventario de Equipos" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
+            <TextBlock x:Name="lblSubtitle" Text="Recolectando información de hardware y sistema (WMI / SNMP)..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+        </StackPanel>
+
+        <!-- Progress -->
+        <Border Grid.Row="1" Background="{DynamicResource Theme.Card.Background}" BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ProgressBar x:Name="progressBar" Grid.Row="0" Grid.Column="0" Height="18" Minimum="0" Maximum="100"/>
+                <TextBlock x:Name="lblProgress" Grid.Row="0" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center"
+                           Text="0 / 0" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button x:Name="btnRefresh" Content="Recolectar de nuevo" Padding="14,6" Margin="0,0,8,0"
+                            Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand" Click="BtnRefresh_Click"/>
+                    <Button x:Name="btnCancel" Content="Cancelar" Padding="14,6" Margin="0,0,8,0" Visibility="Collapsed"
+                            Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
+                            BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnCancel_Click"/>
+                    <Button x:Name="btnExportExcel" Content="Exportar Excel" Padding="14,6" Margin="0,0,8,0"
+                            Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
+                            BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnExportExcel_Click"/>
+                    <Button x:Name="btnExportHtml" Content="Exportar HTML" Padding="14,6"
+                            Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
+                            BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnExportHtml_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Results -->
+        <Border Grid.Row="2" Background="{DynamicResource Theme.Card.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
+                BorderThickness="1" CornerRadius="10" Padding="0">
+            <DataGrid x:Name="dgInventory" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                      SelectionMode="Single" SelectionUnit="FullRow" MouseDoubleClick="DgInventory_MouseDoubleClick"
+                      Background="Transparent" BorderThickness="0"
+                      RowBackground="{DynamicResource Theme.Card.Background}"
+                      AlternatingRowBackground="{DynamicResource Theme.Badge.Background}"
+                      Foreground="{DynamicResource Theme.Text.Primary}"
+                      GridLinesVisibility="Horizontal">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background" Value="{DynamicResource Theme.Badge.Background}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Theme.Text.Secondary}"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Padding" Value="8,6"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Theme.Card.Border}"/>
+                    </Style>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="Cursor" Value="Hand"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Host" Binding="{Binding Host}" Width="150"/>
+                    <DataGridTextColumn Header="Alias" Binding="{Binding Alias}" Width="150"/>
+                    <DataGridTextColumn Header="Fuente" Binding="{Binding Source}" Width="100"/>
+                    <DataGridTextColumn Header="Estado" Binding="{Binding IsReachableText}" Width="80"/>
+                    <DataGridTextColumn Header="Fabricante" Binding="{Binding Manufacturer}" Width="140"/>
+                    <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150"/>
+                    <DataGridTextColumn Header="No. Serie" Binding="{Binding SerialNumber}" Width="130"/>
+                    <DataGridTextColumn Header="Sistema Operativo" Binding="{Binding OsCaption}" Width="220"/>
+                    <DataGridTextColumn Header="IP" Binding="{Binding Ipv4}" Width="160"/>
+                    <DataGridTextColumn Header="Recolectado" Binding="{Binding CollectedLocalText}" Width="130"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Status -->
+        <StatusBar Grid.Row="3" Background="Transparent" Margin="0,8,0,0">
+            <StatusBarItem>
+                <TextBlock x:Name="lblStatus" Text="Doble clic en una fila para ver el detalle del equipo." FontSize="11"
+                           Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

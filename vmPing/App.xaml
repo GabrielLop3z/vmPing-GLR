@@ -35,6 +35,7 @@
             <SolidColorBrush x:Key="Theme.Tool.Folder.Background" Color="#F59E0B"/>
             <SolidColorBrush x:Key="Theme.Tool.Shares.Background" Color="#7C3AED"/>
             <SolidColorBrush x:Key="Theme.Tool.Web.Background" Color="#059669"/>
+            <SolidColorBrush x:Key="Theme.Tool.Inventory.Background" Color="#0E7490"/>
         </ResourceDictionary>
 
     </Application.Resources>
