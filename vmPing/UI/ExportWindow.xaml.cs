@@ -114,6 +114,34 @@ namespace vmPing.UI
             return row;
         }
 
+        // Replica el texto que vmPing muestra en la consola para cada muestra
+        // (mismo formato que Probe-Icmp.DisplayIcmpReply y Probe-Tcp.DisplayTcpReply):
+        //   "[09:28:25 a. m.]  Respuesta de 172.25.39.126  [100 ms]"
+        //   "[09:28:25 a. m.]  Tiempo de espera agotado."
+        //   "[09:28:25 a. m.]  Puerto 80: Conectado  [12 ms]"
+        private string BuildConsoleLine(Probe probe, PingSample s)
+        {
+            string line = s.Timestamp.ToLongTimeString();
+
+            // TCP probe: el hostname es "host:puerto" (ver Probe.IsTcpPing).
+            if (probe.Hostname.Count(f => f == ':') == 1 || probe.Hostname.Contains("]:"))
+            {
+                var host = probe.Hostname.Substring(0, probe.Hostname.LastIndexOf(':')).Trim('[', ']');
+                var port = probe.Hostname.Substring(probe.Hostname.LastIndexOf(':') + 1);
+                line += "  Puerto " + port + ": ";
+                line += s.Success
+                    ? "Conectado  [" + s.RttMs + " ms]"
+                    : "Cerrado";
+                return "[" + line + "]";
+            }
+
+            // ICMP probe.
+            line += s.Success
+                ? "  Respuesta de " + probe.Hostname + (s.RttMs < 1 ? "  [<1ms]" : "  [" + s.RttMs + " ms]")
+                : "  Tiempo de espera agotado.";
+            return "[" + line + "]";
+        }
+
         private string StatusToText(ProbeStatus status)
         {
             switch (status)
@@ -182,7 +210,7 @@ namespace vmPing.UI
 
                     // Sheet 2: Historial (cada muestra con hora y ms)
                     var ws2 = wb.Worksheets.Add("Historial");
-                    string[] h2 = { "Hostname", "Alias", "Fecha y hora", "Estado", "RTT (ms)" };
+                    string[] h2 = { "Hostname", "Alias", "Fecha y hora", "Estado", "RTT (ms)", "Salida" };
                     for (int c = 0; c < h2.Length; c++)
                         ws2.Cell(1, c + 1).Value = h2[c];
 
@@ -199,6 +227,7 @@ namespace vmPing.UI
                             ws2.Cell(rowIdx, 4).Value = s.Success ? "OK" : "Perdida";
                             if (s.Success)
                                 ws2.Cell(rowIdx, 5).Value = s.RttMs;
+                            ws2.Cell(rowIdx, 6).Value = BuildConsoleLine(probe, s);
                             rowIdx++;
                         }
                     }
