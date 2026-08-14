@@ -124,6 +124,9 @@
                     <DataGridTextColumn Header="Min RTT (ms)" Binding="{Binding MinRtt}" Width="110"/>
                     <DataGridTextColumn Header="Prom RTT (ms)" Binding="{Binding AvgRtt}" Width="110"/>
                     <DataGridTextColumn Header="Max RTT (ms)" Binding="{Binding MaxRtt}" Width="110"/>
+                    <DataGridTextColumn Header="Desv. RTT (ms)" Binding="{Binding StdDev}" Width="110"/>
+                    <DataGridTextColumn Header="Caídas" Binding="{Binding DownEvents}" Width="80"/>
+                    <DataGridTextColumn Header="Tiempo caído" Binding="{Binding DownTimeTotal, StringFormat={}{0:h\:mm\:ss}}" Width="120"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

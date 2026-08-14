@@ -54,7 +54,7 @@ namespace vmPing.UI
             foreach (var probe in _probes)
             {
                 var samples = probe.PingSamples.Where(s => s.Timestamp >= windowStart).ToList();
-                var row = BuildRow(probe, samples);
+                var row = BuildRow(probe, samples, windowStart);
                 _rows.Add(row);
             }
 
@@ -65,7 +65,7 @@ namespace vmPing.UI
                 : $"Historial de conexión completo de la sesión. {_rows.Count} hosts.";
         }
 
-        private ExportRow BuildRow(Probe probe, List<PingSample> samples)
+        private ExportRow BuildRow(Probe probe, List<PingSample> samples, DateTime windowStart)
         {
             var row = new ExportRow
             {
@@ -83,7 +83,13 @@ namespace vmPing.UI
                 row.MinRtt = ok.Min();
                 row.MaxRtt = ok.Max();
                 row.AvgRtt = ok.Average();
+                double variance = ok.Average(v => (v - row.AvgRtt) * (v - row.AvgRtt));
+                row.StdDev = Math.Sqrt(variance);
             }
+
+            ComputeDownTime(probe, windowStart, out int downEvents, out TimeSpan downTotal);
+            row.DownEvents = downEvents;
+            row.DownTimeTotal = downTotal;
 
             if (row.Sent == 0)
             {
@@ -114,8 +120,47 @@ namespace vmPing.UI
             return row;
         }
 
-        // Replica el texto que vmPing muestra en la consola para cada muestra
-        // (mismo formato que Probe-Icmp.DisplayIcmpReply y Probe-Tcp.DisplayTcpReply):
+        // Calcula el número de eventos de caída y el tiempo total caído dentro de la ventana,
+        // usando el historial de cambios de estado del probe (Down → Up / ahora).
+        private static void ComputeDownTime(Probe probe, DateTime windowStart, out int downEvents, out TimeSpan downTotal)
+        {
+            downEvents = 0;
+            downTotal = TimeSpan.Zero;
+
+            var changes = Probe.StatusChangeLog
+                .Where(c => c.Hostname == probe.Hostname && c.Timestamp >= windowStart)
+                .OrderBy(c => c.Timestamp)
+                .ToList();
+
+            DateTime? downSince = null;
+            foreach (var change in changes)
+            {
+                if (change.Status == ProbeStatus.Down && !downSince.HasValue)
+                {
+                    downSince = change.Timestamp;
+                }
+                else if ((change.Status == ProbeStatus.Up || change.Status == ProbeStatus.Stop) && downSince.HasValue)
+                {
+                    downTotal += change.Timestamp - downSince.Value;
+                    downEvents++;
+                    downSince = null;
+                }
+            }
+            if (downSince.HasValue)
+            {
+                downTotal += DateTime.Now - downSince.Value;
+                downEvents++;
+            }
+        }
+
+        private static string FormatDownTime(TimeSpan t)
+        {
+            if (t <= TimeSpan.Zero)
+                return "0";
+            return $"{(int)t.TotalMinutes}m {t.Seconds}s";
+        }
+
+        // Replica el texto que vmPing muestra en la consola para cada muestra        // (mismo formato que Probe-Icmp.DisplayIcmpReply y Probe-Tcp.DisplayTcpReply):
         //   "[09:28:25 a. m.]  Respuesta de 172.25.39.126  [100 ms]"
         //   "[09:28:25 a. m.]  Tiempo de espera agotado."
         //   "[09:28:25 a. m.]  Puerto 80: Conectado  [12 ms]"
@@ -178,7 +223,7 @@ namespace vmPing.UI
                     // Sheet 1: Resumen (clasificación por host)
                     var ws = wb.Worksheets.Add("Resumen");
 
-                    string[] headers = { "Hostname", "Alias", "Estado", "Clasificación", "Enviados", "Recibidos", "Perdidos", "% Pérdida", "Min RTT (ms)", "Prom RTT (ms)", "Max RTT (ms)" };
+                    string[] headers = { "Hostname", "Alias", "Estado", "Clasificación", "Enviados", "Recibidos", "Perdidos", "% Pérdida", "Min RTT (ms)", "Prom RTT (ms)", "Max RTT (ms)", "Desv. RTT (ms)", "Caídas", "Tiempo caído (min)" };
                     for (int c = 0; c < headers.Length; c++)
                         ws.Cell(1, c + 1).Value = headers[c];
 
@@ -197,6 +242,9 @@ namespace vmPing.UI
                         ws.Cell(r + 2, 9).Value = it.MinRtt;
                         ws.Cell(r + 2, 10).Value = Math.Round(it.AvgRtt, 2);
                         ws.Cell(r + 2, 11).Value = it.MaxRtt;
+                        ws.Cell(r + 2, 12).Value = Math.Round(it.StdDev, 2);
+                        ws.Cell(r + 2, 13).Value = it.DownEvents;
+                        ws.Cell(r + 2, 14).Value = Math.Round(it.DownTimeTotal.TotalMinutes, 2);
 
                         var clsCell = ws.Cell(r + 2, 4);
                         if (it.Classification == "Bien")
@@ -259,17 +307,41 @@ namespace vmPing.UI
                 var sb = new StringBuilder();
                 sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'>");
                 sb.AppendLine("<title>Reporte vmPing GLR</title>");
-                sb.AppendLine("<style>body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#1f2937}h1{font-size:22px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}th{background:#f3f4f6}.bien{background:#d1fae5}.inter{background:#fef3c7}.fall{background:#fee2e2}</style></head><body>");
+                sb.AppendLine("<style>body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#1f2937}h1{font-size:22px}h2{font-size:16px;margin-top:28px}table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}th,td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}th{background:#f3f4f6}.bien{background:#d1fae5}.inter{background:#fef3c7}.fall{background:#fee2e2}.perdida{color:#ef4444;font-weight:bold}.ok{color:#10b981}</style></head><body>");
                 sb.AppendLine($"<h1>Reporte de Monitoreo vmPing</h1><p>Generado: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - Hosts: {_rows.Count}</p>");
-                sb.AppendLine("<table><thead><tr><th>Hostname</th><th>Alias</th><th>Estado</th><th>Clasificación</th><th>Enviados</th><th>Recibidos</th><th>Perdidos</th><th>% Pérdida</th><th>Min RTT</th><th>Prom RTT</th><th>Max RTT</th></tr></thead><tbody>");
+                sb.AppendLine("<h2>Resumen</h2>");
+                sb.AppendLine("<table><thead><tr><th>Hostname</th><th>Alias</th><th>Estado</th><th>Clasificación</th><th>Enviados</th><th>Recibidos</th><th>Perdidos</th><th>% Pérdida</th><th>Min RTT</th><th>Prom RTT</th><th>Max RTT</th><th>Desv. RTT</th><th>Caídas</th><th>Tiempo caído</th></tr></thead><tbody>");
 
                 foreach (var it in _rows.OrderBy(r => r.SortRank))
                 {
                     string cls = it.Classification == "Bien" ? "bien" : it.Classification == "Intermitente" ? "inter" : it.Classification == "Fallando" ? "fall" : "";
-                    sb.AppendLine($"<tr class='{cls}'><td>{System.Net.WebUtility.HtmlEncode(it.Hostname)}</td><td>{System.Net.WebUtility.HtmlEncode(it.Alias)}</td><td>{it.CurrentStatus}</td><td>{it.Classification}</td><td>{it.Sent}</td><td>{it.Received}</td><td>{it.Lost}</td><td>{it.LossPct:F2}</td><td>{it.MinRtt}</td><td>{it.AvgRtt:F2}</td><td>{it.MaxRtt}</td></tr>");
+                    sb.AppendLine($"<tr class='{cls}'><td>{System.Net.WebUtility.HtmlEncode(it.Hostname)}</td><td>{System.Net.WebUtility.HtmlEncode(it.Alias)}</td><td>{it.CurrentStatus}</td><td>{it.Classification}</td><td>{it.Sent}</td><td>{it.Received}</td><td>{it.Lost}</td><td>{it.LossPct:F2}</td><td>{it.MinRtt}</td><td>{it.AvgRtt:F2}</td><td>{it.MaxRtt}</td><td>{it.StdDev:F2}</td><td>{it.DownEvents}</td><td>{FormatDownTime(it.DownTimeTotal)}</td></tr>");
                 }
 
-                sb.AppendLine("</tbody></table></body></html>");
+                sb.AppendLine("</tbody></table>");
+
+                DateTime windowStart = GetWindowStart();
+                sb.AppendLine("<h2>Historial por host</h2>");
+                foreach (var probe in _probes)
+                {
+                    var samples = probe.PingSamples
+                        .Where(s => s.Timestamp >= windowStart)
+                        .OrderBy(s => s.Timestamp)
+                        .ToList();
+                    if (samples.Count == 0)
+                        continue;
+
+                    sb.AppendLine($"<h3>{System.Net.WebUtility.HtmlEncode(probe.Hostname)}{(string.IsNullOrWhiteSpace(probe.Alias) ? "" : " (" + System.Net.WebUtility.HtmlEncode(probe.Alias) + ")")} <span style='font-size:11px;color:#6b7280;font-weight:normal'>- {samples.Count} muestras</span></h3>");
+                    sb.AppendLine("<table><thead><tr><th>Fecha y hora</th><th>Estado</th><th>RTT (ms)</th><th>Salida</th></tr></thead><tbody>");
+                    foreach (var s in samples)
+                    {
+                        string st = s.Success ? "<span class='ok'>OK</span>" : "<span class='perdida'>Perdida</span>";
+                        sb.AppendLine($"<tr><td>{s.Timestamp:yyyy-MM-dd HH:mm:ss}</td><td>{st}</td><td>{(s.Success ? s.RttMs.ToString() : "")}</td><td>{System.Net.WebUtility.HtmlEncode(BuildConsoleLine(probe, s))}</td></tr>");
+                    }
+                    sb.AppendLine("</tbody></table>");
+                }
+
+                sb.AppendLine("</body></html>");
                 File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
                 lblStatus.Text = $"Exportado a HTML: {Path.GetFileName(dlg.FileName)}";
             }
@@ -293,6 +365,9 @@ namespace vmPing.UI
         public int MinRtt { get; set; }
         public double AvgRtt { get; set; }
         public int MaxRtt { get; set; }
+        public double StdDev { get; set; }
+        public int DownEvents { get; set; }
+        public TimeSpan DownTimeTotal { get; set; }
         public int SortRank { get; set; }
     }
 }
