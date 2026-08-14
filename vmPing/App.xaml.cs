@@ -41,6 +41,13 @@ namespace vmPing
             // Mantener el formulario de actualización por encima de las demás ventanas (si no,
             // con la opción "siempre visible" vmPing lo tapa y parece que no pasa nada).
             AutoUpdater.TopMost = true;
+            // vmPing se ejecuta desde una carpeta con permisos de usuario (no Program Files),
+            // así que la actualización NO requiere elevación. Con RunUpdateAsAdmin = true (por defecto)
+            // ZipExtractor pedía elevación UAC y, en equipos con política restrictiva o EDR (p. ej.
+            // AppLocker/Cortex), Windows lo bloqueaba con "la directiva bloqueó ese programa"
+            // (System.ComponentModel.Win32Exception) al relanzar el programa. Se fuerza false para
+            // aplicar la actualización sin pedir permisos de administrador.
+            AutoUpdater.RunUpdateAsAdmin = false;
             // Con Synchronous = false (por defecto) la revisión corre en segundo plano y no bloquea la UI.
             AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
         }
