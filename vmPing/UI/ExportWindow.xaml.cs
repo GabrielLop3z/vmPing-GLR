@@ -37,13 +37,16 @@ namespace vmPing.UI
 
         private DateTime GetWindowStart()
         {
-            if (rb30Min.IsChecked == true)
+            if (rb30Min != null && rb30Min.IsChecked == true)
                 return DateTime.Now.AddMinutes(-30);
             return DateTime.MinValue;
         }
 
         private void RefreshRows()
         {
+            if (dgExport == null || _probes == null)
+                return;
+
             _rows.Clear();
 
             DateTime windowStart = GetWindowStart();
@@ -57,7 +60,7 @@ namespace vmPing.UI
 
             // Ordenar: Fallando → Intermitente → Bien → Sin datos
             dgExport.ItemsSource = _rows.OrderBy(r => r.SortRank).ToList();
-            lblSubtitle.Text = rb30Min.IsChecked == true
+            lblSubtitle.Text = rb30Min != null && rb30Min.IsChecked == true
                 ? $"Historial de conexión (últimos 30 min). {_rows.Count} hosts."
                 : $"Historial de conexión completo de la sesión. {_rows.Count} hosts.";
         }
