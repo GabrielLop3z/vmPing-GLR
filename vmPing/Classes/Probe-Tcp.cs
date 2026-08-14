@@ -110,6 +110,7 @@ namespace vmPing.Classes
                         Statistics.Received++;
                         IndeterminateCount = 0;
                         isPortOpen = true;
+                        AddPingSample((int)stopwatch.ElapsedMilliseconds, true);
 
                         // If this is a new probe, record the initial 'up' state to the status history.
                         if (Status == ProbeStatus.Inactive)
@@ -226,6 +227,7 @@ namespace vmPing.Classes
                         Statistics.Lost++;
                         isPortOpen = false;
                         errorCode = ex.ErrorCode;
+                        AddPingSample(0, false);
                     }
                     catch (Exception ex)
                     {

@@ -203,6 +203,25 @@
                 </MenuItem.Icon>
             </MenuItem>
 
+            <!-- Menu: Export report button (top bar) -->
+            <MenuItem x:Name="ExportReportMenu"
+                      Click="Export_Click"
+                      DockPanel.Dock="Right"
+                      Margin="4,4,0,4"
+                      FontSize="13"
+                      Foreground="White"
+                      Background="{DynamicResource Theme.Accent}"
+                      BorderBrush="{DynamicResource Theme.Accent}"
+                      BorderThickness="1"
+                      Template="{StaticResource TopLevelHeaderNoPaddingTemplate}">
+                <MenuItem.Icon>
+                    <Image Source="{StaticResource icon.file-export}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16"/>
+                </MenuItem.Icon>
+                <MenuItem.Header>
+                    <TextBlock Text="Exportar" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="White"/>
+                </MenuItem.Header>
+            </MenuItem>
+
             <!-- Menu: Main menu dropdown (rounded button) -->
             <MenuItem x:Name="OptionsMenuButton"
                       MinWidth="120"
@@ -353,6 +372,11 @@
                     <MenuItem Header="Reportes de Hosts" Click="Reports_Click">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource icon.file-code}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Exportar Reporte (Excel)" Click="Export_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.file-export}" VerticalAlignment="Center" Width="16" Height="16"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Inventario de Equipos" Click="Inventory_Click">

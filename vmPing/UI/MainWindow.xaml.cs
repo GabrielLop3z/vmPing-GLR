@@ -573,6 +573,12 @@ namespace vmPing.UI
             wnd.Show();
         }
 
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            var wnd = new ExportWindow(_ProbeCollection) { Owner = this };
+            wnd.Show();
+        }
+
         private void NewInstanceExecute(object sender, ExecutedRoutedEventArgs e)
         {
             try

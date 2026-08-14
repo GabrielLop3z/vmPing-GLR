@@ -120,6 +120,7 @@ namespace vmPing.Classes
                                 }
                             }
                             UpdateLatencyHistory((int)reply.RoundtripTime);
+                            AddPingSample((int)reply.RoundtripTime, true);
                         }
                         // No reply received.
                         else
@@ -148,6 +149,7 @@ namespace vmPing.Classes
                                 OnStatusChange(ProbeStatus.Down, "down");
                             }
                             UpdateLatencyHistory(-1);
+                            AddPingSample(0, false);
                         }
 
                         if (!cancellationToken.IsCancellationRequested)
@@ -164,6 +166,7 @@ namespace vmPing.Classes
                     catch (Exception ex)
                     {
                         Statistics.Lost++;
+                        AddPingSample(0, false);
 
                         // Check for status change.
                         if (Status == ProbeStatus.Inactive)

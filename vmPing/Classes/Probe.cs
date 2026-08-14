@@ -35,6 +35,20 @@ namespace vmPing.Classes
         Comment
     }
 
+    public class PingSample
+    {
+        public DateTime Timestamp { get; set; }
+        public int RttMs { get; set; }
+        public bool Success { get; set; }
+
+        public PingSample(DateTime timestamp, int rttMs, bool success)
+        {
+            Timestamp = timestamp;
+            RttMs = rttMs;
+            Success = success;
+        }
+    }
+
     public partial class Probe : INotifyPropertyChanged
     {
         // Static members
@@ -115,6 +129,9 @@ namespace vmPing.Classes
         public string HistoryAsString => History != null
             ? string.Join(Environment.NewLine, History)
             : string.Empty;
+
+        private readonly ObservableCollection<PingSample> _pingSamples = new ObservableCollection<PingSample>();
+        public ObservableCollection<PingSample> PingSamples => _pingSamples;
 
         private ProbeType type = ProbeType.Ping;
         public ProbeType Type
@@ -283,6 +300,19 @@ namespace vmPing.Classes
                     if (latency > MaxLatency) MaxLatency = latency;
                     // LatencyHistory is an ObservableCollection, so we don't need to notify the property changed.
                     // OnPropertyChanged(nameof(LatencyHistory)); 
+                }));
+            }
+        }
+
+        public void AddPingSample(int rttMs, bool success)
+        {
+            if (System.Windows.Application.Current != null)
+            {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    const int MaxSize = 50000;
+                    _pingSamples.Add(new PingSample(DateTime.Now, rttMs, success));
+                    if (_pingSamples.Count > MaxSize) _pingSamples.RemoveAt(0);
                 }));
             }
         }
