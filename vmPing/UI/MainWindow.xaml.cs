@@ -271,7 +271,7 @@ namespace vmPing.UI
             {
                AutoUpdater.SetOwner(this); // Asegurar que el formulario aparezca frente a vmPing
                AutoUpdater.ReportErrors = true; // Mostrar errores si falla al buscar (solo cuando es manual)
-               AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
+               AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
             };
         }
 

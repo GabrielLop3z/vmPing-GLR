@@ -49,7 +49,7 @@ namespace vmPing
             // aplicar la actualización sin pedir permisos de administrador.
             AutoUpdater.RunUpdateAsAdmin = false;
             // Con Synchronous = false (por defecto) la revisión corre en segundo plano y no bloquea la UI.
-            AutoUpdater.Start("https://cdn.jsdelivr.net/gh/GabrielLop3z/vmPing-GLR@main/update.xml");
+            AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
         }
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
