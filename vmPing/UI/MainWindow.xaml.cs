@@ -109,8 +109,13 @@ namespace vmPing.UI
             // Parse command line arguments. Get any host addresses entered on command line.
             List<string> cliHosts = CommandLine.ParseArguments();
 
+            // If a favorite was passed on the command line, load it.
+            if (!string.IsNullOrWhiteSpace(CommandLine.InitialFavorite))
+            {
+                LoadFavorite(CommandLine.InitialFavorite);
+            }
             // Add initial probes.
-            if (cliHosts.Count > 0)
+            else if (cliHosts.Count > 0)
             {
                 // Host addresses were entered on the command line.
                 // Add addresses to probe collection and begin pinging.
@@ -714,12 +719,41 @@ namespace vmPing.UI
                 {
                     Header = fav
                 };
+                // Clic normal: abrir el favorito en una instancia nueva sin tocar la ventana actual.
                 menuItem.Click += (s, r) =>
                 {
-                    LoadFavorite((s as MenuItem).Header.ToString());
+                    LaunchNewInstanceWithFavorite((s as MenuItem).Header.ToString());
+                };
+                // Clic de rueda (boton central): abrir tambien una instancia nueva.
+                menuItem.PreviewMouseDown += (s, e) =>
+                {
+                    if (e.ChangedButton == MouseButton.Middle)
+                    {
+                        e.Handled = true;
+                        LaunchNewInstanceWithFavorite((s as MenuItem).Header.ToString());
+                        FavoritesMenu.IsSubmenuOpen = false;
+                    }
                 };
 
                 FavoritesMenu.Items.Add(menuItem);
+            }
+        }
+
+        private void LaunchNewInstanceWithFavorite(string favoriteTitle)
+        {
+            try
+            {
+                var p = new System.Diagnostics.Process();
+                p.StartInfo.FileName =
+                    System.Reflection.Assembly.GetExecutingAssembly().Location;
+                p.StartInfo.Arguments = $"/favorite \"{favoriteTitle}\"";
+                p.Start();
+            }
+            catch (Exception ex)
+            {
+                var errorWindow = DialogWindow.ErrorWindow($"Error al iniciar: {ex.Message}");
+                errorWindow.Owner = this;
+                errorWindow.ShowDialog();
             }
         }
 

@@ -16,16 +16,32 @@ namespace vmPing.Classes
         private const int MaxTimeout = 60;
         private const long MaxHostFileSize = 10 * 1024;
 
+        public static string InitialFavorite = null;
+
         public static List<string> ParseArguments()
         {
             var args = Environment.GetCommandLineArgs();
             var errors = new StringBuilder();
             var hostnames = new List<string>();
+            InitialFavorite = null;
 
             for (int i = 1; i < args.Length; i++)
             {
                 switch (args[i].ToLowerInvariant())
                 {
+                    case "/favorite":
+                    case "-favorite":
+                        if (i + 1 < args.Length && !string.IsNullOrWhiteSpace(args[i + 1]))
+                        {
+                            InitialFavorite = args[i + 1];
+                            i++; // Skip over next arg.
+                        }
+                        else
+                        {
+                            errors.AppendLine("-favorite: Debe especificar el nombre del favorito.");
+                        }
+                        break;
+
                     case "/i":
                     case "-i":
                         if (i + 1 < args.Length &&
