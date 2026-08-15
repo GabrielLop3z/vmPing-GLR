@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
-using AutoUpdaterDotNET;
 using vmPing.Classes;
 
 namespace vmPing
@@ -33,23 +32,10 @@ namespace vmPing
             // Global exception handler to catch runtime errors
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
-            // Initialize AutoUpdater
-            // El update.xml se sirve desde el CDN de jsDelivr porque raw.githubusercontent.com
-            // no es accesible desde todas las redes y congelaba la app en la búsqueda manual.
-            AutoUpdater.Mandatory = false; // No obligar a actualizar
-            AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
-            // Mantener el formulario de actualización por encima de las demás ventanas (si no,
-            // con la opción "siempre visible" vmPing lo tapa y parece que no pasa nada).
-            AutoUpdater.TopMost = true;
-            // vmPing se ejecuta desde una carpeta con permisos de usuario (no Program Files),
-            // así que la actualización NO requiere elevación. Con RunUpdateAsAdmin = true (por defecto)
-            // ZipExtractor pedía elevación UAC y, en equipos con política restrictiva o EDR (p. ej.
-            // AppLocker/Cortex), Windows lo bloqueaba con "la directiva bloqueó ese programa"
-            // (System.ComponentModel.Win32Exception) al relanzar el programa. Se fuerza false para
-            // aplicar la actualización sin pedir permisos de administrador.
-            AutoUpdater.RunUpdateAsAdmin = false;
-            // Con Synchronous = false (por defecto) la revisión corre en segundo plano y no bloquea la UI.
-            AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
+            // Comprobar actualizaciones en segundo plano al iniciar (sin bloquear la UI).
+            // El update.xml se sirve desde raw.githubusercontent.com porque jsDelivr
+            // no propagaba de forma fiable los cambios de la rama main.
+            UpdateManager.CheckForUpdate(showUpToDateMessage: false);
         }
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

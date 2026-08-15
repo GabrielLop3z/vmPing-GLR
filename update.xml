@@ -1,5 +1,7 @@
 <item>
-    <version>1.8.6</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.6/vmPing.zip</url>
+    <version>1.8.7</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.7/vmPing.zip</url>
     <mandatory>false</mandatory>
+    <changelog>- Actualizador nuevo: interfaz profesional con tema de la aplicación, progreso de descarga, "Recordar más tarde" y "Omitir esta versión".
+- Corregido el error "la directiva bloqueó ese programa" (Win32Exception) al actualizar: ya no se ejecutan archivos externos, la actualización se aplica con herramientas nativas de Windows.</changelog>
 </item>

@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using vmPing.Classes;
 using vmPing.Properties;
-using AutoUpdaterDotNET;
 
 namespace vmPing.UI
 {
@@ -40,10 +39,6 @@ namespace vmPing.UI
         {
             InitializeComponent();
             InitializeAplication();
-
-            // El formulario de actualización de AutoUpdater.NET debe tener como dueña la
-            // ventana principal; si no, se queda detrás de vmPing (o de otras apps) al aparecer.
-            AutoUpdater.SetOwner(this);
         }
 
         private void InitializeAplication()
@@ -272,12 +267,7 @@ namespace vmPing.UI
             WelcomeMenu.Command = WelcomeCommand;
             
             // Vincular el comando al evento del menú
-            UpdateMenu.Click += (s, args) => 
-            {
-               AutoUpdater.SetOwner(this); // Asegurar que el formulario aparezca frente a vmPing
-               AutoUpdater.ReportErrors = true; // Mostrar errores si falla al buscar (solo cuando es manual)
-               AutoUpdater.Start("https://raw.githubusercontent.com/GabrielLop3z/vmPing-GLR/main/update.xml");
-            };
+            UpdateMenu.Click += (s, args) => UpdateManager.CheckForUpdate(showUpToDateMessage: true);
         }
 
         private void FullScreenExecute(object sender, ExecutedRoutedEventArgs e)
