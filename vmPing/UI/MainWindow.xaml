@@ -203,6 +203,25 @@
                 </MenuItem.Icon>
             </MenuItem>
 
+            <!-- Menu: Dashboard button (top bar) -->
+            <MenuItem x:Name="DashboardMenu"
+                      Click="Dashboard_Click"
+                      DockPanel.Dock="Right"
+                      Margin="4,4,0,4"
+                      FontSize="13"
+                      Foreground="White"
+                      Background="#2563EB"
+                      BorderBrush="#2563EB"
+                      BorderThickness="1"
+                      Template="{StaticResource TopLevelHeaderNoPaddingTemplate}">
+                <MenuItem.Icon>
+                    <Image Source="{StaticResource icon.columns-grid}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16"/>
+                </MenuItem.Icon>
+                <MenuItem.Header>
+                    <TextBlock Text="Dashboard" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="White"/>
+                </MenuItem.Header>
+            </MenuItem>
+
             <!-- Menu: Export report button (top bar) -->
             <MenuItem x:Name="ExportReportMenu"
                       Click="Export_Click"
@@ -377,11 +396,6 @@
                     <MenuItem Header="Exportar Reporte (Excel)" Click="Export_Click">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource icon.file-export}" VerticalAlignment="Center" Width="16" Height="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Dashboard de Monitoreo" Click="Dashboard_Click">
-                        <MenuItem.Icon>
-                            <Image Source="{StaticResource icon.columns-grid}" VerticalAlignment="Center" Width="16" Height="16"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Inventario de Equipos" Click="Inventory_Click">
