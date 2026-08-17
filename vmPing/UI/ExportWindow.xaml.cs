@@ -305,23 +305,91 @@ namespace vmPing.UI
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'>");
-                sb.AppendLine("<title>Reporte vmPing GLR</title>");
-                sb.AppendLine("<style>body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#1f2937}h1{font-size:22px}h2{font-size:16px;margin-top:28px}table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}th,td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}th{background:#f3f4f6}.bien{background:#d1fae5}.inter{background:#fef3c7}.fall{background:#fee2e2}.perdida{color:#ef4444;font-weight:bold}.ok{color:#10b981}</style></head><body>");
-                sb.AppendLine($"<h1>Reporte de Monitoreo vmPing</h1><p>Generado: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - Hosts: {_rows.Count}</p>");
-                sb.AppendLine("<h2>Resumen</h2>");
-                sb.AppendLine("<table><thead><tr><th>Hostname</th><th>Alias</th><th>Estado</th><th>Clasificación</th><th>Enviados</th><th>Recibidos</th><th>Perdidos</th><th>% Pérdida</th><th>Min RTT</th><th>Prom RTT</th><th>Max RTT</th><th>Desv. RTT</th><th>Caídas</th><th>Tiempo caído</th></tr></thead><tbody>");
+                int totalUp = _rows.Count(r => r.Classification == "Bien");
+                int totalDown = _rows.Count(r => r.Classification == "Fallando");
+                int totalInter = _rows.Count(r => r.Classification == "Intermitente");
+                int totalNoData = _rows.Count(r => r.Classification == "Sin datos");
+                double avgLoss = _rows.Any() ? _rows.Average(r => r.LossPct) : 0;
+                double avgRttAll = _rows.Where(r => r.AvgRtt > 0).Any() ? _rows.Where(r => r.AvgRtt > 0).Average(r => r.AvgRtt) : 0;
+
+                sb.AppendLine("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>");
+                sb.AppendLine("<title>Dashboard vmPing GLR</title>");
+                sb.AppendLine("<style>");
+                sb.AppendLine("*{margin:0;padding:0;box-sizing:border-box}");
+                sb.AppendLine("body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.5}");
+                sb.AppendLine(".header{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);color:#fff;padding:28px 32px;display:flex;justify-content:space-between;align-items:center}");
+                sb.AppendLine(".header h1{font-size:22px;font-weight:600;letter-spacing:-0.3px}");
+                sb.AppendLine(".header .meta{font-size:13px;opacity:0.85;text-align:right}");
+                sb.AppendLine(".header .meta span{display:block}");
+                sb.AppendLine(".container{max-width:1400px;margin:0 auto;padding:24px 28px}");
+                sb.AppendLine(".cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}");
+                sb.AppendLine(".card{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.06);border-left:4px solid #e2e8f0;transition:transform 0.15s}");
+                sb.AppendLine(".card:hover{transform:translateY(-2px)}");
+                sb.AppendLine(".card.up{border-left-color:#10b981}.card.down{border-left-color:#ef4444}.card.inter{border-left-color:#f59e0b}.card.nodata{border-left-color:#94a3b8}.card.total{border-left-color:#2563eb}.card.loss{border-left-color:#f97316}.card.rtt{border-left-color:#6366f1}");
+                sb.AppendLine(".card .label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:500}");
+                sb.AppendLine(".card .value{font-size:28px;font-weight:700;margin-top:4px}");
+                sb.AppendLine(".card.total .value{color:#2563eb}.card.up .value{color:#10b981}.card.down .value{color:#ef4444}.card.inter .value{color:#f59e0b}.card.nodata .value{color:#94a3b8}.card.loss .value{color:#f97316}.card.rtt .value{color:#6366f1}");
+                sb.AppendLine(".section{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:24px;overflow:hidden}");
+                sb.AppendLine(".section-title{font-size:16px;font-weight:600;padding:18px 22px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:8px}");
+                sb.AppendLine(".section-title .icon{width:8px;height:8px;border-radius:50%;display:inline-block}");
+                sb.AppendLine(".section-title .icon.blue{background:#2563eb}.section-title .icon.green{background:#10b981}.section-title .icon.amber{background:#f59e0b}.section-title .icon.red{background:#ef4444}");
+                sb.AppendLine("table{width:100%;border-collapse:collapse;font-size:13px}");
+                sb.AppendLine("thead th{background:#f8fafc;color:#475569;font-weight:600;text-align:left;padding:12px 14px;border-bottom:2px solid #e2e8f0;white-space:nowrap;position:sticky;top:0}");
+                sb.AppendLine("tbody td{padding:10px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle}");
+                sb.AppendLine("tbody tr:hover{background:#f8fafc}");
+                sb.AppendLine("tbody tr:last-child td{border-bottom:none}");
+                sb.AppendLine(".badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}");
+                sb.AppendLine(".badge.up{background:#d1fae5;color:#065f46}.badge.down{background:#fee2e2;color:#991b1b}.badge.inter{background:#fef3c7;color:#92400e}.badge.nodata{background:#f1f5f9;color:#64748b}");
+                sb.AppendLine(".rtt-bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-right:6px}");
+                sb.AppendLine(".loss-high{color:#ef4444;font-weight:600}.loss-mid{color:#f59e0b;font-weight:600}.loss-ok{color:#10b981}");
+                sb.AppendLine(".host-block{margin-bottom:24px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden}");
+                sb.AppendLine(".host-block:last-child{margin-bottom:0}");
+                sb.AppendLine(".host-header{padding:14px 18px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}");
+                sb.AppendLine(".host-header h3{font-size:14px;font-weight:600}");
+                sb.AppendLine(".host-header .count{font-size:12px;color:#64748b}");
+                sb.AppendLine(".host-table{width:100%;font-size:12px}");
+                sb.AppendLine(".host-table th{background:#fff;padding:8px 14px;font-weight:600;color:#64748b;text-transform:uppercase;font-size:11px;letter-spacing:0.3px}");
+                sb.AppendLine(".host-table td{padding:7px 14px}");
+                sb.AppendLine(".host-table tbody tr:nth-child(even){background:#fafbfc}");
+                sb.AppendLine(".footer{text-align:center;padding:20px;color:#94a3b8;font-size:12px}");
+                sb.AppendLine("@media print{body{background:#fff}.cards{gap:8px}.section{box-shadow:none;border:1px solid #e2e8f0}thead th{background:#f1f5f9}}");
+                sb.AppendLine("</style></head><body>");
+
+                sb.AppendLine("<div class='header'><div><h1>Dashboard de Monitoreo vmPing</h1></div><div class='meta'>");
+                sb.AppendLine($"<span>Generado: {DateTime.Now:dddd dd 'de' MMMM yyyy, HH:mm:ss}</span>");
+                sb.AppendLine($"<span>Hosts monitoreados: {_rows.Count}</span>");
+                sb.AppendLine("</div></div>");
+
+                sb.AppendLine("<div class='container'>");
+
+                sb.AppendLine("<div class='cards'>");
+                sb.AppendLine($"<div class='card total'><div class='label'>Total Hosts</div><div class='value'>{_rows.Count}</div></div>");
+                sb.AppendLine($"<div class='card up'><div class='label'>En línea</div><div class='value'>{totalUp}</div></div>");
+                sb.AppendLine($"<div class='card down'><div class='label'>Caídos</div><div class='value'>{totalDown}</div></div>");
+                sb.AppendLine($"<div class='card inter'><div class='label'>Intermitentes</div><div class='value'>{totalInter}</div></div>");
+                if (totalNoData > 0)
+                    sb.AppendLine($"<div class='card nodata'><div class='label'>Sin datos</div><div class='value'>{totalNoData}</div></div>");
+                sb.AppendLine($"<div class='card loss'><div class='label'>Pérdida Promedio</div><div class='value'>{avgLoss:F1}%</div></div>");
+                sb.AppendLine($"<div class='card rtt'><div class='label'>RTT Promedio</div><div class='value'>{avgRttAll:F0} ms</div></div>");
+                sb.AppendLine("</div>");
+
+                sb.AppendLine("<div class='section'><div class='section-title'><span class='icon blue'></span> Resumen por Host</div>");
+                sb.AppendLine("<div style='overflow-x:auto'><table><thead><tr><th>Hostname</th><th>Alias</th><th>Estado</th><th>Clasificación</th><th>Enviados</th><th>Recibidos</th><th>Perdidos</th><th>% Pérdida</th><th>RTT Mín</th><th>RTT Prom</th><th>RTT Máx</th><th>Desv. Est.</th><th>Caídas</th><th>Tiempo Caído</th></tr></thead><tbody>");
 
                 foreach (var it in _rows.OrderBy(r => r.SortRank))
                 {
-                    string cls = it.Classification == "Bien" ? "bien" : it.Classification == "Intermitente" ? "inter" : it.Classification == "Fallando" ? "fall" : "";
-                    sb.AppendLine($"<tr class='{cls}'><td>{System.Net.WebUtility.HtmlEncode(it.Hostname)}</td><td>{System.Net.WebUtility.HtmlEncode(it.Alias)}</td><td>{it.CurrentStatus}</td><td>{it.Classification}</td><td>{it.Sent}</td><td>{it.Received}</td><td>{it.Lost}</td><td>{it.LossPct:F2}</td><td>{it.MinRtt}</td><td>{it.AvgRtt:F2}</td><td>{it.MaxRtt}</td><td>{it.StdDev:F2}</td><td>{it.DownEvents}</td><td>{FormatDownTime(it.DownTimeTotal)}</td></tr>");
+                    string badgeCls = it.Classification == "Bien" ? "up" : it.Classification == "Intermitente" ? "inter" : it.Classification == "Fallando" ? "down" : "nodata";
+                    string lossCls = it.LossPct >= 10 ? "loss-high" : it.LossPct > 0 ? "loss-mid" : "loss-ok";
+                    string lossBar = it.LossPct > 0 ? $"<div class='rtt-bar' style='width:{Math.Min(it.LossPct, 100) * 0.6}px;background:{(it.LossPct >= 10 ? "#ef4444" : "#f59e0b")}'></div>" : "";
+                    sb.AppendLine($"<tr><td>{System.Net.WebUtility.HtmlEncode(it.Hostname)}</td><td>{System.Net.WebUtility.HtmlEncode(it.Alias)}</td><td>{it.CurrentStatus}</td><td><span class='badge {badgeCls}'>{it.Classification}</span></td><td>{it.Sent}</td><td>{it.Received}</td><td>{it.Lost}</td><td>{lossBar}<span class='{lossCls}'>{it.LossPct:F2}%</span></td><td>{it.MinRtt}</td><td>{it.AvgRtt:F2}</td><td>{it.MaxRtt}</td><td>{it.StdDev:F2}</td><td>{it.DownEvents}</td><td>{FormatDownTime(it.DownTimeTotal)}</td></tr>");
                 }
 
-                sb.AppendLine("</tbody></table>");
+                sb.AppendLine("</tbody></table></div></div>");
 
                 DateTime windowStart = GetWindowStart();
-                sb.AppendLine("<h2>Historial por host</h2>");
+                sb.AppendLine("<div class='section'><div class='section-title'><span class='icon green'></span> Historial por Host</div>");
+                sb.AppendLine("<div style='padding:16px 18px'>");
+
                 foreach (var probe in _probes)
                 {
                     var samples = probe.PingSamples
@@ -331,17 +399,25 @@ namespace vmPing.UI
                     if (samples.Count == 0)
                         continue;
 
-                    sb.AppendLine($"<h3>{System.Net.WebUtility.HtmlEncode(probe.Hostname)}{(string.IsNullOrWhiteSpace(probe.Alias) ? "" : " (" + System.Net.WebUtility.HtmlEncode(probe.Alias) + ")")} <span style='font-size:11px;color:#6b7280;font-weight:normal'>- {samples.Count} muestras</span></h3>");
-                    sb.AppendLine("<table><thead><tr><th>Fecha y hora</th><th>Estado</th><th>RTT (ms)</th><th>Salida</th></tr></thead><tbody>");
+                    int upCount = samples.Count(s => s.Success);
+                    int downCount = samples.Count(s => !s.Success);
+                    string hostAlias = string.IsNullOrWhiteSpace(probe.Alias) ? "" : $" ({System.Net.WebUtility.HtmlEncode(probe.Alias)})";
+
+                    sb.AppendLine($"<div class='host-block'>");
+                    sb.AppendLine($"<div class='host-header'><h3>{System.Net.WebUtility.HtmlEncode(probe.Hostname)}{hostAlias}</h3><div class='count'>{samples.Count} muestras &middot; <span style='color:#10b981'>{upCount} OK</span> &middot; <span style='color:#ef4444'>{downCount} fallas</span></div></div>");
+                    sb.AppendLine("<table class='host-table'><thead><tr><th>Fecha y hora</th><th>Estado</th><th>RTT (ms)</th><th>Salida</th></tr></thead><tbody>");
+
                     foreach (var s in samples)
                     {
-                        string st = s.Success ? "<span class='ok'>OK</span>" : "<span class='perdida'>Perdida</span>";
-                        sb.AppendLine($"<tr><td>{s.Timestamp:yyyy-MM-dd HH:mm:ss}</td><td>{st}</td><td>{(s.Success ? s.RttMs.ToString() : "")}</td><td>{System.Net.WebUtility.HtmlEncode(BuildConsoleLine(probe, s))}</td></tr>");
+                        string st = s.Success ? "<span class='badge up'>OK</span>" : "<span class='badge down'>Falla</span>";
+                        sb.AppendLine($"<tr><td>{s.Timestamp:yyyy-MM-dd HH:mm:ss}</td><td>{st}</td><td>{(s.Success ? s.RttMs.ToString() : "-")}</td><td>{System.Net.WebUtility.HtmlEncode(BuildConsoleLine(probe, s))}</td></tr>");
                     }
-                    sb.AppendLine("</tbody></table>");
+                    sb.AppendLine("</tbody></table></div>");
                 }
 
-                sb.AppendLine("</body></html>");
+                sb.AppendLine("</div></div>");
+                sb.AppendLine($"<div class='footer'>vmPing GLR &mdash; Reporte generado el {DateTime.Now:yyyy-MM-dd 'a las' HH:mm:ss}</div>");
+                sb.AppendLine("</div></body></html>");
                 File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
                 lblStatus.Text = $"Exportado a HTML: {Path.GetFileName(dlg.FileName)}";
             }

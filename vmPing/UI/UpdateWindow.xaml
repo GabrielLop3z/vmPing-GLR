@@ -191,13 +191,11 @@
                             Content="Recordar más tarde"
                             Click="RemindButton_Click"/>
                     <Button x:Name="UpdateButton"
-                            Style="{StaticResource ButtonStandardStyle}"
+                            Style="{StaticResource ButtonPrimaryStyle}"
                             Margin="10,0,0,0"
                             Width="Auto"
                             Height="32"
                             Padding="20,6"
-                            Background="#2563EB"
-                            Foreground="White"
                             IsDefault="True"
                             Content="Actualizar ahora"
                             Click="UpdateButton_Click"/>

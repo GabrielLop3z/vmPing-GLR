@@ -1,7 +1,7 @@
 <item>
-    <version>1.8.7</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.7/vmPing.zip</url>
+    <version>1.8.8</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.8/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Actualizador nuevo: interfaz profesional con tema de la aplicación, progreso de descarga, "Recordar más tarde" y "Omitir esta versión".
-- Corregido el error "la directiva bloqueó ese programa" (Win32Exception) al actualizar: ya no se ejecutan archivos externos, la actualización se aplica con herramientas nativas de Windows.</changelog>
+    <changelog>- Dashboard HTML: el reporte de monitoreo ahora se genera como un dashboard profesional con tarjetas de resumen (total hosts, en linea, caidos, intermitentes, perdida promedio, RTT promedio), tabla de resumen con indicadores visuales de perdida y badges de clasificacion, e historial por host con contadores OK/fallas.
+- Corregido: colores del boton "Actualizar ahora" en el actualizador ya no se vuelven invisibles al pasar el mouse.</changelog>
 </item>
