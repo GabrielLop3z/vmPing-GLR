@@ -1,7 +1,8 @@
 <item>
-    <version>1.8.8</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.8/vmPing.zip</url>
+    <version>1.8.9</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Dashboard HTML: el reporte de monitoreo ahora se genera como un dashboard profesional con tarjetas de resumen (total hosts, en linea, caidos, intermitentes, perdida promedio, RTT promedio), tabla de resumen con indicadores visuales de perdida y badges de clasificacion, e historial por host con contadores OK/fallas.
-- Corregido: colores del boton "Actualizar ahora" en el actualizador ya no se vuelven invisibles al pasar el mouse.</changelog>
+    <changelog>- Dashboard de Monitoreo completo: nueva ventana con 6 secciones - KPIs en vivo (Total, En linea, Caidos, Error, Disponibilidad%, RTT Promedio), grid de estado de hosts con sorting, grafica RTT en tiempo real con Polyline (seleccion de host, muestreo inteligente, linea de threshold), mapa de disponibilidad (heatmap verde/rojo por bloques de 5 min), timeline de eventos con badges de color, y tarjetas de salud de red (CPU/RAM/Disk) usando WMI.
+- Actualizacion en vivo cada 2 segundos con boton Pausar/Reanudar.
+- Boton de acceso desde Herramientas en la barra principal.</changelog>
 </item>
