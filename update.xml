@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.3</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.3/vmPing.zip</url>
+    <version>1.8.9.4</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.4/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Fix: crash en exportacion a Excel (Row number must be between 1 and 1048576). Se agrego try-catch alrededor de ws.Columns().AdjustToContents() y ws2.Columns().AdjustToContents().</changelog>
+    <changelog>- Fix: clasificacion de hosts corregida. Solo se marca "Intermitente" cuando la perdida de paquetes es >= 10%. Con menos de 10% de perdida y estado actual Up, se clasifica "Bien". Fix aplicado tanto en ExportWindow como en el grid del Dashboard.</changelog>
 </item>
