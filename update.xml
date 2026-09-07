@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.2</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.2/vmPing.zip</url>
+    <version>1.8.9.3</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.3/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Fix: el timeline de eventos en el Dashboard ahora muestra correctamente cada evento con su hora, host y badge de color (antes solo aparecian nombres de clase).</changelog>
+    <changelog>- Fix: crash en exportacion a Excel (Row number must be between 1 and 1048576). Se agrego try-catch alrededor de ws.Columns().AdjustToContents() y ws2.Columns().AdjustToContents().</changelog>
 </item>
