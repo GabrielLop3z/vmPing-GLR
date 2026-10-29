@@ -933,36 +933,6 @@ namespace vmPing.UI
             }
         }
 
-        private void SSH_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProbeDetailsModal.DataContext is Probe probe)
-            {
-                if (TryLaunch("ssh.exe", probe.Hostname)) return;
-                if (TryLaunch("putty.exe", $"-ssh {probe.Hostname}")) return;
-                Util.ShowError("No se encontró OpenSSH (ssh.exe) ni PuTTY (putty.exe). Instala uno de ellos e inténtalo de nuevo.");
-            }
-        }
-
-        private void PowerShell_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProbeDetailsModal.DataContext is Probe probe)
-            {
-                TryLaunch("powershell.exe", $"-NoExit -Command \"Enter-PSSession -ComputerName '{probe.Hostname}'\"");
-            }
-        }
-
-        private void Admin_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProbeDetailsModal.DataContext is Probe probe)
-            {
-                try
-                {
-                    System.Diagnostics.Process.Start("compmgmt.msc", $"/computer:{probe.Hostname}");
-                }
-                catch { }
-            }
-        }
-
         private void PingIsolatedModal_Click(object sender, RoutedEventArgs e)
         {
             if (ProbeDetailsModal.DataContext is Probe probe)
@@ -1077,6 +1047,13 @@ namespace vmPing.UI
                     return;
                 }
 
+                if (!Util.ConfirmWmiCollection("la consulta de inventario de este equipo"))
+                {
+                    lblPortStatus.Text = "Consulta cancelada.";
+                    lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
+                    return;
+                }
+
                 lblPortStatus.Text = "Consultando inventario...";
                 lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
 
@@ -1093,25 +1070,6 @@ namespace vmPing.UI
                 }
 
                 lblPortStatus.Text = string.Empty;
-            }
-        }
-
-        private static bool TryLaunch(string fileName, string arguments)
-        {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = fileName,
-                    Arguments = arguments,
-                    UseShellExecute = false
-                };
-                System.Diagnostics.Process.Start(psi);
-                return true;
-            }
-            catch
-            {
-                return false;
             }
         }
 
@@ -1202,51 +1160,6 @@ namespace vmPing.UI
                     System.Diagnostics.Process.Start("cmd.exe", $"/c start telnet {probe.Hostname} {port}");
                 }
                 catch { /* Ignore errors if telnet is not installed */ }
-            }
-        }
-
-        private void RDP_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProbeDetailsModal.DataContext is Probe probe)
-            {
-                try
-                {
-                   System.Diagnostics.Process.Start("mstsc", $"/v:{probe.Hostname}");
-                }
-                catch { }
-            }
-        }
-
-        private void VNC_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProbeDetailsModal.DataContext is Probe probe)
-            {
-                // Try launching TightVNC with specific arguments
-                try
-                {
-                    // Option A: Try standard system PATH
-                   System.Diagnostics.Process.Start("tvnviewer.exe", $"-host={probe.Hostname}");
-                }
-                catch 
-                {
-                    try
-                    {
-                        // Option B: Try common install path (64-bit)
-                        System.Diagnostics.Process.Start(@"C:\Program Files\TightVNC\tvnviewer.exe", $"-host={probe.Hostname}");
-                    }
-                    catch
-                    {
-                         try
-                        {
-                            // Option C: Try common install path (32-bit)
-                            System.Diagnostics.Process.Start(@"C:\Program Files (x86)\TightVNC\tvnviewer.exe", $"-host={probe.Hostname}");
-                        }
-                        catch
-                        {
-                            MessageBox.Show("No se encontró 'tvnviewer.exe'. Asegúrate de que TightVNC esté instalado y en el PATH.", "Error VNC", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
             }
         }
 

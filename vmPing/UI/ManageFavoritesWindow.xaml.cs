@@ -147,8 +147,8 @@ namespace vmPing.UI
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "vmPing Favorites (*.xml)|*.xml|All Files (*.*)|*.*",
-                Title = "Import Favorites"
+                Filter = "Favoritos vmPing (*.xml)|*.xml|Todos los archivos (*.*)|*.*",
+                Title = "Importar favoritos"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -160,16 +160,16 @@ namespace vmPing.UI
                     if (count >= 0)
                     {
                         RefreshFavoriteList();
-                        Util.ShowInfo($"Successfully imported {count} favorite set(s).");
+                        Util.ShowInfo($"Se importaron {count} lista(s) de favoritos. Las listas existentes con el mismo nombre fueron reemplazadas.");
                     }
                     else
                     {
-                        Util.ShowError("Failed to import favorites. The file may be invalid.");
+                        Util.ShowError("No se pudieron importar los favoritos. El archivo puede no ser válido.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Util.ShowError($"Error importing favorites: {ex.Message}");
+                    Util.ShowError($"Error al importar favoritos: {ex.Message}");
                 }
             }
         }
@@ -178,24 +178,50 @@ namespace vmPing.UI
         {
             if (Favorites.SelectedItems.Count == 0) return;
 
+            ExportTitles(
+                Favorites.SelectedItems.Cast<string>(),
+                "vmPing_Favoritos_Seleccion.xml");
+        }
+
+        private void ExportAll_Click(object sender, RoutedEventArgs e)
+        {
+            var titles = Favorite.GetTitles();
+            if (titles.Count == 0)
+            {
+                Util.ShowInfo("No hay listas de favoritos para exportar.");
+                return;
+            }
+
+            ExportTitles(titles, "vmPing_Favoritos_Todos.xml");
+        }
+
+        private void ExportTitles(IEnumerable<string> titles, string defaultFileName)
+        {
+            var titleList = titles?.Where(t => !string.IsNullOrWhiteSpace(t)).ToList() ?? new List<string>();
+            if (titleList.Count == 0)
+            {
+                Util.ShowInfo("No hay listas de favoritos para exportar.");
+                return;
+            }
+
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "vmPing Favorites (*.xml)|*.xml",
-                Title = "Export Favorites",
-                FileName = "vmPing_Favorites.xml"
+                Filter = "Favoritos vmPing (*.xml)|*.xml",
+                Title = "Exportar favoritos",
+                FileName = defaultFileName
             };
 
             if (saveFileDialog.ShowDialog() == true)
             {
                 try
                 {
-                    string content = Favorite.Export(Favorites.SelectedItems);
+                    string content = Favorite.Export(titleList);
                     System.IO.File.WriteAllText(saveFileDialog.FileName, content);
-                    Util.ShowInfo("Favorites exported successfully.");
+                    Util.ShowInfo($"Se exportaron {titleList.Count} lista(s) de favoritos.");
                 }
                 catch (Exception ex)
                 {
-                    Util.ShowError($"Error exporting favorites: {ex.Message}");
+                    Util.ShowError($"Error al exportar favoritos: {ex.Message}");
                 }
             }
         }

@@ -5,8 +5,7 @@
         Height="700" Width="1240"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Theme.Window.Background}"
-        Foreground="{DynamicResource Theme.Window.Foreground}"
-        Closing="Window_Closing">
+        Foreground="{DynamicResource Theme.Window.Foreground}">
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
@@ -19,7 +18,7 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="Salud en Vivo" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
-            <TextBlock x:Name="lblSubtitle" Text="Monitoreo de CPU, memoria y disco mediante WMI..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            <TextBlock x:Name="lblSubtitle" Text="Recolección manual de CPU, memoria y disco mediante WMI. No se conecta automáticamente." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
         </StackPanel>
 
         <!-- Toolbar -->
@@ -32,29 +31,15 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button x:Name="btnToggle" Content="Pausar" Padding="14,6" Margin="0,0,8,0"
-                            Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="Bold"
-                            BorderThickness="0" Cursor="Hand" Click="BtnToggle_Click"/>
                     <Button x:Name="btnNow" Content="Recolectar ahora" Padding="14,6" Margin="0,0,8,0"
-                            Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
-                            BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnNow_Click"/>
+                            Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand" Click="BtnNow_Click"/>
                     <Button x:Name="btnExportExcel" Content="Exportar Excel" Padding="14,6" Margin="0,0,8,0"
                             Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
                             BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnExportExcel_Click"/>
                     <Button x:Name="btnExportHtml" Content="Exportar HTML" Padding="14,6" Margin="0,0,8,0"
                             Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
                             BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnExportHtml_Click"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                    <TextBlock Text="Intervalo (segundos):" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <TextBox x:Name="txtInterval" Width="70" Padding="4,2"
-                             Background="{DynamicResource Theme.Badge.Background}" Foreground="{DynamicResource Theme.Text.Primary}"
-                             BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1"
-                             PreviewTextInput="NumericTextbox_PreviewTextInput" MaxLength="3"/>
-                    <Button x:Name="btnApplyInterval" Content="Aplicar" Padding="10,4" Margin="6,0,0,0"
-                            Background="{DynamicResource Theme.Badge.Background}" BorderBrush="{DynamicResource Theme.Card.Border}"
-                            BorderThickness="1" Foreground="{DynamicResource Theme.Text.Primary}" Cursor="Hand" Click="BtnApplyInterval_Click"/>
                 </StackPanel>
 
                 <TextBlock x:Name="lblCount" Grid.Column="2" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}" VerticalAlignment="Center"/>
@@ -123,7 +108,7 @@
         <!-- Status -->
         <StatusBar Grid.Row="3" Background="Transparent" Margin="0,8,0,0">
             <StatusBarItem>
-                <TextBlock x:Name="lblStatus" Text="La recolección se ejecuta periódicamente según el intervalo." FontSize="11"
+                <TextBlock x:Name="lblStatus" Text="Presione Recolectar ahora para consultar WMI. No se realiza ninguna conexión automática." FontSize="11"
                            Foreground="{DynamicResource Theme.Text.Secondary}"/>
             </StatusBarItem>
         </StatusBar>

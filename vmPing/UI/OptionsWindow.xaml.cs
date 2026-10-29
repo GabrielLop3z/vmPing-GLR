@@ -318,19 +318,11 @@ namespace vmPing.UI
         private void PopulateHealthOptions()
         {
             HealthEnabledCheck.IsChecked = ApplicationOptions.HealthEnabled;
-            HealthIntervalBox.Text = ApplicationOptions.HealthIntervalSeconds.ToString();
             HealthHistoryBox.Text = ApplicationOptions.HealthHistoryPoints.ToString();
         }
 
         private bool SaveHealthOptions()
         {
-            int interval = 5;
-            if (!int.TryParse(HealthIntervalBox.Text, out interval) || interval < 2 || interval > 120)
-            {
-                ShowError("Por favor ingrese un intervalo válido (2-120 segundos).", HealthTab, HealthIntervalBox);
-                return false;
-            }
-
             int history = 60;
             if (!int.TryParse(HealthHistoryBox.Text, out history) || history < 10 || history > 240)
             {
@@ -339,7 +331,6 @@ namespace vmPing.UI
             }
 
             ApplicationOptions.HealthEnabled = HealthEnabledCheck.IsChecked == true;
-            ApplicationOptions.HealthIntervalSeconds = interval;
             ApplicationOptions.HealthHistoryPoints = history;
             return true;
         }

@@ -515,22 +515,36 @@ namespace vmPing.UI
             {
                 if (healthPanel.Children.Count == 0)
                 {
-                    var loading = new TextBlock
+                    var manual = new TextBlock
                     {
-                        Text = "Recopilando datos de salud...",
+                        Text = "Presione Recolectar salud para consultar WMI. No hay recolección automática.",
                         FontSize = 12,
                         Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
                         Margin = new Thickness(8, 4, 0, 0),
                         VerticalAlignment = VerticalAlignment.Center
                     };
-                    healthPanel.Children.Add(loading);
+                    healthPanel.Children.Add(manual);
                 }
-                CollectHealthAsync();
             }
         }
 
-        private async void CollectHealthAsync()
+        private void BtnCollectHealth_Click(object sender, RoutedEventArgs e)
         {
+            _ = CollectHealthAsync();
+        }
+
+        private async System.Threading.Tasks.Task CollectHealthAsync()
+        {
+            if (!ApplicationOptions.HealthEnabled)
+            {
+                return;
+            }
+
+            if (!Util.ConfirmWmiCollection("la recolección de salud del dashboard"))
+            {
+                return;
+            }
+
             _healthCts?.Cancel();
             _healthCts = new CancellationTokenSource();
 
@@ -542,6 +556,7 @@ namespace vmPing.UI
 
             if (hosts.Count == 0) return;
 
+            btnCollectHealth.IsEnabled = false;
             try
             {
                 _lastHealthSnapshots = await HealthService.CollectAsync(hosts, null, _healthCts.Token);
@@ -553,6 +568,10 @@ namespace vmPing.UI
                 });
             }
             catch { }
+            finally
+            {
+                btnCollectHealth.IsEnabled = true;
+            }
         }
 
         private Border BuildHealthCard(HealthSnapshot snap)
@@ -589,7 +608,7 @@ namespace vmPing.UI
             {
                 var noData = new TextBlock
                 {
-                    Text = "Sin datos",
+                    Text = snap.AccessDenied ? "Sin permisos WMI" : "Sin datos",
                     FontSize = 10,
                     Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8))
                 };

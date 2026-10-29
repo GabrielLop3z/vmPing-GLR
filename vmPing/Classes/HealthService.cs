@@ -32,6 +32,7 @@ namespace vmPing.Classes
         public double DiskPercent { get; set; } = -1;
         public List<DiskHealth> Disks { get; set; } = new List<DiskHealth>();
         public bool HasData => CpuPercent >= 0 || RamPercent >= 0 || DiskPercent >= 0;
+        public bool AccessDenied { get; set; }
         public string ErrorMessage { get; set; }
     }
 
@@ -198,12 +199,31 @@ namespace vmPing.Classes
                     snapshot.ErrorMessage = "Sin datos disponibles.";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                snapshot.ErrorMessage = "No se pudo obtener información. Verifique que el equipo esté encendido y accesible, y que las credenciales WMI sean correctas.";
+                snapshot.AccessDenied = IsAccessDenied(ex);
+                snapshot.ErrorMessage = snapshot.AccessDenied
+                    ? "Sin permisos WMI. La cuenta no puede iniciar sesión en el equipo."
+                    : "No se pudo obtener información. Verifique que el equipo esté encendido y accesible, y que las credenciales WMI sean correctas.";
             }
 
             return snapshot;
+        }
+
+        private static bool IsAccessDenied(Exception ex)
+        {
+            if (ex is UnauthorizedAccessException)
+            {
+                return true;
+            }
+
+            if (ex is System.Runtime.InteropServices.COMException com)
+            {
+                var code = unchecked((uint)com.HResult);
+                return code == 0x80070005u || code == 0x8007052Eu;
+            }
+
+            return false;
         }
 
         private static string Clean(object value)

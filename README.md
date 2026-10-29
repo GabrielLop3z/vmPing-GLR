@@ -21,10 +21,10 @@ Diseñado para administradores de TI, soporte técnico y entusiastas de redes qu
 - **Pings TCP:** ¿El servidor responde al ping pero el servicio web no? Monitorea puertos específicos (ej. `Servidor:80`).
 
 ### 🛠️ Caja de Herramientas (Command Center)
-Olvídate de abrir `mstsc` o consolas por separado. Desde la misma interfaz:
-- **Acceso Remoto Rápido:** Lanza sesiones de **RDP (Escritorio Remoto)** y **VNC** con un clic derecho sobre el host.
+Olvídate de abrir consolas por separado. Desde la misma interfaz:
 - **Diagnóstico de Red:** Ejecuta **Traceroute** y **Flooding** para pruebas de estrés.
-- **Utilidades Integradas:** Acceso directo a Telnet y recursos compartidos.
+- **Utilidades Integradas:** Acceso directo a Telnet, Web, recursos compartidos, inventario y salud manual.
+- **Consultas Manuales:** El inventario y la salud WMI/SNMP solo se ejecutan cuando el usuario lo solicita.
 
 ### 🔔 Alertas Inteligentes
 - **Notificaciones Popup:** Entérate al instante si algo cambia de estado.

@@ -39,8 +39,6 @@ Se ha implementado una ventana modal interna (simulada con un Grid con ZIndex al
 *   **Integración de Herramientas:**
     *   **TestPort_Click:** Utiliza `TcpClient.BeginConnect` asíncrono para probar puertos sin congelar la UI.
     *   **Telnet_Click:** Ejecuta `cmd.exe /c start telnet {host} {port}`.
-    *   **RDP_Click:** Ejecuta `mstsc.exe /v:{host}`.
-    *   **VNC_Click:** Intenta localizar `tvnviewer.exe` en 3 rutas comunes (Program Files x64/x86 y PATH).
     *   **Explorer_Click:** Abre `explorer.exe` con rutas UNC (`\\host\c$`).
 
 ### Ventana de Inundación (`FloodHostWindow.xaml`)

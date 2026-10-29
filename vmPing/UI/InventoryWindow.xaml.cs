@@ -23,7 +23,9 @@ namespace vmPing.UI
             Topmost = ApplicationOptions.IsAlwaysOnTopEnabled;
 
             _hosts = hosts ?? new List<string>();
-            lblSubtitle.Text = $"{_hosts.Count} equipo(s) seleccionados. Fuentes: WMI + SNMP.";
+            lblSubtitle.Text = $"{_hosts.Count} equipo(s) seleccionados. Fuentes: WMI + SNMP. Recolección manual.";
+            btnExportExcel.IsEnabled = false;
+            btnExportHtml.IsEnabled = false;
 
             if (_hosts.Count == 0)
             {
@@ -32,11 +34,17 @@ namespace vmPing.UI
                 return;
             }
 
-            _ = CollectAsync();
+            lblStatus.Text = "Presione Recolectar ahora para consultar WMI/SNMP. No se realiza ninguna conexión automática.";
         }
 
         private async System.Threading.Tasks.Task CollectAsync()
         {
+            if (!Util.ConfirmWmiCollection("la recolección de inventario"))
+            {
+                lblStatus.Text = "Recolección cancelada. No se realizó ninguna conexión WMI.";
+                return;
+            }
+
             btnRefresh.IsEnabled = false;
             btnCancel.Visibility = Visibility.Visible;
             btnExportExcel.IsEnabled = false;

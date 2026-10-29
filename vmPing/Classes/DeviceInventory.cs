@@ -11,10 +11,11 @@ namespace vmPing.Classes
         public string Alias { get; set; }
         public string Source { get; set; }          // "WMI", "SNMP", "WMI + SNMP" o "Sin datos"
         public bool IsReachable { get; set; }
+        public bool AccessDenied { get; set; }
         public DateTime? CollectedUtc { get; set; }
         public string ErrorMessage { get; set; }
 
-        public string IsReachableText => IsReachable ? "Disponible" : "Sin datos";
+        public string IsReachableText => IsReachable ? "Disponible" : AccessDenied ? "Sin permisos" : "Sin datos";
 
         public string CollectedLocalText => CollectedUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? string.Empty;
 

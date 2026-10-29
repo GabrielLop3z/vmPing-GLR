@@ -257,6 +257,11 @@ namespace vmPing.Classes
             return string.IsNullOrWhiteSpace(title);
         }
 
+        public static string ExportAll()
+        {
+            return Export(GetTitles());
+        }
+
         public static string Export(System.Collections.IEnumerable titles)
         {
             var xd = new XDocument(new XElement("vmping_favorites"));
@@ -284,7 +289,9 @@ namespace vmPing.Classes
             {
                 var xd = XDocument.Parse(xmlContent);
                 int count = 0;
-                var favoriteNodes = xd.Descendants("favorite").ToList();
+                var favoriteNodes = xd.Descendants("favorite")
+                    .Where(f => f.Attribute("title") != null)
+                    .ToList();
 
                 foreach (var favNode in favoriteNodes)
                 {

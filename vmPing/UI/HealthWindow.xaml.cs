@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using ClosedXML.Excel;
 using Microsoft.Win32;
 using vmPing.Classes;
@@ -73,6 +71,15 @@ namespace vmPing.UI
             Notify("DiskPoints");
         }
 
+        public void AddError(HealthSnapshot snapshot)
+        {
+            LastUpdateText = snapshot.TimestampUtc.ToLocalTime().ToString("HH:mm:ss");
+            DisksText = snapshot.AccessDenied ? "Sin permisos WMI" : "Sin datos";
+
+            Notify("DisksText");
+            Notify("LastUpdateText");
+        }
+
         private string FormatPercent(double value)
         {
             return value < 0 ? "--" : $"{value:0}%";
@@ -115,9 +122,8 @@ namespace vmPing.UI
         private readonly string[] _hosts;
         private readonly int _maxPoints;
         private List<HostHealth> _items = new List<HostHealth>();
-        private readonly DispatcherTimer _timer;
+        private readonly HashSet<string> _blockedHosts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private bool _collecting;
-        private bool _paused;
 
         public HealthWindow(List<string> hosts)
         {
@@ -126,12 +132,10 @@ namespace vmPing.UI
 
             _hosts = hosts?.Where(h => !string.IsNullOrWhiteSpace(h)).Distinct().ToArray() ?? new string[0];
             _maxPoints = Math.Max(10, Math.Min(240, ApplicationOptions.HealthHistoryPoints));
-            txtInterval.Text = ApplicationOptions.HealthIntervalSeconds.ToString();
 
             if (_hosts.Length == 0)
             {
                 lblStatus.Text = "No hay equipos activos para monitorear.";
-                btnToggle.IsEnabled = false;
                 btnNow.IsEnabled = false;
                 return;
             }
@@ -140,89 +144,74 @@ namespace vmPing.UI
             _items = _hosts.Select(h => new HostHealth(h, aliases.ContainsKey(h.ToLower()) ? aliases[h.ToLower()] : h, _maxPoints)).ToList();
             dgHealth.ItemsSource = _items;
             lblCount.Text = $"{_hosts.Length} equipo(s)";
-
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(ApplicationOptions.HealthIntervalSeconds);
-            _timer.Tick += async (s, e) => await CollectTickAsync();
-            _timer.Start();
+            lblStatus.Text = "Presione Recolectar ahora para consultar WMI. No se realiza ninguna conexión automática.";
         }
 
-        private async System.Threading.Tasks.Task CollectTickAsync()
+        private async System.Threading.Tasks.Task CollectNowAsync()
         {
-            if (_collecting || _paused)
+            if (_collecting || _hosts.Length == 0)
             {
                 return;
             }
+
+            if (!Util.ConfirmWmiCollection("la recolección de salud"))
+            {
+                lblStatus.Text = "Recolección cancelada. No se realizó ninguna conexión WMI.";
+                return;
+            }
+
+            var targets = _hosts.Where(h => !_blockedHosts.Contains(h)).ToArray();
+            if (targets.Length == 0)
+            {
+                lblStatus.Text = "Todos los equipos quedaron bloqueados por falta de permisos WMI. Reconecte la ventana después de configurar credenciales.";
+                return;
+            }
+
             _collecting = true;
+            btnNow.IsEnabled = false;
             try
             {
-                var snapshots = await HealthService.CollectAsync(_hosts, null, CancellationToken.None).ConfigureAwait(false);
+                lblStatus.Text = $"Recolectando {targets.Length} equipo(s)...";
+                var snapshots = await HealthService.CollectAsync(targets, null, CancellationToken.None).ConfigureAwait(false);
                 var byHost = snapshots.ToDictionary(s => s.Host, StringComparer.OrdinalIgnoreCase);
                 Dispatcher.Invoke(() =>
                 {
+                    int denied = 0;
                     foreach (var item in _items)
                     {
                         if (byHost.TryGetValue(item.Host, out var snap))
                         {
-                            item.AddSample(snap);
+                            if (snap.AccessDenied)
+                            {
+                                denied++;
+                                _blockedHosts.Add(item.Host);
+                                item.AddError(snap);
+                            }
+                            else
+                            {
+                                item.AddSample(snap);
+                            }
                         }
                     }
-                    lblStatus.Text = $"Última recolección: {DateTime.Now:HH:mm:ss}. Intervalo: {_timer.Interval.TotalSeconds:0} s.";
+                    lblStatus.Text = denied == 0
+                        ? $"Última recolección manual: {DateTime.Now:HH:mm:ss}."
+                        : $"Última recolección manual: {DateTime.Now:HH:mm:ss}. Sin permisos WMI: {denied} equipo(s); no se reintentarán en esta ventana.";
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                // Keep monitoring loop alive.
+                Dispatcher.Invoke(() => lblStatus.Text = $"Error en la recolección manual: {ex.Message}");
             }
             finally
             {
                 _collecting = false;
-            }
-        }
-
-        private void BtnToggle_Click(object sender, RoutedEventArgs e)
-        {
-            _paused = !_paused;
-            btnToggle.Content = _paused ? "Reanudar" : "Pausar";
-            lblStatus.Text = _paused ? "Monitoreo en pausa." : "Monitoreo reanudado.";
-            if (!_paused)
-            {
-                _ = CollectTickAsync();
+                Dispatcher.Invoke(() => btnNow.IsEnabled = true);
             }
         }
 
         private void BtnNow_Click(object sender, RoutedEventArgs e)
         {
-            _ = CollectTickAsync();
-        }
-
-        private void BtnApplyInterval_Click(object sender, RoutedEventArgs e)
-        {
-            if (!int.TryParse(txtInterval.Text, out int seconds) || seconds < 1 || seconds > 120)
-            {
-                Util.ShowInfo("Ingrese un intervalo válido (1-120 segundos).");
-                return;
-            }
-            ApplicationOptions.HealthIntervalSeconds = seconds;
-            _timer.Interval = TimeSpan.FromSeconds(seconds);
-            lblStatus.Text = $"Intervalo actualizado a {seconds} s.";
-        }
-
-        private void NumericTextbox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            foreach (char c in e.Text)
-            {
-                if (!char.IsDigit(c))
-                {
-                    e.Handled = true;
-                    return;
-                }
-            }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            _timer?.Stop();
+            _ = CollectNowAsync();
         }
 
         private void BtnExportExcel_Click(object sender, RoutedEventArgs e)

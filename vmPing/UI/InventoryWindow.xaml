@@ -18,7 +18,7 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="Inventario de Equipos" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
-            <TextBlock x:Name="lblSubtitle" Text="Recolectando información de hardware y sistema (WMI / SNMP)..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            <TextBlock x:Name="lblSubtitle" Text="Recolección manual de hardware y sistema (WMI / SNMP). No se conecta automáticamente." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
         </StackPanel>
 
         <!-- Progress -->
@@ -38,7 +38,7 @@
                            Text="0 / 0" FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
-                    <Button x:Name="btnRefresh" Content="Recolectar de nuevo" Padding="14,6" Margin="0,0,8,0"
+                    <Button x:Name="btnRefresh" Content="Recolectar ahora" Padding="14,6" Margin="0,0,8,0"
                             Background="{DynamicResource Theme.Accent}" Foreground="White" FontWeight="Bold"
                             BorderThickness="0" Cursor="Hand" Click="BtnRefresh_Click"/>
                     <Button x:Name="btnCancel" Content="Cancelar" Padding="14,6" Margin="0,0,8,0" Visibility="Collapsed"
@@ -95,7 +95,7 @@
         <!-- Status -->
         <StatusBar Grid.Row="3" Background="Transparent" Margin="0,8,0,0">
             <StatusBarItem>
-                <TextBlock x:Name="lblStatus" Text="Doble clic en una fila para ver el detalle del equipo." FontSize="11"
+                <TextBlock x:Name="lblStatus" Text="Presione Recolectar ahora para consultar WMI/SNMP. No se realiza ninguna conexión automática." FontSize="11"
                            Foreground="{DynamicResource Theme.Text.Secondary}"/>
             </StatusBarItem>
         </StatusBar>

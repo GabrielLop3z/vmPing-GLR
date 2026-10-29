@@ -94,15 +94,20 @@
         <Grid Grid.Row="2" Margin="0,9,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button Click="Import_Click"
-                        Width="85"
+                        Width="80"
                         Style="{StaticResource ButtonStandardStyle}"
-                        Content="_Import"/>
+                        Content="_Importar"/>
                 <Button Click="Export_Click"
-                        Margin="15,0,0,0"
-                        Width="85"
+                        Margin="10,0,0,0"
+                        Width="105"
                         Style="{StaticResource ButtonStandardStyle}"
                         IsEnabled="{Binding ElementName=Favorites, Path=SelectedItems.Count}"
-                        Content="_Export"/>
+                        Content="Exportar _selección"/>
+                <Button Click="ExportAll_Click"
+                        Margin="10,0,0,0"
+                        Width="90"
+                        Style="{StaticResource ButtonStandardStyle}"
+                        Content="Exportar _todo"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

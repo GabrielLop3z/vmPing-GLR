@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.4</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.4/vmPing.zip</url>
+    <version>1.8.9.5</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.5/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Fix: clasificacion de hosts corregida. Solo se marca "Intermitente" cuando la perdida de paquetes es >= 10%. Con menos de 10% de perdida y estado actual Up, se clasifica "Bien". Fix aplicado tanto en ExportWindow como en el grid del Dashboard.</changelog>
+    <changelog>- Favoritos: nuevo botón "Exportar todo" para exportar todas las listas e importación de todas las listas con reemplazo por nombre. - Seguridad: se eliminaron los accesos remotos RDP, VNC, SSH, PowerShell y Admin. - WMI: la salud y el inventario ya no se recolectan automáticamente; solo se ejecutan al pulsar el botón. Se agregó confirmación cuando se usa la cuenta de Windows y manejo de "Sin permisos WMI" sin reintentos.</changelog>
 </item>

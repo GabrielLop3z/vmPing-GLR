@@ -1129,32 +1129,7 @@
                                     <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>
                             </Button>
-                            <Button Content="RDP" Padding="10,5" Background="{DynamicResource Theme.Accent}" Foreground="White" BorderThickness="0" Click="RDP_Click" Margin="5,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="VNC" Padding="10,5" Background="{DynamicResource Theme.Tool.Vnc.Background}" Foreground="White" BorderThickness="0" Click="VNC_Click" Margin="5,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
-                                </Button.Resources>
-                            </Button>
                             <Button Content="Web" Padding="10,5" Background="{DynamicResource Theme.Tool.Web.Background}" Foreground="White" BorderThickness="0" Click="Web_Click" Margin="5,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="SSH" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="SSH_Click" Margin="5,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="PowerShell" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="PowerShell_Click" Margin="5,0,1,0">
-                                <Button.Resources>
-                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="Admin" Padding="10,5" Background="{DynamicResource Theme.Tool.Secondary.Background}" Foreground="White" BorderThickness="0" Click="Admin_Click" Margin="5,0,1,0">
                                 <Button.Resources>
                                     <Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style>
                                 </Button.Resources>

@@ -52,18 +52,10 @@ Al hacer clic en cualquier tarjeta de host se abre una **Ventana Modal de Detall
     *   **Función:** Inicia una traza de ruta visual hacia ese host.
     *   **Uso:** Muestra cada salto de red hasta llegar al destino.
 
-### Herramientas de Acceso Remoto:
+### Herramientas de Conexión:
 *   **Telnet:**
     *   **Función:** Abre una ventana de comandos (`cmd`) e intenta iniciar una sesión Telnet al puerto especificado.
     *   **Requisito:** El cliente Telnet debe estar habilitado en Windows (`Funciones de Windows -> Cliente Telnet`).
-
-*   **RDP (Escritorio Remoto):**
-    *   **Función:** Lanza la herramienta nativa de conexión a Escritorio Remoto (`mstsc.exe`).
-    *   **Uso:** Se conecta automáticamente al host/IP seleccionado.
-
-*   **VNC (Virtual Network Computing):**
-    *   **Función:** Intenta lanzar `TightVNC Viewer`.
-    *   **Lógica:** Busca `tvnviewer.exe` en las rutas de instalación estándar (`Program Files\TightVNC` o `Program Files (x86)\TightVNC`) o en el PATH del sistema.
 
 *   **Web:**
     *   **Función:** Abre el navegador predeterminado del sistema.
@@ -120,4 +112,4 @@ Personalice la apariencia en **Opciones -> Interface**. Temas nuevos incluidos:
 ## 9. Solución de Problemas
 *   **Firewall:** Si todos los pings fallan, verifique que el Firewall de Windows no esté bloqueando vmPing.exe.
 *   **Ejecución:** No requiere permisos de administrador para pings básicos, pero sí para algunas funciones avanzadas de red (como Flood Host).
-*   **VNC falla:** Si VNC no abre, asegúrese de tener TightVNC instalado en la ruta por defecto o que el ejecutable esté en las variables de entorno (PATH).
+*   **WMI sin permisos:** Si el inventario o la salud muestran "Sin permisos WMI", configure credenciales en Preferencias > Inventario. vmPing no reintenta automáticamente esos equipos.

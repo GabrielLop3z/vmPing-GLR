@@ -98,6 +98,26 @@ namespace vmPing.Classes
             MessageBox.Show(message, "vmPing", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        public static bool ConfirmWmiCollection(string action)
+        {
+            if (!ApplicationOptions.InventoryWmiEnabled || !string.IsNullOrWhiteSpace(ApplicationOptions.InventoryWmiUsername))
+            {
+                return true;
+            }
+
+            var account = $"{Environment.UserDomainName}\\{Environment.UserName}";
+            var result = MessageBox.Show(
+                $"Se intentará conectar por WMI usando tu cuenta de Windows ({account}).{Environment.NewLine}{Environment.NewLine}" +
+                "Si esa cuenta no tiene permisos en los equipos remotos, se generarán eventos de inicio de sesión fallido (4625)." + Environment.NewLine + Environment.NewLine +
+                $"¿Deseas continuar con {action}?",
+                "Confirmar conexión WMI",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            return result == MessageBoxResult.Yes;
+        }
+
         public static bool IsValidHtmlColor(string htmlColor)
         {
             return Regex.IsMatch(htmlColor, "^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$");

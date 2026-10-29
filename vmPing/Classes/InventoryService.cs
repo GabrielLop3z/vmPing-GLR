@@ -132,7 +132,9 @@ namespace vmPing.Classes
 
             if (!inventory.IsReachable)
             {
-                inventory.ErrorMessage = "No se pudo obtener información. Verifique que el equipo esté encendido y accesible, y que las credenciales o community SNMP sean correctas.";
+                inventory.ErrorMessage = inventory.AccessDenied
+                    ? "Sin permisos WMI. La cuenta no puede iniciar sesión en el equipo."
+                    : "No se pudo obtener información. Verifique que el equipo esté encendido y accesible, y que las credenciales o community SNMP sean correctas.";
             }
 
             return inventory;
@@ -277,10 +279,27 @@ namespace vmPing.Classes
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                inventory.AccessDenied = IsAccessDenied(ex);
                 return false;
             }
+        }
+
+        private static bool IsAccessDenied(Exception ex)
+        {
+            if (ex is UnauthorizedAccessException)
+            {
+                return true;
+            }
+
+            if (ex is System.Runtime.InteropServices.COMException com)
+            {
+                var code = unchecked((uint)com.HResult);
+                return code == 0x80070005u || code == 0x8007052Eu;
+            }
+
+            return false;
         }
 
         #endregion
