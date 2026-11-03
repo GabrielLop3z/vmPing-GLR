@@ -1003,28 +1003,6 @@ namespace vmPing.UI
             new InventoryWindow(hosts) { Owner = this }.Show();
         }
 
-        private void Health_Click(object sender, RoutedEventArgs e)
-        {
-            if (!ApplicationOptions.HealthEnabled)
-            {
-                Util.ShowInfo("El monitoreo de salud está deshabilitado. Active la opción en Preferencias > Salud.");
-                return;
-            }
-
-            var hosts = _ProbeCollection
-                .Where(p => !string.IsNullOrEmpty(p.Hostname))
-                .Select(p => p.Hostname)
-                .ToList();
-
-            if (hosts.Count == 0)
-            {
-                Util.ShowInfo("No hay equipos monitoreados. Agregue sondas primero para poder monitorear su salud.");
-                return;
-            }
-
-            new HealthWindow(hosts) { Owner = this }.Show();
-        }
-
         private void Ad_Click(object sender, RoutedEventArgs e)
         {
             if (!ApplicationOptions.AdEnabled)
@@ -1047,14 +1025,7 @@ namespace vmPing.UI
                     return;
                 }
 
-                if (!Util.ConfirmWmiCollection("la consulta de inventario de este equipo"))
-                {
-                    lblPortStatus.Text = "Consulta cancelada.";
-                    lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
-                    return;
-                }
-
-                lblPortStatus.Text = "Consultando inventario...";
+                lblPortStatus.Text = "Consultando inventario SNMP...";
                 lblPortStatus.Foreground = ThemeBrush("Theme.Text.Muted");
 
                 var devices = await InventoryService.CollectAsync(

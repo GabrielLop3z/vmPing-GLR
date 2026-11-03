@@ -23,7 +23,7 @@ namespace vmPing.UI
             Topmost = ApplicationOptions.IsAlwaysOnTopEnabled;
 
             _hosts = hosts ?? new List<string>();
-            lblSubtitle.Text = $"{_hosts.Count} equipo(s) seleccionados. Fuentes: WMI + SNMP. Recolección manual.";
+            lblSubtitle.Text = $"{_hosts.Count} equipo(s) seleccionados. Fuente: SNMP. Recolección manual.";
             btnExportExcel.IsEnabled = false;
             btnExportHtml.IsEnabled = false;
 
@@ -34,17 +34,11 @@ namespace vmPing.UI
                 return;
             }
 
-            lblStatus.Text = "Presione Recolectar ahora para consultar WMI/SNMP. No se realiza ninguna conexión automática.";
+            lblStatus.Text = "Presione Recolectar ahora para consultar por SNMP. No se realiza ninguna conexión automática.";
         }
 
         private async System.Threading.Tasks.Task CollectAsync()
         {
-            if (!Util.ConfirmWmiCollection("la recolección de inventario"))
-            {
-                lblStatus.Text = "Recolección cancelada. No se realizó ninguna conexión WMI.";
-                return;
-            }
-
             btnRefresh.IsEnabled = false;
             btnCancel.Visibility = Visibility.Visible;
             btnExportExcel.IsEnabled = false;
@@ -123,7 +117,7 @@ namespace vmPing.UI
                 {
                     var ws = wb.Worksheets.Add("Inventario");
 
-                    string[] headers = { "Host", "Alias", "Fuente", "Estado", "Fabricante", "Modelo", "No. Serie", "UUID", "Sistema Operativo", "Versión", "Arquitectura", "CPU", "Cores", "RAM (GB)", "Dominio", "DNS Hostname", "IP", "MAC", "Último arranque", "Recolectado (UTC)" };
+                    string[] headers = { "Host", "Alias", "Fuente", "Estado", "sysName", "sysDescr", "Ubicacion", "Contacto", "Uptime", "Recolectado (UTC)" };
                     for (int c = 0; c < headers.Length; c++)
                         ws.Cell(1, c + 1).Value = headers[c];
 
@@ -134,22 +128,12 @@ namespace vmPing.UI
                         ws.Cell(r + 2, 2).Value = d.Alias ?? string.Empty;
                         ws.Cell(r + 2, 3).Value = d.Source ?? string.Empty;
                         ws.Cell(r + 2, 4).Value = d.IsReachableText;
-                        ws.Cell(r + 2, 5).Value = d.Manufacturer ?? string.Empty;
-                        ws.Cell(r + 2, 6).Value = d.Model ?? string.Empty;
-                        ws.Cell(r + 2, 7).Value = d.SerialNumber ?? string.Empty;
-                        ws.Cell(r + 2, 8).Value = d.Uuid ?? string.Empty;
-                        ws.Cell(r + 2, 9).Value = d.OsCaption ?? string.Empty;
-                        ws.Cell(r + 2, 10).Value = d.OsVersion ?? string.Empty;
-                        ws.Cell(r + 2, 11).Value = d.OsArchitecture ?? string.Empty;
-                        ws.Cell(r + 2, 12).Value = d.CpuName ?? string.Empty;
-                        ws.Cell(r + 2, 13).Value = d.CpuCores;
-                        ws.Cell(r + 2, 14).Value = d.TotalRamGB;
-                        ws.Cell(r + 2, 15).Value = d.Domain ?? string.Empty;
-                        ws.Cell(r + 2, 16).Value = d.DnsHostname ?? string.Empty;
-                        ws.Cell(r + 2, 17).Value = d.Ipv4 ?? string.Empty;
-                        ws.Cell(r + 2, 18).Value = d.MacAddresses ?? string.Empty;
-                        ws.Cell(r + 2, 19).Value = d.LastBootUpTime ?? string.Empty;
-                        ws.Cell(r + 2, 20).Value = d.CollectedUtc?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
+                        ws.Cell(r + 2, 5).Value = d.SnmpSysName ?? string.Empty;
+                        ws.Cell(r + 2, 6).Value = d.SnmpSysDescr ?? string.Empty;
+                        ws.Cell(r + 2, 7).Value = d.SnmpLocation ?? string.Empty;
+                        ws.Cell(r + 2, 8).Value = d.SnmpContact ?? string.Empty;
+                        ws.Cell(r + 2, 9).Value = d.SnmpUptime ?? string.Empty;
+                        ws.Cell(r + 2, 10).Value = d.CollectedUtc?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty;
                     }
 
                     ws.Columns().AdjustToContents();
@@ -181,12 +165,12 @@ namespace vmPing.UI
                 sb.AppendLine("<title>Inventario de Equipos - vmPing GLR</title>");
                 sb.AppendLine("<style>body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#1f2937}h1{font-size:22px}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}th{background:#f3f4f6;position:sticky;top:0}tr:nth-child(even){background:#f9fafb}.ok{color:#047857;font-weight:bold}.nook{color:#b91c1c}</style></head><body>");
                 sb.AppendLine($"<h1>Inventario de Equipos</h1><p>Generado: {DateTime.Now:yyyy-MM-dd HH:mm:ss} - Total: {_devices.Count}</p>");
-                sb.AppendLine("<table><thead><tr><th>Host</th><th>Alias</th><th>Fuente</th><th>Estado</th><th>Fabricante</th><th>Modelo</th><th>No. Serie</th><th>SO</th><th>CPU</th><th>RAM (GB)</th><th>IP</th><th>MAC</th></tr></thead><tbody>");
+                sb.AppendLine("<table><thead><tr><th>Host</th><th>Alias</th><th>Fuente</th><th>Estado</th><th>sysName</th><th>sysDescr</th><th>Ubicacion</th><th>Contacto</th><th>Uptime</th></tr></thead><tbody>");
 
                 foreach (var d in _devices)
                 {
                     var state = d.IsReachable ? "<span class='ok'>Disponible</span>" : "<span class='nook'>Sin datos</span>";
-                    sb.AppendLine($"<tr><td>{System.Net.WebUtility.HtmlEncode(d.Host)}</td><td>{System.Net.WebUtility.HtmlEncode(d.Alias)}</td><td>{System.Net.WebUtility.HtmlEncode(d.Source)}</td><td>{state}</td><td>{System.Net.WebUtility.HtmlEncode(d.Manufacturer)}</td><td>{System.Net.WebUtility.HtmlEncode(d.Model)}</td><td>{System.Net.WebUtility.HtmlEncode(d.SerialNumber)}</td><td>{System.Net.WebUtility.HtmlEncode(d.OsCaption)}</td><td>{System.Net.WebUtility.HtmlEncode(d.CpuName)}</td><td>{d.TotalRamGB}</td><td>{System.Net.WebUtility.HtmlEncode(d.Ipv4)}</td><td>{System.Net.WebUtility.HtmlEncode(d.MacAddresses)}</td></tr>");
+                    sb.AppendLine($"<tr><td>{System.Net.WebUtility.HtmlEncode(d.Host)}</td><td>{System.Net.WebUtility.HtmlEncode(d.Alias)}</td><td>{System.Net.WebUtility.HtmlEncode(d.Source)}</td><td>{state}</td><td>{System.Net.WebUtility.HtmlEncode(d.SnmpSysName)}</td><td>{System.Net.WebUtility.HtmlEncode(d.SnmpSysDescr)}</td><td>{System.Net.WebUtility.HtmlEncode(d.SnmpLocation)}</td><td>{System.Net.WebUtility.HtmlEncode(d.SnmpContact)}</td><td>{System.Net.WebUtility.HtmlEncode(d.SnmpUptime)}</td></tr>");
                 }
 
                 sb.AppendLine("</tbody></table></body></html>");

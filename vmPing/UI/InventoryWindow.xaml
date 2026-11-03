@@ -18,7 +18,7 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="Inventario de Equipos" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}"/>
-            <TextBlock x:Name="lblSubtitle" Text="Recolección manual de hardware y sistema (WMI / SNMP). No se conecta automáticamente." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
+            <TextBlock x:Name="lblSubtitle" Text="Recolección manual por SNMP. No se conecta automáticamente." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}"/>
         </StackPanel>
 
         <!-- Progress -->
@@ -82,11 +82,11 @@
                     <DataGridTextColumn Header="Alias" Binding="{Binding Alias}" Width="150"/>
                     <DataGridTextColumn Header="Fuente" Binding="{Binding Source}" Width="100"/>
                     <DataGridTextColumn Header="Estado" Binding="{Binding IsReachableText}" Width="80"/>
-                    <DataGridTextColumn Header="Fabricante" Binding="{Binding Manufacturer}" Width="140"/>
-                    <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150"/>
-                    <DataGridTextColumn Header="No. Serie" Binding="{Binding SerialNumber}" Width="130"/>
-                    <DataGridTextColumn Header="Sistema Operativo" Binding="{Binding OsCaption}" Width="220"/>
-                    <DataGridTextColumn Header="IP" Binding="{Binding Ipv4}" Width="160"/>
+                    <DataGridTextColumn Header="sysName" Binding="{Binding SnmpSysName}" Width="160"/>
+                    <DataGridTextColumn Header="sysDescr" Binding="{Binding SnmpSysDescr}" Width="260"/>
+                    <DataGridTextColumn Header="Ubicación" Binding="{Binding SnmpLocation}" Width="160"/>
+                    <DataGridTextColumn Header="Contacto" Binding="{Binding SnmpContact}" Width="150"/>
+                    <DataGridTextColumn Header="Uptime" Binding="{Binding SnmpUptime}" Width="120"/>
                     <DataGridTextColumn Header="Recolectado" Binding="{Binding CollectedLocalText}" Width="130"/>
                 </DataGrid.Columns>
             </DataGrid>
@@ -95,7 +95,7 @@
         <!-- Status -->
         <StatusBar Grid.Row="3" Background="Transparent" Margin="0,8,0,0">
             <StatusBarItem>
-                <TextBlock x:Name="lblStatus" Text="Presione Recolectar ahora para consultar WMI/SNMP. No se realiza ninguna conexión automática." FontSize="11"
+                <TextBlock x:Name="lblStatus" Text="Presione Recolectar ahora para consultar por SNMP. No se realiza ninguna conexión automática." FontSize="11"
                            Foreground="{DynamicResource Theme.Text.Secondary}"/>
             </StatusBarItem>
         </StatusBar>

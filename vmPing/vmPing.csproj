@@ -13,7 +13,6 @@
   <ItemGroup>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.Management" />
   </ItemGroup>
 
   <ItemGroup>

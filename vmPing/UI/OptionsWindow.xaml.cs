@@ -39,7 +39,6 @@ namespace vmPing.UI
             PopulateInterfaceOptions();
             PopulateInventoryOptions();
             PopulateAdOptions();
-            PopulateHealthOptions();
         }
 
         private bool? ShowError(string message, TabItem tabItem, Control control, bool isWarning = false)
@@ -229,7 +228,6 @@ namespace vmPing.UI
             if (SaveInterfaceOptions() == false) return;
             if (SaveInventoryOptions() == false) return;
             if (SaveAdOptions() == false) return;
-            if (SaveHealthOptions() == false) return;
 
             if (SaveAsDefaults.IsChecked == true)
             {
@@ -252,10 +250,6 @@ namespace vmPing.UI
 
         private void PopulateInventoryOptions()
         {
-            InventoryWmiEnabledCheck.IsChecked = ApplicationOptions.InventoryWmiEnabled;
-            InventoryWmiDomainBox.Text = ApplicationOptions.InventoryWmiDomain ?? string.Empty;
-            InventoryWmiUsernameBox.Text = ApplicationOptions.InventoryWmiUsername ?? string.Empty;
-            InventoryWmiPasswordBox.Password = ApplicationOptions.InventoryWmiPassword ?? string.Empty;
             InventorySnmpEnabledCheck.IsChecked = ApplicationOptions.InventorySnmpEnabled;
             InventorySnmpCommunityBox.Text = ApplicationOptions.InventorySnmpCommunity ?? string.Empty;
             InventorySnmpPortBox.Text = ApplicationOptions.InventorySnmpPort.ToString();
@@ -286,16 +280,6 @@ namespace vmPing.UI
                 return false;
             }
 
-            ApplicationOptions.InventoryWmiEnabled = InventoryWmiEnabledCheck.IsChecked == true;
-            ApplicationOptions.InventoryWmiDomain = string.IsNullOrWhiteSpace(InventoryWmiDomainBox.Text)
-                ? null
-                : InventoryWmiDomainBox.Text.Trim();
-            ApplicationOptions.InventoryWmiUsername = string.IsNullOrWhiteSpace(InventoryWmiUsernameBox.Text)
-                ? null
-                : InventoryWmiUsernameBox.Text.Trim();
-            ApplicationOptions.InventoryWmiPassword = string.IsNullOrWhiteSpace(InventoryWmiPasswordBox.Password)
-                ? null
-                : InventoryWmiPasswordBox.Password;
             ApplicationOptions.InventorySnmpEnabled = InventorySnmpEnabledCheck.IsChecked == true;
             ApplicationOptions.InventorySnmpCommunity = string.IsNullOrWhiteSpace(InventorySnmpCommunityBox.Text)
                 ? "public"
@@ -313,26 +297,6 @@ namespace vmPing.UI
             AdUsernameBox.Text = ApplicationOptions.AdUsername ?? string.Empty;
             AdPasswordBox.Password = ApplicationOptions.AdPassword ?? string.Empty;
             AdTimeoutBox.Text = ApplicationOptions.AdTimeoutSeconds.ToString();
-        }
-
-        private void PopulateHealthOptions()
-        {
-            HealthEnabledCheck.IsChecked = ApplicationOptions.HealthEnabled;
-            HealthHistoryBox.Text = ApplicationOptions.HealthHistoryPoints.ToString();
-        }
-
-        private bool SaveHealthOptions()
-        {
-            int history = 60;
-            if (!int.TryParse(HealthHistoryBox.Text, out history) || history < 10 || history > 240)
-            {
-                ShowError("Por favor ingrese un número de puntos de historial válido (10-240).", HealthTab, HealthHistoryBox);
-                return false;
-            }
-
-            ApplicationOptions.HealthEnabled = HealthEnabledCheck.IsChecked == true;
-            ApplicationOptions.HealthHistoryPoints = history;
-            return true;
         }
 
         private bool SaveAdOptions()

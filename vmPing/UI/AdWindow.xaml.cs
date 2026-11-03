@@ -60,7 +60,7 @@ namespace vmPing.UI
             ApplyFilter();
             dgUsers.ItemsSource = _users;
             lblSubtitle.Text = $"Dominio: {Environment.UserDomainName}. {_computers.Count} computadoras, {_users.Count} usuarios. Inventario correlacionado: {_inventory.Count} equipos.";
-            lblStatus.Text = $"Datos cargados. {_computers.Count(c => c.HasInventory)} de {_computers.Count} computadoras tienen inventario WMI.";
+            lblStatus.Text = $"Datos cargados. {_computers.Count(c => c.HasInventory)} de {_computers.Count} computadoras tienen inventario recolectado.";
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)

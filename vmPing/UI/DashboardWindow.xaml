@@ -158,8 +158,6 @@
                     <RowDefinition Height="2*" MinHeight="180"/>
                     <RowDefinition Height="8"/>
                     <RowDefinition Height="1*" MinHeight="120"/>
-                    <RowDefinition Height="8"/>
-                    <RowDefinition Height="1*" MinHeight="100"/>
                 </Grid.RowDefinitions>
 
                 <!-- RTT Chart -->
@@ -196,25 +194,6 @@
                         </DockPanel>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                             <StackPanel x:Name="heatmapPanel" Orientation="Vertical"/>
-                        </ScrollViewer>
-                    </DockPanel>
-                </Border>
-
-                <GridSplitter Grid.Row="3" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Transparent"/>
-
-                <!-- Health Mini Cards -->
-                <Border Grid.Row="4" Background="{DynamicResource Theme.Card.Background}"
-                        BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1"
-                        CornerRadius="10" Padding="8">
-                    <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="4,4,4,6">
-                            <Button x:Name="btnCollectHealth" DockPanel.Dock="Right" Content="Recolectar salud" Padding="10,4"
-                                    Style="{StaticResource ButtonStandardStyle}" Click="BtnCollectHealth_Click"/>
-                            <TextBlock Text="Salud de Red" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Theme.Text.Primary}" VerticalAlignment="Center"/>
-                        </DockPanel>
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <StackPanel x:Name="healthPanel" Orientation="Horizontal"/>
                         </ScrollViewer>
                     </DockPanel>
                 </Border>

@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Threading;
 using System.Windows.Threading;
 using vmPing.Classes;
 
@@ -21,8 +20,6 @@ namespace vmPing.UI
         private DateTime _sessionStart = DateTime.Now;
         private Probe _selectedProbe;
         private int _lastEventIndex;
-        private List<HealthSnapshot> _lastHealthSnapshots = new List<HealthSnapshot>();
-        private CancellationTokenSource _healthCts;
 
         public DashboardWindow(ObservableCollection<Probe> probes)
         {
@@ -34,7 +31,7 @@ namespace vmPing.UI
             _timer.Tick += Timer_Tick;
             _timer.Start();
 
-            Closing += (s, e) => { _timer.Stop(); _healthCts?.Cancel(); };
+            Closing += (s, e) => _timer.Stop();
 
             RefreshAll();
         }
@@ -52,7 +49,6 @@ namespace vmPing.UI
             RefreshRttChart();
             RefreshHeatmap();
             RefreshTimeline();
-            RefreshHealth();
             lblFooter.Text = $"Sesion: {(DateTime.Now - _sessionStart):hh\\:mm\\:ss}  |  Actualizado: {DateTime.Now:HH:mm:ss}";
         }
 
@@ -484,199 +480,6 @@ namespace vmPing.UI
 
             eventList.ItemsSource = items;
         }
-
-        // ── Health (optional, uses HealthService if enabled) ──────────────
-        private void RefreshHealth()
-        {
-            if (!ApplicationOptions.HealthEnabled)
-            {
-                healthPanel.Children.Clear();
-                var noData = new TextBlock
-                {
-                    Text = "Salud de red no disponible (deshabilitada en Opciones)",
-                    FontSize = 12,
-                    Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
-                    Margin = new Thickness(8, 4, 0, 0),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                healthPanel.Children.Add(noData);
-                return;
-            }
-
-            if (_lastHealthSnapshots.Count > 0)
-            {
-                healthPanel.Children.Clear();
-                foreach (var snap in _lastHealthSnapshots)
-                {
-                    healthPanel.Children.Add(BuildHealthCard(snap));
-                }
-            }
-            else
-            {
-                if (healthPanel.Children.Count == 0)
-                {
-                    var manual = new TextBlock
-                    {
-                        Text = "Presione Recolectar salud para consultar WMI. No hay recolección automática.",
-                        FontSize = 12,
-                        Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
-                        Margin = new Thickness(8, 4, 0, 0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    healthPanel.Children.Add(manual);
-                }
-            }
-        }
-
-        private void BtnCollectHealth_Click(object sender, RoutedEventArgs e)
-        {
-            _ = CollectHealthAsync();
-        }
-
-        private async System.Threading.Tasks.Task CollectHealthAsync()
-        {
-            if (!ApplicationOptions.HealthEnabled)
-            {
-                return;
-            }
-
-            if (!Util.ConfirmWmiCollection("la recolección de salud del dashboard"))
-            {
-                return;
-            }
-
-            _healthCts?.Cancel();
-            _healthCts = new CancellationTokenSource();
-
-            var hosts = _probes
-                .Where(p => p.IsActive && p.Status != ProbeStatus.Inactive && p.Status != ProbeStatus.Scanner)
-                .Select(p => p.Hostname)
-                .Distinct()
-                .ToList();
-
-            if (hosts.Count == 0) return;
-
-            btnCollectHealth.IsEnabled = false;
-            try
-            {
-                _lastHealthSnapshots = await HealthService.CollectAsync(hosts, null, _healthCts.Token);
-                Dispatcher.Invoke(() =>
-                {
-                    healthPanel.Children.Clear();
-                    foreach (var snap in _lastHealthSnapshots)
-                        healthPanel.Children.Add(BuildHealthCard(snap));
-                });
-            }
-            catch { }
-            finally
-            {
-                btnCollectHealth.IsEnabled = true;
-            }
-        }
-
-        private Border BuildHealthCard(HealthSnapshot snap)
-        {
-            var card = new Border
-            {
-                Background = new SolidColorBrush(Color.FromRgb(0xF1, 0xF5, 0xF9)),
-                CornerRadius = new CornerRadius(6),
-                Padding = new Thickness(10, 6, 10, 6),
-                Margin = new Thickness(0, 0, 8, 0),
-                MinWidth = 140
-            };
-
-            var stack = new StackPanel();
-
-            var hostText = new TextBlock
-            {
-                Text = (snap.Host.Length > 16 ? snap.Host.Substring(0, 15) + ".." : snap.Host),
-                FontSize = 11,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(Color.FromRgb(0x0F, 0x17, 0x2A)),
-                Margin = new Thickness(0, 0, 0, 4)
-            };
-            stack.Children.Add(hostText);
-
-            if (snap.CpuPercent >= 0)
-                stack.Children.Add(BuildHealthBar("CPU", snap.CpuPercent, GetHealthColor(snap.CpuPercent)));
-            if (snap.RamPercent >= 0)
-                stack.Children.Add(BuildHealthBar("RAM", snap.RamPercent, GetHealthColor(snap.RamPercent)));
-            if (snap.DiskPercent >= 0)
-                stack.Children.Add(BuildHealthBar("Disco", snap.DiskPercent, GetHealthColor(snap.DiskPercent)));
-
-            if (!snap.HasData)
-            {
-                var noData = new TextBlock
-                {
-                    Text = snap.AccessDenied ? "Sin permisos WMI" : "Sin datos",
-                    FontSize = 10,
-                    Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8))
-                };
-                stack.Children.Add(noData);
-            }
-
-            card.Child = stack;
-            return card;
-        }
-
-        private StackPanel BuildHealthBar(string label, double value, Color color)
-        {
-            var sp = new StackPanel { Margin = new Thickness(0, 1, 0, 1) };
-
-            var header = new DockPanel();
-            var lbl = new TextBlock
-            {
-                Text = label,
-                FontSize = 9,
-                Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B))
-            };
-            DockPanel.SetDock(lbl, Dock.Left);
-            header.Children.Add(lbl);
-
-            var val = new TextBlock
-            {
-                Text = $"{value:F0}%",
-                FontSize = 9,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush(color),
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            header.Children.Add(val);
-            sp.Children.Add(header);
-
-            var barBg = new Border
-            {
-                Height = 4,
-                Background = new SolidColorBrush(Color.FromRgb(0xE2, 0xE8, 0xF0)),
-                CornerRadius = new CornerRadius(2)
-            };
-
-            var barFill = new Border
-            {
-                Height = 4,
-                Background = new SolidColorBrush(color),
-                CornerRadius = new CornerRadius(2),
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-            barBg.Child = barFill;
-
-            barBg.SizeChanged += (s, e) =>
-            {
-                barFill.Width = Math.Max(0, barBg.ActualWidth * Math.Min(value, 100) / 100.0);
-            };
-
-            sp.Children.Add(barBg);
-            return sp;
-        }
-
-        private static Color GetHealthColor(double pct)
-        {
-            if (pct < 60) return Color.FromRgb(0x16, 0xA3, 0x4A);
-            if (pct < 85) return Color.FromRgb(0xEA, 0x58, 0x0C);
-            return Color.FromRgb(0xDC, 0x26, 0x26);
-        }
-
-        // ── Pause / Export ────────────────────────────────────────────────
         private void BtnPause_Click(object sender, RoutedEventArgs e)
         {
             _isPaused = !_isPaused;

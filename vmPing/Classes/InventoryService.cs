@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,16 +20,6 @@ namespace vmPing.Classes
 
     public static class InventoryService
     {
-        // WMI system queries.
-        private const string WmiQueryBios = "SELECT SerialNumber FROM Win32_BIOS";
-        private const string WmiQueryProduct = "SELECT Vendor, Name, IdentifyingNumber, UUID FROM Win32_ComputerSystemProduct";
-        private const string WmiQuerySystem = "SELECT Manufacturer, Model, Domain, PartOfDomain, TotalPhysicalMemory, NumberOfLogicalProcessors, SystemType, DNSHostName FROM Win32_ComputerSystem";
-        private const string WmiQueryOs = "SELECT Caption, Version, BuildNumber, OSArchitecture, LastBootUpTime FROM Win32_OperatingSystem";
-        private const string WmiQueryCpu = "SELECT Name, NumberOfCores, NumberOfLogicalProcessors FROM Win32_Processor";
-        private const string WmiQueryMemory = "SELECT Capacity FROM Win32_PhysicalMemory";
-        private const string WmiQueryDisk = "SELECT DeviceID, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3";
-        private const string WmiQueryNet = "SELECT MACAddress, IPAddress, DHCPEnabled FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True";
-
         // SNMP system OIDs.
         private static readonly ObjectIdentifier OidSysDescr = new ObjectIdentifier(".1.3.6.1.2.1.1.1.0");
         private static readonly ObjectIdentifier OidSysObjectId = new ObjectIdentifier(".1.3.6.1.2.1.1.2.0");
@@ -114,195 +103,23 @@ namespace vmPing.Classes
                 inventory.Alias = aliases[host.ToLower()];
             }
 
-            bool wmiOk = false;
             bool snmpOk = false;
-
-            if (ApplicationOptions.InventoryWmiEnabled)
-            {
-                wmiOk = CollectWmi(host, inventory);
-            }
 
             if (ApplicationOptions.InventorySnmpEnabled)
             {
                 snmpOk = CollectSnmp(host, inventory);
             }
 
-            inventory.IsReachable = wmiOk || snmpOk;
-            inventory.Source = (wmiOk && snmpOk) ? "WMI + SNMP" : wmiOk ? "WMI" : snmpOk ? "SNMP" : "Sin datos";
+            inventory.IsReachable = snmpOk;
+            inventory.Source = snmpOk ? "SNMP" : "Sin datos";
 
             if (!inventory.IsReachable)
             {
-                inventory.ErrorMessage = inventory.AccessDenied
-                    ? "Sin permisos WMI. La cuenta no puede iniciar sesión en el equipo."
-                    : "No se pudo obtener información. Verifique que el equipo esté encendido y accesible, y que las credenciales o community SNMP sean correctas.";
+                inventory.ErrorMessage = "No se pudo obtener informacion. Verifique que el equipo este encendido y accesible, y que la community SNMP sea correcta.";
             }
 
             return inventory;
         }
-
-        #region WMI
-
-        private static bool CollectWmi(string host, DeviceInventory inventory)
-        {
-            ManagementScope scope = null;
-            try
-            {
-                var options = new ConnectionOptions
-                {
-                    Timeout = TimeSpan.FromSeconds(ApplicationOptions.InventoryTimeoutSeconds),
-                    Authentication = AuthenticationLevel.PacketPrivacy
-                };
-
-                var username = ApplicationOptions.InventoryWmiUsername?.Trim();
-                var domain = ApplicationOptions.InventoryWmiDomain?.Trim();
-                if (!string.IsNullOrEmpty(username))
-                {
-                    options.Username = string.IsNullOrEmpty(domain) ? username : $"{domain}\\{username}";
-                    options.Password = ApplicationOptions.InventoryWmiPassword;
-                }
-
-                scope = new ManagementScope($@"\\{host}\root\cimv2", options);
-                scope.Connect();
-                if (!scope.IsConnected)
-                {
-                    return false;
-                }
-
-                var results = new Dictionary<string, ManagementObject>();
-
-                var queryClasses = new Dictionary<string, string>
-                {
-                    ["bios"] = WmiQueryBios,
-                    ["product"] = WmiQueryProduct,
-                    ["system"] = WmiQuerySystem,
-                    ["os"] = WmiQueryOs,
-                    ["cpu"] = WmiQueryCpu
-                };
-
-                foreach (var kvp in queryClasses)
-                {
-                    var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(kvp.Value));
-                    var first = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
-                    if (first != null)
-                    {
-                        results[kvp.Key] = first;
-                    }
-                }
-
-                // Sistema.
-                if (results.TryGetValue("system", out var sys))
-                {
-                    inventory.Manufacturer = Clean(sys["Manufacturer"]);
-                    inventory.Model = Clean(sys["Model"]);
-                    inventory.Domain = Clean(sys["Domain"]);
-                    inventory.DnsHostname = Clean(sys["DNSHostName"]);
-                    inventory.SystemType = Clean(sys["SystemType"]);
-                    inventory.CpuLogicalProcessors = ToInt(sys["NumberOfLogicalProcessors"]);
-                    var totalMemory = ToDouble(sys["TotalPhysicalMemory"]);
-                    inventory.TotalRamGB = Math.Round(totalMemory / 1024.0 / 1024.0 / 1024.0, 1);
-                }
-
-                // BIOS / producto (serial, uuid).
-                if (results.TryGetValue("product", out var product))
-                {
-                    inventory.Manufacturer = string.IsNullOrEmpty(inventory.Manufacturer) ? Clean(product["Vendor"]) : inventory.Manufacturer;
-                    inventory.Model = string.IsNullOrEmpty(inventory.Model) ? Clean(product["Name"]) : inventory.Model;
-                    inventory.SerialNumber = Clean(product["IdentifyingNumber"]);
-                    inventory.Uuid = Clean(product["UUID"]);
-                }
-                if (results.TryGetValue("bios", out var bios))
-                {
-                    inventory.SerialNumber = string.IsNullOrEmpty(inventory.SerialNumber) ? Clean(bios["SerialNumber"]) : inventory.SerialNumber;
-                }
-
-                // OS.
-                if (results.TryGetValue("os", out var os))
-                {
-                    inventory.OsCaption = Clean(os["Caption"]);
-                    inventory.OsVersion = Clean(os["Version"]);
-                    inventory.OsBuildNumber = Clean(os["BuildNumber"]);
-                    inventory.OsArchitecture = Clean(os["OSArchitecture"]);
-                    inventory.LastBootUpTime = Clean(os["LastBootUpTime"]);
-                }
-
-                // CPU.
-                if (results.TryGetValue("cpu", out var cpu))
-                {
-                    inventory.CpuName = Clean(cpu["Name"]);
-                    inventory.CpuCores = ToInt(cpu["NumberOfCores"]);
-                    inventory.CpuLogicalProcessors = inventory.CpuLogicalProcessors > 0
-                        ? inventory.CpuLogicalProcessors
-                        : ToInt(cpu["NumberOfLogicalProcessors"]);
-                }
-
-                // RAM (sum of sticks).
-                using (var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(WmiQueryMemory)))
-                {
-                    var capacity = searcher.Get().Cast<ManagementObject>()
-                        .Sum(m => ToDouble(m["Capacity"]));
-                    inventory.TotalRamGB = inventory.TotalRamGB > 0
-                        ? inventory.TotalRamGB
-                        : Math.Round(capacity / 1024.0 / 1024.0 / 1024.0, 1);
-                    inventory.RamSlots = searcher.Get().Cast<ManagementObject>().Count();
-                }
-
-                // Disks.
-                using (var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(WmiQueryDisk)))
-                {
-                    foreach (var disk in searcher.Get().Cast<ManagementObject>())
-                    {
-                        inventory.Disks.Add(new DiskInfo
-                        {
-                            Label = Clean(disk["DeviceID"]),
-                            SizeGB = Math.Round(ToDouble(disk["Size"]) / 1024.0 / 1024.0 / 1024.0, 1),
-                            FreeGB = Math.Round(ToDouble(disk["FreeSpace"]) / 1024.0 / 1024.0 / 1024.0, 1)
-                        });
-                    }
-                }
-
-                // Network.
-                using (var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(WmiQueryNet)))
-                {
-                    var adapters = searcher.Get().Cast<ManagementObject>().ToList();
-                    inventory.MacAddresses = string.Join(", ", adapters
-                        .Select(a => Clean(a["MACAddress"]))
-                        .Where(m => !string.IsNullOrEmpty(m)));
-                    inventory.Ipv4 = string.Join(", ", adapters
-                        .SelectMany(a => ToStringArray(a["IPAddress"]))
-                        .Where(ip => ip.Contains(".")));
-                    inventory.Ipv6 = string.Join(", ", adapters
-                        .SelectMany(a => ToStringArray(a["IPAddress"]))
-                        .Where(ip => ip.Contains(":")));
-                    var dhcp = adapters.Select(a => a["DHCPEnabled"]).FirstOrDefault();
-                    inventory.DhcpEnabled = dhcp == null ? null : Convert.ToBoolean(dhcp) ? "Sí" : "No";
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                inventory.AccessDenied = IsAccessDenied(ex);
-                return false;
-            }
-        }
-
-        private static bool IsAccessDenied(Exception ex)
-        {
-            if (ex is UnauthorizedAccessException)
-            {
-                return true;
-            }
-
-            if (ex is System.Runtime.InteropServices.COMException com)
-            {
-                var code = unchecked((uint)com.HResult);
-                return code == 0x80070005u || code == 0x8007052Eu;
-            }
-
-            return false;
-        }
-
-        #endregion
 
         #region SNMP
 

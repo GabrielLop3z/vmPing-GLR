@@ -198,14 +198,6 @@ namespace vmPing.Classes
                 Node("Theme", ApplicationOptions.CurrentTheme),
                 Node("IsWelcomeShown", ApplicationOptions.IsWelcomeShown),
                 new XComment(" Inventory "),
-                Node("InventoryWmiEnabled", ApplicationOptions.InventoryWmiEnabled),
-                Node("InventoryWmiDomain", ApplicationOptions.InventoryWmiDomain),
-                Node("InventoryWmiUsername", string.IsNullOrWhiteSpace(ApplicationOptions.InventoryWmiUsername)
-                    ? string.Empty
-                    : Util.EncryptStringAES(ApplicationOptions.InventoryWmiUsername)),
-                Node("InventoryWmiPassword", string.IsNullOrWhiteSpace(ApplicationOptions.InventoryWmiPassword)
-                    ? string.Empty
-                    : Util.EncryptStringAES(ApplicationOptions.InventoryWmiPassword)),
                 Node("InventorySnmpEnabled", ApplicationOptions.InventorySnmpEnabled),
                 Node("InventorySnmpCommunity", ApplicationOptions.InventorySnmpCommunity),
                 Node("InventorySnmpPort", ApplicationOptions.InventorySnmpPort),
@@ -220,11 +212,7 @@ namespace vmPing.Classes
                 Node("AdPassword", string.IsNullOrWhiteSpace(ApplicationOptions.AdPassword)
                     ? string.Empty
                     : Util.EncryptStringAES(ApplicationOptions.AdPassword)),
-                Node("AdTimeoutSeconds", ApplicationOptions.AdTimeoutSeconds),
-                new XComment(" Salud en vivo "),
-                Node("HealthEnabled", ApplicationOptions.HealthEnabled),
-                Node("HealthIntervalSeconds", ApplicationOptions.HealthIntervalSeconds),
-                Node("HealthHistoryPoints", ApplicationOptions.HealthHistoryPoints)
+                Node("AdTimeoutSeconds", ApplicationOptions.AdTimeoutSeconds)
             );
         }
 
@@ -537,38 +525,6 @@ namespace vmPing.Classes
             {
                 ApplicationOptions.IsWelcomeShown = bool.Parse(optionValue);
             }
-            if (options.TryGetValue("InventoryWmiEnabled", out optionValue))
-            {
-                ApplicationOptions.InventoryWmiEnabled = bool.Parse(optionValue);
-            }
-            if (options.TryGetValue("InventoryWmiDomain", out optionValue))
-            {
-                ApplicationOptions.InventoryWmiDomain = optionValue.Length > 0 ? optionValue : null;
-            }
-            if (options.TryGetValue("InventoryWmiUsername", out optionValue))
-            {
-                if (optionValue.Length > 0)
-                {
-                    try { ApplicationOptions.InventoryWmiUsername = Util.DecryptStringAES(optionValue); }
-                    catch { ApplicationOptions.InventoryWmiUsername = null; }
-                }
-                else
-                {
-                    ApplicationOptions.InventoryWmiUsername = null;
-                }
-            }
-            if (options.TryGetValue("InventoryWmiPassword", out optionValue))
-            {
-                if (optionValue.Length > 0)
-                {
-                    try { ApplicationOptions.InventoryWmiPassword = Util.DecryptStringAES(optionValue); }
-                    catch { ApplicationOptions.InventoryWmiPassword = null; }
-                }
-                else
-                {
-                    ApplicationOptions.InventoryWmiPassword = null;
-                }
-            }
             if (options.TryGetValue("InventorySnmpEnabled", out optionValue))
             {
                 ApplicationOptions.InventorySnmpEnabled = bool.Parse(optionValue);
@@ -624,18 +580,6 @@ namespace vmPing.Classes
             if (options.TryGetValue("AdTimeoutSeconds", out optionValue))
             {
                 ApplicationOptions.AdTimeoutSeconds = int.Parse(optionValue);
-            }
-            if (options.TryGetValue("HealthEnabled", out optionValue))
-            {
-                ApplicationOptions.HealthEnabled = bool.Parse(optionValue);
-            }
-            if (options.TryGetValue("HealthIntervalSeconds", out optionValue))
-            {
-                ApplicationOptions.HealthIntervalSeconds = int.Parse(optionValue);
-            }
-            if (options.TryGetValue("HealthHistoryPoints", out optionValue))
-            {
-                ApplicationOptions.HealthHistoryPoints = int.Parse(optionValue);
             }
         }
     }

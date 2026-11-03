@@ -1,4 +1,4 @@
-﻿<Window x:Class="vmPing.UI.OptionsWindow"
+<Window x:Class="vmPing.UI.OptionsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Opciones"
@@ -755,41 +755,11 @@
                                    Style="{StaticResource OptionHeaderTextStyle}"/>
 
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="Consulta información de hardware y sistema de los equipos monitoreados mediante WMI (Windows) y SNMP (switches, impresoras, firewalls)."
+                                   Text="Consulta informacion de sistema de los equipos monitoreados mediante SNMP (switches, impresoras, firewalls, UPS)."
                                    Margin="0,12,0,8"
                                    HorizontalAlignment="Left"
                                    TextWrapping="Wrap"
                                    Width="480"
-                                   Foreground="#6B7280"/>
-
-                        <!-- WMI -->
-                        <TextBlock DockPanel.Dock="Top" Text="WMI / WinRM"
-                                   Margin="0,18,0,6"
-                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
-                        <CheckBox DockPanel.Dock="Top" Name="InventoryWmiEnabledCheck"
-                                  Content="Habilitar recolección por WMI (computadoras con Windows)"
-                                  Margin="0,0,0,8"/>
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
-                            <TextBlock Width="140" Text="Dominio"/>
-                            <TextBox Name="InventoryWmiDomainBox" Width="280"
-                                     ToolTip="Dominio o equipo como por ejemplo: EMPRESA o EMPRESA\\PC. Vacío = conexión con credenciales de grupo de trabajo (nombre de usuario puede ser 'usuario@dominio')."/>
-                        </StackPanel>
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
-                            <TextBlock Width="140" Text="Usuario (opcional)"/>
-                            <TextBox Name="InventoryWmiUsernameBox" Width="280"
-                                     ToolTip="Si se deja vacío, se usa la identidad del usuario actual de Windows."/>
-                        </StackPanel>
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
-                            <TextBlock Width="140" Text="Contraseña"/>
-                            <PasswordBox Name="InventoryWmiPasswordBox" Width="280"/>
-                        </StackPanel>
-                        <TextBlock DockPanel.Dock="Top"
-                                   Text="Para usar credenciales alternativas se requiere que el acceso remoto por WMI (Puerto 135, plus 49152+) y autenticación de credenciales esté habilitado en los equipos destino."
-                                   Margin="0,8,0,0"
-                                   HorizontalAlignment="Left"
-                                   TextWrapping="Wrap"
-                                   Width="480"
-                                   FontSize="11"
                                    Foreground="#6B7280"/>
 
                         <!-- SNMP -->
@@ -833,7 +803,7 @@
                                    Style="{StaticResource OptionHeaderTextStyle}"/>
 
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="Correlacione las computadoras del dominio con el inventario WMI, y consulte usuarios, unidades organizativas y estado de las cuentas."
+                                   Text="Correlacione las computadoras del dominio con el inventario SNMP, y consulte usuarios, unidades organizativas y estado de las cuentas."
                                    Margin="0,12,0,8"
                                    HorizontalAlignment="Left"
                                    TextWrapping="Wrap"
@@ -864,43 +834,6 @@
                         </StackPanel>
                         <TextBlock DockPanel.Dock="Top"
                                    Text="Nota: la consulta de computadoras puede tardar en dominios grandes. Se muestran todas las computadoras (Habilitadas y Deshabilitadas) con su OU y último inicio de sesión."
-                                   Margin="0,8,0,0"
-                                   HorizontalAlignment="Left"
-                                   TextWrapping="Wrap"
-                                   Width="480"
-                                   FontSize="11"
-                                   Foreground="#6B7280"/>
-                    </DockPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <!-- Tab: Salud -->
-            <TabItem Header="Salud" Name="HealthTab">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
-                        <TextBlock DockPanel.Dock="Top"
-                                   Text="Salud en Vivo"
-                                   Style="{StaticResource OptionHeaderTextStyle}"/>
-
-                        <TextBlock DockPanel.Dock="Top"
-                                   Text="Consulte manualmente el uso de CPU, memoria y disco de los equipos mediante WMI. Las tendencias se muestran como mini-gráficas (sparklines). No se realizan conexiones automáticas."
-                                   Margin="0,12,0,8"
-                                   HorizontalAlignment="Left"
-                                   TextWrapping="Wrap"
-                                   Width="480"
-                                   Foreground="#6B7280"/>
-
-                        <CheckBox DockPanel.Dock="Top" Name="HealthEnabledCheck"
-                                  Content="Habilitar consulta manual de salud"
-                                  Margin="0,0,0,8"/>
-
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
-                            <TextBlock Width="160" Text="Puntos de historial"/>
-                            <TextBox Name="HealthHistoryBox" Width="300"
-                                     ToolTip="Cantidad de puntos que conserva cada sparkline por equipo (10-240). Default: 60."/>
-                        </StackPanel>
-                        <TextBlock DockPanel.Dock="Top"
-                                   Text="Nota: la recolección es manual y usa las mismas credenciales WMI y timeout configurados en la pestaña 'Inventario'. Si las credenciales están vacías se usará la cuenta de Windows y se pedirá confirmación antes de conectar."
                                    Margin="0,8,0,0"
                                    HorizontalAlignment="Left"
                                    TextWrapping="Wrap"
