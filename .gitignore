@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+# Local release artifacts
+vmPing/ReleaseOutput/
+vmPing/vmPing.zip

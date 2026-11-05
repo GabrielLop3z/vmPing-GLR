@@ -85,6 +85,21 @@ namespace vmPing.Classes
         public static bool IsLogStatusChangesEnabled { get; set; } = false;
         public static string LogStatusChangesPath { get; set; }
 
+        // History and reports.
+        public static int HistorySampleSeconds { get; set; } = 30;
+        public static int HistoryRetentionDays { get; set; } = 90;
+        public static int ReportDefaultStartHour { get; set; } = 7;
+        public static int ReportDefaultEndHour { get; set; } = 16;
+
+        // Report delivery (SMTP). Password is stored with DPAPI, never in plain text.
+        public static string ReportSmtpHost { get; set; } = "smtp.gmail.com";
+        public static int ReportSmtpPort { get; set; } = 587;
+        public static bool ReportSmtpUseSsl { get; set; } = true;
+        public static string ReportSmtpUser { get; set; }
+        public static string ReportSmtpPassword { get; set; }
+        public static string ReportFromAddress { get; set; }
+        public static string ReportRecipients { get; set; }
+
         // Inventory (SNMP only; WMI was removed for security).
         public static bool InventorySnmpEnabled { get; set; } = true;
         public static string InventorySnmpCommunity { get; set; } = "public";

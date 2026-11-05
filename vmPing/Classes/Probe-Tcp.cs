@@ -111,6 +111,14 @@ namespace vmPing.Classes
                         IndeterminateCount = 0;
                         isPortOpen = true;
                         AddPingSample((int)stopwatch.ElapsedMilliseconds, true);
+                        HistoryService.RecordSample(
+                            Hostname,
+                            Alias,
+                            "TCP",
+                            DateTime.UtcNow,
+                            true,
+                            stopwatch.ElapsedMilliseconds,
+                            null);
 
                         // If this is a new probe, record the initial 'up' state to the status history.
                         if (Status == ProbeStatus.Inactive)
@@ -228,10 +236,26 @@ namespace vmPing.Classes
                         isPortOpen = false;
                         errorCode = ex.ErrorCode;
                         AddPingSample(0, false);
+                        HistoryService.RecordSample(
+                            Hostname,
+                            Alias,
+                            "TCP",
+                            DateTime.UtcNow,
+                            false,
+                            null,
+                            ex.Message);
                     }
                     catch (Exception ex)
                     {
                         // Unexpected error ocurred. Report error and stop probe.
+                        HistoryService.RecordSample(
+                            Hostname,
+                            Alias,
+                            "TCP",
+                            DateTime.UtcNow,
+                            false,
+                            null,
+                            ex.Message);
                         await Application.Current.Dispatcher.BeginInvoke(
                             new Action(() => AddHistory("Error: " + ex.Message)));
                         StopProbe(ProbeStatus.Error);

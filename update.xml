@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.6</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.6/vmPing.zip</url>
+    <version>1.8.9.7</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.7/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Seguridad: se eliminó por completo el uso de WMI (consultas, credenciales y opciones) para evitar eventos 4625 de inicio de sesión fallido. - Inventario: ahora usa únicamente SNMP (community "public", puerto 161). - Se eliminó la ventana "Salud en Vivo" y el panel automático de salud del Dashboard. - Las gráficas de ping, pérdidas y conexiones del Dashboard se mantienen intactas. - Notificaciones automáticas (webhook y correo) permanecen desactivadas por defecto.</changelog>
+    <changelog>- Reportes empresariales: historial persistente en SQLite con disponibilidad, errores, horarios de fallo e inestabilidad. - Generacion de PDF profesional con equipos OK, equipos con problemas, ventanas de fallo, errores frecuentes y bitacora por hora. - Envio manual de reportes por correo SMTP (Gmail con contrasena de aplicacion). - Nuevas opciones de historial y correo en Opciones &gt; Reportes. - Auditoria local de ejecucion de la aplicacion y de reportes generados. - Se mantiene la eliminacion total de WMI y el inventario solo por SNMP.</changelog>
 </item>

@@ -197,6 +197,20 @@ namespace vmPing.Classes
                 Node("IsExitToTrayEnabled", ApplicationOptions.IsExitToTrayEnabled),
                 Node("Theme", ApplicationOptions.CurrentTheme),
                 Node("IsWelcomeShown", ApplicationOptions.IsWelcomeShown),
+                new XComment(" History and reports "),
+                Node("HistorySampleSeconds", ApplicationOptions.HistorySampleSeconds),
+                Node("HistoryRetentionDays", ApplicationOptions.HistoryRetentionDays),
+                Node("ReportDefaultStartHour", ApplicationOptions.ReportDefaultStartHour),
+                Node("ReportDefaultEndHour", ApplicationOptions.ReportDefaultEndHour),
+                Node("ReportSmtpHost", ApplicationOptions.ReportSmtpHost),
+                Node("ReportSmtpPort", ApplicationOptions.ReportSmtpPort),
+                Node("ReportSmtpUseSsl", ApplicationOptions.ReportSmtpUseSsl),
+                Node("ReportSmtpUser", ApplicationOptions.ReportSmtpUser),
+                Node("ReportSmtpPassword", string.IsNullOrWhiteSpace(ApplicationOptions.ReportSmtpPassword)
+                    ? string.Empty
+                    : SecretProtector.Protect(ApplicationOptions.ReportSmtpPassword)),
+                Node("ReportFromAddress", ApplicationOptions.ReportFromAddress),
+                Node("ReportRecipients", ApplicationOptions.ReportRecipients),
                 new XComment(" Inventory "),
                 Node("InventorySnmpEnabled", ApplicationOptions.InventorySnmpEnabled),
                 Node("InventorySnmpCommunity", ApplicationOptions.InventorySnmpCommunity),
@@ -524,6 +538,55 @@ namespace vmPing.Classes
             if (options.TryGetValue("IsWelcomeShown", out optionValue))
             {
                 ApplicationOptions.IsWelcomeShown = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("HistorySampleSeconds", out optionValue)
+                && int.TryParse(optionValue, out var historySampleSeconds))
+            {
+                ApplicationOptions.HistorySampleSeconds = Math.Max(1, historySampleSeconds);
+            }
+            if (options.TryGetValue("HistoryRetentionDays", out optionValue)
+                && int.TryParse(optionValue, out var historyRetentionDays))
+            {
+                ApplicationOptions.HistoryRetentionDays = Math.Max(1, historyRetentionDays);
+            }
+            if (options.TryGetValue("ReportDefaultStartHour", out optionValue)
+                && int.TryParse(optionValue, out var reportStartHour))
+            {
+                ApplicationOptions.ReportDefaultStartHour = Math.Max(0, Math.Min(23, reportStartHour));
+            }
+            if (options.TryGetValue("ReportDefaultEndHour", out optionValue)
+                && int.TryParse(optionValue, out var reportEndHour))
+            {
+                ApplicationOptions.ReportDefaultEndHour = Math.Max(0, Math.Min(23, reportEndHour));
+            }
+            if (options.TryGetValue("ReportSmtpHost", out optionValue))
+            {
+                ApplicationOptions.ReportSmtpHost = optionValue;
+            }
+            if (options.TryGetValue("ReportSmtpPort", out optionValue)
+                && int.TryParse(optionValue, out var reportSmtpPort))
+            {
+                ApplicationOptions.ReportSmtpPort = Math.Max(1, Math.Min(65535, reportSmtpPort));
+            }
+            if (options.TryGetValue("ReportSmtpUseSsl", out optionValue))
+            {
+                ApplicationOptions.ReportSmtpUseSsl = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("ReportSmtpUser", out optionValue))
+            {
+                ApplicationOptions.ReportSmtpUser = optionValue;
+            }
+            if (options.TryGetValue("ReportSmtpPassword", out optionValue))
+            {
+                ApplicationOptions.ReportSmtpPassword = SecretProtector.Unprotect(optionValue);
+            }
+            if (options.TryGetValue("ReportFromAddress", out optionValue))
+            {
+                ApplicationOptions.ReportFromAddress = optionValue;
+            }
+            if (options.TryGetValue("ReportRecipients", out optionValue))
+            {
+                ApplicationOptions.ReportRecipients = optionValue;
             }
             if (options.TryGetValue("InventorySnmpEnabled", out optionValue))
             {

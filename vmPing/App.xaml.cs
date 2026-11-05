@@ -38,6 +38,13 @@ namespace vmPing
             UpdateManager.CheckForUpdate(showUpToDateMessage: false);
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            HistoryService.RecordAudit("app-stop", "vmPing", string.Empty);
+            HistoryService.Shutdown();
+            base.OnExit(e);
+        }
+
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             // Create a friendly error message

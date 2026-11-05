@@ -47,6 +47,11 @@ namespace vmPing.UI
             LoadFavorites();
             LoadAliases();
             Configuration.Load();
+            HistoryService.Initialize();
+            HistoryService.RecordAudit(
+                "app-start",
+                "vmPing",
+                $"version={typeof(App).Assembly.GetName().Version}; user={Environment.UserName}; machine={Environment.MachineName}");
             RefreshGuiState();
 
             _dashboardTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -565,6 +570,12 @@ namespace vmPing.UI
         private void Reports_Click(object sender, RoutedEventArgs e)
         {
             var wnd = new ReportsWindow(_ProbeCollection) { Owner = this };
+            wnd.Show();
+        }
+
+        private void ReportPdf_Click(object sender, RoutedEventArgs e)
+        {
+            var wnd = new ReportPdfWindow { Owner = this };
             wnd.Show();
         }
 

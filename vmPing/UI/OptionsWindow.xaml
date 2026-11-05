@@ -746,6 +746,81 @@
                 </DockPanel>
             </TabItem>
 
+            <!-- Tab: Reports -->
+            <TabItem Header="Reportes" Name="ReportsTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Reportes empresariales"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Historial persistente de disponibilidad y envio de reportes PDF por correo. El historial se guarda localmente en SQLite."
+                                   Margin="0,12,0,8"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   Foreground="#6B7280"/>
+
+                        <TextBlock DockPanel.Dock="Top" Text="Historial"
+                                   Margin="0,22,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Intervalo de muestreo (seg)"/>
+                            <TextBox Name="HistorySampleSecondsBox" Width="120"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Retencion (dias)"/>
+                            <TextBox Name="HistoryRetentionDaysBox" Width="120"/>
+                        </StackPanel>
+
+                        <TextBlock DockPanel.Dock="Top" Text="Correo saliente (SMTP)"
+                                   Margin="0,22,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Servidor SMTP"/>
+                            <TextBox Name="ReportSmtpHostBox" Width="300"
+                                     ToolTip="Gmail: smtp.gmail.com"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Puerto"/>
+                            <TextBox Name="ReportSmtpPortBox" Width="120"/>
+                        </StackPanel>
+                        <CheckBox DockPanel.Dock="Top" Name="ReportSmtpUseSslCheck"
+                                  Content="Usar SSL/TLS (STARTTLS)"
+                                  Margin="0,8,0,4"/>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Usuario"/>
+                            <TextBox Name="ReportSmtpUserBox" Width="300"
+                                     ToolTip="Gmail: su direccion completa, por ejemplo usuario@gmail.com"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Contrasena / App Password"/>
+                            <PasswordBox Name="ReportSmtpPasswordBox" Width="300"
+                                         ToolTip="Para Gmail use una contrasena de aplicacion, no su contrasena normal."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Remitente"/>
+                            <TextBox Name="ReportFromAddressBox" Width="300"
+                                     ToolTip="Si se deja vacio se usa el usuario SMTP."/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Destinatarios"/>
+                            <TextBox Name="ReportRecipientsBox" Width="300"
+                                     ToolTip="Separe varias direcciones con punto y coma."/>
+                        </StackPanel>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Gmail requiere verificacion en dos pasos y una contrasena de aplicacion. La contrasena se guarda cifrada con DPAPI en el perfil de Windows del usuario."
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- Tab: Inventory -->
             <TabItem Header="Inventario" Name="InventoryTab">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

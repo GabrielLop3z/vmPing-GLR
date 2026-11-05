@@ -121,6 +121,14 @@ namespace vmPing.Classes
                             }
                             UpdateLatencyHistory((int)reply.RoundtripTime);
                             AddPingSample((int)reply.RoundtripTime, true);
+                            HistoryService.RecordSample(
+                                Hostname,
+                                Alias,
+                                "ICMP",
+                                DateTime.UtcNow,
+                                true,
+                                (long)reply.RoundtripTime,
+                                null);
                         }
                         // No reply received.
                         else
@@ -150,6 +158,14 @@ namespace vmPing.Classes
                             }
                             UpdateLatencyHistory(-1);
                             AddPingSample(0, false);
+                            HistoryService.RecordSample(
+                                Hostname,
+                                Alias,
+                                "ICMP",
+                                DateTime.UtcNow,
+                                false,
+                                null,
+                                reply.Status.ToString());
                         }
 
                         if (!cancellationToken.IsCancellationRequested)
@@ -167,6 +183,14 @@ namespace vmPing.Classes
                     {
                         Statistics.Lost++;
                         AddPingSample(0, false);
+                        HistoryService.RecordSample(
+                            Hostname,
+                            Alias,
+                            "ICMP",
+                            DateTime.UtcNow,
+                            false,
+                            null,
+                            ex.Message);
 
                         // Check for status change.
                         if (Status == ProbeStatus.Inactive)

@@ -37,6 +37,7 @@ namespace vmPing.UI
             PopulateDisplayOptions();
             PopulateLayoutOptions();
             PopulateInterfaceOptions();
+            PopulateReportOptions();
             PopulateInventoryOptions();
             PopulateAdOptions();
         }
@@ -226,6 +227,7 @@ namespace vmPing.UI
             if (SaveLayoutOptions() == false) return;
             if (SaveDisplayOptions() == false) return;
             if (SaveInterfaceOptions() == false) return;
+            if (SaveReportOptions() == false) return;
             if (SaveInventoryOptions() == false) return;
             if (SaveAdOptions() == false) return;
 
@@ -245,6 +247,54 @@ namespace vmPing.UI
                 ApplicationOptions.CurrentTheme = selectedTheme;
                 App.ApplyTheme(selectedTheme);
             }
+            return true;
+        }
+
+        private void PopulateReportOptions()
+        {
+            HistorySampleSecondsBox.Text = ApplicationOptions.HistorySampleSeconds.ToString();
+            HistoryRetentionDaysBox.Text = ApplicationOptions.HistoryRetentionDays.ToString();
+            ReportSmtpHostBox.Text = ApplicationOptions.ReportSmtpHost ?? string.Empty;
+            ReportSmtpPortBox.Text = ApplicationOptions.ReportSmtpPort.ToString();
+            ReportSmtpUseSslCheck.IsChecked = ApplicationOptions.ReportSmtpUseSsl;
+            ReportSmtpUserBox.Text = ApplicationOptions.ReportSmtpUser ?? string.Empty;
+            ReportSmtpPasswordBox.Password = ApplicationOptions.ReportSmtpPassword ?? string.Empty;
+            ReportFromAddressBox.Text = ApplicationOptions.ReportFromAddress ?? string.Empty;
+            ReportRecipientsBox.Text = ApplicationOptions.ReportRecipients ?? string.Empty;
+        }
+
+        private bool SaveReportOptions()
+        {
+            if (!int.TryParse(HistorySampleSecondsBox.Text, out var sampleSeconds)
+                || sampleSeconds < 5 || sampleSeconds > 3600)
+            {
+                ShowError("Ingrese un intervalo de muestreo valido (5-3600 segundos).", ReportsTab, HistorySampleSecondsBox);
+                return false;
+            }
+
+            if (!int.TryParse(HistoryRetentionDaysBox.Text, out var retentionDays)
+                || retentionDays < 1 || retentionDays > 3650)
+            {
+                ShowError("Ingrese una retencion valida (1-3650 dias).", ReportsTab, HistoryRetentionDaysBox);
+                return false;
+            }
+
+            if (!int.TryParse(ReportSmtpPortBox.Text, out var smtpPort)
+                || smtpPort < 1 || smtpPort > 65535)
+            {
+                ShowError("Ingrese un puerto SMTP valido (1-65535).", ReportsTab, ReportSmtpPortBox);
+                return false;
+            }
+
+            ApplicationOptions.HistorySampleSeconds = sampleSeconds;
+            ApplicationOptions.HistoryRetentionDays = retentionDays;
+            ApplicationOptions.ReportSmtpHost = ReportSmtpHostBox.Text?.Trim() ?? string.Empty;
+            ApplicationOptions.ReportSmtpPort = smtpPort;
+            ApplicationOptions.ReportSmtpUseSsl = ReportSmtpUseSslCheck.IsChecked == true;
+            ApplicationOptions.ReportSmtpUser = ReportSmtpUserBox.Text?.Trim() ?? string.Empty;
+            ApplicationOptions.ReportSmtpPassword = ReportSmtpPasswordBox.Password ?? string.Empty;
+            ApplicationOptions.ReportFromAddress = ReportFromAddressBox.Text?.Trim() ?? string.Empty;
+            ApplicationOptions.ReportRecipients = ReportRecipientsBox.Text?.Trim() ?? string.Empty;
             return true;
         }
 

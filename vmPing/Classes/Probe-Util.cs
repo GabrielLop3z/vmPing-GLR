@@ -116,6 +116,14 @@ namespace vmPing.Classes
 
         private void AddStatusHistory(ProbeStatus status, bool isHidden = false)
         {
+            HistoryService.RecordStatusChange(
+                Hostname,
+                Alias,
+                string.Empty,
+                status.ToString(),
+                DateTime.UtcNow,
+                isHidden ? "initial" : "status");
+
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 lock (mutex)
@@ -213,7 +221,17 @@ namespace vmPing.Classes
 
         private void OnStatusChange(ProbeStatus newStatus, string alertType)
         {
+            var oldStatus = Status;
             Status = newStatus;
+
+            HistoryService.RecordStatusChange(
+                Hostname,
+                Alias,
+                oldStatus.ToString(),
+                newStatus.ToString(),
+                DateTime.UtcNow,
+                alertType);
+
             TriggerStatusChange(new StatusChangeLog
             {
                 Timestamp = DateTime.Now,
