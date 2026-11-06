@@ -471,6 +471,7 @@ namespace vmPing.UI
                 // The probe set was replaced entirely, so it is no longer bound to a loaded favorite.
                 _currentFavoriteTitle = null;
                 UpdateSaveButtonState();
+                UpdateTitleBar();
 
                 if (wnd.Addresses.Count < 1)
                 {
@@ -792,6 +793,19 @@ namespace vmPing.UI
             ColumnCount.Value = 1;  // Ensure window's grid column binding is updated, if needed.
             ColumnCount.Value = favorite.ColumnCount;
             this.Title = $"{favoriteTitle} - vmPing";
+            UpdateTitleBar();
+        }
+
+        private void UpdateTitleBar()
+        {
+            if (TitleBarText == null)
+            {
+                return;
+            }
+
+            bool hasFavorite = !string.IsNullOrWhiteSpace(_currentFavoriteTitle);
+            TitleBarText.Text = hasFavorite ? _currentFavoriteTitle : "vmPing GLR";
+            TitleBarText.ToolTip = hasFavorite ? $"{_currentFavoriteTitle} - vmPing GLR" : "vmPing GLR";
         }
 
         private void UpdateSaveButtonState()
@@ -1299,6 +1313,7 @@ namespace vmPing.UI
                     ? Title.Remove(Title.Length - favTitle.Length)
                     : null;
                 UpdateSaveButtonState();
+                UpdateTitleBar();
             }
         }
 

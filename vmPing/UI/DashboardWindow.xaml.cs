@@ -19,7 +19,6 @@ namespace vmPing.UI
         private bool _isPaused;
         private DateTime _sessionStart = DateTime.Now;
         private Probe _selectedProbe;
-        private int _lastEventIndex;
 
         public DashboardWindow(ObservableCollection<Probe> probes)
         {

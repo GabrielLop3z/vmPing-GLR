@@ -87,7 +87,7 @@
                 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="12,0" VerticalAlignment="Center" IsHitTestVisible="False">
                     <Image Source="/vmPing.ico" Width="16" Height="16" Margin="0,0,8,0"/>
-                    <TextBlock Text="vmPing GLR" Foreground="{DynamicResource Theme.Text.Primary}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TitleBarText" Text="vmPing GLR" Foreground="{DynamicResource Theme.Text.Primary}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="500" ToolTip="vmPing GLR"/>
                 </StackPanel>
 
                 <!-- Window Controls -->

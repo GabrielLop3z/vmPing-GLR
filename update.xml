@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.7</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.7/vmPing.zip</url>
+    <version>1.8.9.8</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.8/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- Reportes empresariales: historial persistente en SQLite con disponibilidad, errores, horarios de fallo e inestabilidad. - Generacion de PDF profesional con equipos OK, equipos con problemas, ventanas de fallo, errores frecuentes y bitacora por hora. - Envio manual de reportes por correo SMTP (Gmail con contrasena de aplicacion). - Nuevas opciones de historial y correo en Opciones &gt; Reportes. - Auditoria local de ejecucion de la aplicacion y de reportes generados. - Se mantiene la eliminacion total de WMI y el inventario solo por SNMP.</changelog>
+    <changelog>- La pantalla principal muestra el nombre de la lista de favoritos cargada. - Corregido el timeline del Dashboard para mostrar hora, host y estado reales en lugar del nombre de la clase.</changelog>
 </item>
