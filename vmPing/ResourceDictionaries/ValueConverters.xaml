@@ -27,4 +27,5 @@
     <classes:LossPercentageConverter x:Key="LossPercentageConverter" />
     <classes:AvailabilityPercentageConverter x:Key="AvailabilityPercentageConverter" />
     <classes:ModalWidthConverter x:Key="ModalWidthConverter" />
+    <classes:ModalHeightConverter x:Key="ModalHeightConverter" />
 </ResourceDictionary>

@@ -463,7 +463,25 @@ namespace vmPing.Classes
             {
                 return 780d;
             }
-            return Math.Max(340, d - 48);
+            return Math.Max(300, d - 32);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
+    }
+
+    public class ModalHeightConverter : IValueConverter
+    {
+        // Caps the modal height to the overlay height minus padding so it never exceeds a small window.
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is double d) || double.IsNaN(d) || d <= 0)
+            {
+                return 610d;
+            }
+            return Math.Max(180, d - 32);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -940,7 +940,7 @@
         <!-- Modal Overlay -->
         <Grid Name="ProbeDetailsModal" Visibility="Collapsed" Panel.ZIndex="1000">
              <Border Background="#80000000" MouseLeftButtonUp="CloseModal_Click"/>
-             <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="16" Width="780" Height="610" MaxWidth="{Binding ActualWidth, ElementName=ProbeDetailsModal, Converter={StaticResource ModalWidthConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
+             <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="16" Width="780" Height="610" MaxWidth="{Binding ActualWidth, ElementName=ProbeDetailsModal, Converter={StaticResource ModalWidthConverter}}" MaxHeight="{Binding ActualHeight, ElementName=ProbeDetailsModal, Converter={StaticResource ModalHeightConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" RenderTransformOrigin="0.5,0.5">
                  <Border.RenderTransform>
                     <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                  </Border.RenderTransform>
@@ -975,30 +975,29 @@
                  <Grid ClipToBounds="True">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
                     <!-- Header -->
-                    <Border Grid.Row="0" Background="{DynamicResource Theme.Badge.Background}" Padding="20" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Theme.Card.Border}">
-                        <DockPanel>
-                            <Button DockPanel.Dock="Right" Click="CloseModal_Click" Content="✕" FontSize="16" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource Theme.Text.Secondary}"/>
-                             <StackPanel Orientation="Horizontal">
-                                <Image Source="{StaticResource icon.vmping-logo-simple}" Width="32" Height="32" Margin="0,0,15,0" VerticalAlignment="Center"/>
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Hostname}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}" Margin="0,0,10,0" TextTrimming="CharacterEllipsis" MaxWidth="380"/>
-                                        <Button Content="Copiar" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHostname_Click" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Background="{DynamicResource Theme.Badge.Background}" Padding="16,14" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Theme.Card.Border}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource icon.vmping-logo-simple}" Width="32" Height="32" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                                        <Button Content="Copiar" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyHostname_Click">
                                             <Button.Resources>
                                                 <Style TargetType="Border">
                                                     <Setter Property="CornerRadius" Value="10"/>
                                                 </Style>
                                             </Button.Resources>
                                         </Button>
-                                        <Button Content="Editar alias" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="EditAliasModal_Click" VerticalAlignment="Center" Margin="5,0,0,0">
+                                        <Button Content="Editar alias" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="EditAliasModal_Click" Margin="5,0,0,0">
                                             <Button.Resources>
                                                 <Style TargetType="Border">
                                                     <Setter Property="CornerRadius" Value="10"/>
@@ -1006,30 +1005,43 @@
                                             </Button.Resources>
                                         </Button>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                        <TextBlock Text="{Binding Status}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource ProbeStatusToForegroundBrushConverter}}"/>
-                                        <TextBlock Text=" - " Foreground="{DynamicResource Theme.Text.Muted}"/>
-                                        <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="{DynamicResource Theme.Text.Secondary}" TextTrimming="CharacterEllipsis" MaxWidth="240"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                        <TextBlock Text="IP:" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" VerticalAlignment="Center"/>
-                                        <TextBlock Name="txtModalIP" Text="Resolviendo..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="4,0,8,0" VerticalAlignment="Center"/>
-                                        <Button Content="Copiar IP" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyIp_Click" VerticalAlignment="Center">
-                                            <Button.Resources>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="CornerRadius" Value="10"/>
-                                                </Style>
-                                            </Button.Resources>
-                                        </Button>
-                                        <TextBlock Text="{Binding Category}" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </StackPanel>
-                             </StackPanel>
-                        </DockPanel>
+                                    <TextBlock Text="{Binding Hostname}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Theme.Text.Primary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                </DockPanel>
+                                <WrapPanel Margin="0,2,0,0">
+                                    <TextBlock Text="{Binding Status}" FontSize="14" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource ProbeStatusToForegroundBrushConverter}}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" - " Foreground="{DynamicResource Theme.Text.Muted}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Alias}" FontSize="14" Foreground="{DynamicResource Theme.Text.Secondary}" TextTrimming="CharacterEllipsis" MaxWidth="240" VerticalAlignment="Center"/>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,2,0,0">
+                                    <TextBlock Text="IP:" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" VerticalAlignment="Center"/>
+                                    <TextBlock Name="txtModalIP" Text="Resolviendo..." FontSize="12" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="4,0,8,0" VerticalAlignment="Center"/>
+                                    <Button Content="Copiar IP" FontSize="10" Padding="8,2" Background="{DynamicResource Theme.Card.Border}" Foreground="{DynamicResource Theme.Text.Secondary}" BorderThickness="0" Click="CopyIp_Click" VerticalAlignment="Center" Margin="0,0,8,0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                    <TextBlock Text="{Binding Category}" FontSize="12" Foreground="{DynamicResource Theme.Text.Muted}" VerticalAlignment="Center"/>
+                                </WrapPanel>
+                            </StackPanel>
+                            <Button Grid.Column="2" Click="CloseModal_Click" Content="✕" FontSize="16" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource Theme.Text.Secondary}" VerticalAlignment="Top" Margin="8,0,0,0"/>
+                        </Grid>
                     </Border>
-                    
+
+                    <!-- Cuerpo desplazable: mantiene todo accesible cuando la ventana es pequena -->
+                    <ScrollViewer x:Name="ModalBodyScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                        <Grid MinHeight="{Binding ViewportHeight, ElementName=ModalBodyScroll}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*" MinHeight="90"/>
+                            </Grid.RowDefinitions>
+
                     <!-- Stats Row 1: Sent / Received / Lost -->
-                    <Grid Grid.Row="1" Margin="20,16,20,0">
+                    <Grid Grid.Row="0" Margin="20,16,20,0">
                          <Grid.ColumnDefinitions>
                              <ColumnDefinition Width="*"/>
                              <ColumnDefinition Width="*"/>
@@ -1056,7 +1068,7 @@
                     </Grid>
 
                     <!-- Stats Row 2: Latency + ratios -->
-                    <Grid Grid.Row="2" Margin="20,0,20,0">
+                    <Grid Grid.Row="1" Margin="20,0,20,0">
                          <Grid.ColumnDefinitions>
                              <ColumnDefinition Width="*"/>
                              <ColumnDefinition Width="*"/>
@@ -1065,25 +1077,25 @@
                          </Grid.ColumnDefinitions>
                          <Border Grid.Column="0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="LATENCIA MÍN" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="LATENCIA MÍN" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
                                  <TextBlock Text="{Binding Statistics.MinRtt, StringFormat={}{0} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
                          <Border Grid.Column="1" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="LATENCIA PROM" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="LATENCIA PROM" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
                                  <TextBlock Text="{Binding Statistics.AvgRtt, StringFormat={}{0:0.##} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
                          <Border Grid.Column="2" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="LATENCIA MÁX" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="LATENCIA MÁX" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
                                  <TextBlock Text="{Binding Statistics.MaxRtt, StringFormat={}{0} ms}" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" HorizontalAlignment="Center" FontWeight="Light"/>
                              </StackPanel>
                          </Border>
                          <Border Grid.Column="3" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="10" Margin="5" Padding="12">
                              <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                 <TextBlock Text="DISPONIBILIDAD" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold"/>
+                                 <TextBlock Text="DISPONIBILIDAD" FontSize="11" Foreground="{DynamicResource Theme.Text.Secondary}" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center"/>
                                  <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Theme.Text.Primary}" FontWeight="Light">
                                      <TextBlock.Text>
                                          <MultiBinding Converter="{StaticResource AvailabilityPercentageConverter}">
@@ -1105,7 +1117,7 @@
                     </Grid>
 
                     <!-- Sparkline -->
-                    <Border Grid.Row="3" Margin="25,10,25,0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
+                    <Border Grid.Row="2" Margin="25,10,25,0" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
                         <Grid>
                             <Polyline Points="{Binding LatencyHistory, Converter={StaticResource LatencyHistoryToPointsConverter}}"
                                       Stroke="{Binding Status, Converter={StaticResource ProbeStatusToStatisticsBrushConverter}}"
@@ -1119,7 +1131,7 @@
                     </Border>
 
                     <!-- Tools Section: Quick Actions -->
-                    <Border Grid.Row="4" Margin="25,10,25,0" Padding="10" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
+                    <Border Grid.Row="3" Margin="25,10,25,0" Padding="10" Background="{DynamicResource Theme.Badge.Background}" CornerRadius="8">
                         <WrapPanel>
                             <TextBlock Text="Port:" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource Theme.Text.Secondary}" Margin="0,0,5,0"/>
                             <TextBox Name="txtPortNumber" Text="80" Width="50" Padding="4" VerticalContentAlignment="Center" Margin="0,0,8,0"/>
@@ -1194,10 +1206,12 @@
                     </Border>
                     
                     <!-- History Log area -->
-                    <Grid Grid.Row="5" Background="{DynamicResource Theme.Badge.Background}" Margin="0,10,0,0">
+                    <Grid Grid.Row="4" Background="{DynamicResource Theme.Badge.Background}" Margin="0,10,0,0">
                          <c:AutoScrollListBox BorderThickness="0" Background="Transparent" ItemsSource="{Binding History}" FontFamily="Consolas" FontSize="13" Margin="10" 
                                               Foreground="{DynamicResource Theme.Text.Primary}"/>
                     </Grid>
+                        </Grid>
+                    </ScrollViewer>
                  </Grid>
              </Border>
     </Grid>
@@ -1205,7 +1219,7 @@
         <!-- ADD PROBE MODAL -->
         <Grid Name="AddProbeModal" Visibility="Collapsed" Panel.ZIndex="1100">
             <Border Background="#80000000" MouseLeftButtonUp="AddProbe_Cancel_Click"/>
-            <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="12" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
+            <Border Background="{DynamicResource Theme.Card.Background}" CornerRadius="12" Width="400" MaxWidth="{Binding ActualWidth, ElementName=AddProbeModal, Converter={StaticResource ModalWidthConverter}}" MaxHeight="{Binding ActualHeight, ElementName=AddProbeModal, Converter={StaticResource ModalHeightConverter}}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.2"/>
                 </Border.Effect>
