@@ -413,6 +413,11 @@
                             <Image Source="{StaticResource icon.server}" VerticalAlignment="Center" Width="16" Height="16"/>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="API / Integraciones" Click="Api_Click">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource icon.server}" VerticalAlignment="Center" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
                 <Separator />
                 <!-- Menu: Traceroute -->

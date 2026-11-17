@@ -211,6 +211,14 @@ namespace vmPing.Classes
                     : SecretProtector.Protect(ApplicationOptions.ReportSmtpPassword)),
                 Node("ReportFromAddress", ApplicationOptions.ReportFromAddress),
                 Node("ReportRecipients", ApplicationOptions.ReportRecipients),
+                new XComment(" Local HTTP API "),
+                Node("ApiEnabled", ApplicationOptions.ApiEnabled),
+                Node("ApiPort", ApplicationOptions.ApiPort),
+                Node("ApiListenLan", ApplicationOptions.ApiListenLan),
+                Node("ApiKey", string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey)
+                    ? string.Empty
+                    : SecretProtector.Protect(ApplicationOptions.ApiKey)),
+                Node("ApiCorsEnabled", ApplicationOptions.ApiCorsEnabled),
                 new XComment(" Inventory "),
                 Node("InventorySnmpEnabled", ApplicationOptions.InventorySnmpEnabled),
                 Node("InventorySnmpCommunity", ApplicationOptions.InventorySnmpCommunity),
@@ -587,6 +595,27 @@ namespace vmPing.Classes
             if (options.TryGetValue("ReportRecipients", out optionValue))
             {
                 ApplicationOptions.ReportRecipients = optionValue;
+            }
+            if (options.TryGetValue("ApiEnabled", out optionValue))
+            {
+                ApplicationOptions.ApiEnabled = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("ApiPort", out optionValue)
+                && int.TryParse(optionValue, out var apiPort))
+            {
+                ApplicationOptions.ApiPort = Math.Max(1024, Math.Min(65535, apiPort));
+            }
+            if (options.TryGetValue("ApiListenLan", out optionValue))
+            {
+                ApplicationOptions.ApiListenLan = bool.Parse(optionValue);
+            }
+            if (options.TryGetValue("ApiKey", out optionValue))
+            {
+                ApplicationOptions.ApiKey = SecretProtector.Unprotect(optionValue);
+            }
+            if (options.TryGetValue("ApiCorsEnabled", out optionValue))
+            {
+                ApplicationOptions.ApiCorsEnabled = bool.Parse(optionValue);
             }
             if (options.TryGetValue("InventorySnmpEnabled", out optionValue))
             {

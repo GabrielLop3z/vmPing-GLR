@@ -31,6 +31,20 @@ namespace vmPing.Classes
         public string Reason { get; set; }
     }
 
+    public class HostAggregateRow
+    {
+        public string Hostname { get; set; }
+        public string Alias { get; set; }
+        public long Samples { get; set; }
+        public long Ok { get; set; }
+        public long Failed { get; set; }
+        public double? MinRttMs { get; set; }
+        public double? AvgRttMs { get; set; }
+        public double? MaxRttMs { get; set; }
+
+        public double AvailabilityPercent => Samples > 0 ? (double)Ok * 100.0 / Samples : 0;
+    }
+
     public static class HistoryService
     {
         private const string TimestampFormat = "o";
@@ -406,6 +420,200 @@ ORDER BY hostname, timestamp_utc;";
                             {
                                 result.Add(reader.GetString(0));
                             }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Consulta muestras con filtros opcionales de host y rango, con límite de filas.
+        /// Devuelve las filas en orden cronológico ascendente (las últimas N del rango).
+        /// </summary>
+        public static List<ProbeSampleRow> QuerySamples(
+            string hostname,
+            DateTime rangeStartUtc,
+            DateTime rangeEndUtc,
+            int limit)
+        {
+            var result = new List<ProbeSampleRow>();
+            if (!_initialized)
+            {
+                return result;
+            }
+
+            limit = Math.Max(1, Math.Min(limit, 200000));
+            var hasHost = !string.IsNullOrWhiteSpace(hostname);
+
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+SELECT hostname, alias, probe_type, timestamp_utc, success, latency_ms, error
+FROM probe_samples
+WHERE timestamp_utc >= @start AND timestamp_utc <= @end
+" + (hasHost ? "AND hostname = @host COLLATE NOCASE\n" : string.Empty) + @"
+ORDER BY timestamp_utc DESC
+LIMIT @limit;";
+                    command.Parameters.AddWithValue("@start", Format(rangeStartUtc));
+                    command.Parameters.AddWithValue("@end", Format(rangeEndUtc));
+                    command.Parameters.AddWithValue("@limit", limit);
+                    if (hasHost)
+                    {
+                        command.Parameters.AddWithValue("@host", hostname.Trim());
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new ProbeSampleRow
+                            {
+                                Hostname = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                                Alias = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                ProbeType = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                                TimestampUtc = Parse(reader.IsDBNull(3) ? string.Empty : reader.GetString(3)),
+                                Success = !reader.IsDBNull(4) && reader.GetInt32(4) != 0,
+                                LatencyMs = reader.IsDBNull(5) ? (long?)null : reader.GetInt64(5),
+                                Error = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
+                            });
+                        }
+                    }
+                }
+            }
+
+            result.Reverse();
+            return result;
+        }
+
+        /// <summary>
+        /// Consulta cambios de estado con filtros opcionales de host y rango, con límite de filas.
+        /// Devuelve las filas en orden cronológico ascendente (las últimas N del rango).
+        /// </summary>
+        public static List<StatusChangeRow> QueryStatusChanges(
+            string hostname,
+            DateTime rangeStartUtc,
+            DateTime rangeEndUtc,
+            int limit)
+        {
+            var result = new List<StatusChangeRow>();
+            if (!_initialized)
+            {
+                return result;
+            }
+
+            limit = Math.Max(1, Math.Min(limit, 50000));
+            var hasHost = !string.IsNullOrWhiteSpace(hostname);
+
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+SELECT hostname, alias, old_status, new_status, timestamp_utc, reason
+FROM status_changes
+WHERE timestamp_utc >= @start AND timestamp_utc <= @end
+" + (hasHost ? "AND hostname = @host COLLATE NOCASE\n" : string.Empty) + @"
+ORDER BY timestamp_utc DESC
+LIMIT @limit;";
+                    command.Parameters.AddWithValue("@start", Format(rangeStartUtc));
+                    command.Parameters.AddWithValue("@end", Format(rangeEndUtc));
+                    command.Parameters.AddWithValue("@limit", limit);
+                    if (hasHost)
+                    {
+                        command.Parameters.AddWithValue("@host", hostname.Trim());
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new StatusChangeRow
+                            {
+                                Hostname = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                                Alias = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                OldStatus = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                                NewStatus = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                                TimestampUtc = Parse(reader.IsDBNull(4) ? string.Empty : reader.GetString(4)),
+                                Reason = reader.IsDBNull(5) ? string.Empty : reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+            }
+
+            result.Reverse();
+            return result;
+        }
+
+        /// <summary>
+        /// Agregados de disponibilidad y latencia por host para un rango de fechas.
+        /// </summary>
+        public static List<HostAggregateRow> GetHostAggregates(
+            string hostname,
+            DateTime rangeStartUtc,
+            DateTime rangeEndUtc)
+        {
+            var result = new List<HostAggregateRow>();
+            if (!_initialized)
+            {
+                return result;
+            }
+
+            var hasHost = !string.IsNullOrWhiteSpace(hostname);
+
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+SELECT hostname,
+       MAX(alias) AS alias,
+       COUNT(*) AS samples,
+       SUM(CASE WHEN success <> 0 THEN 1 ELSE 0 END) AS ok_count,
+       SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) AS fail_count,
+       MIN(CASE WHEN success <> 0 AND latency_ms IS NOT NULL THEN latency_ms END) AS min_rtt,
+       AVG(CASE WHEN success <> 0 AND latency_ms IS NOT NULL THEN latency_ms END) AS avg_rtt,
+       MAX(CASE WHEN success <> 0 AND latency_ms IS NOT NULL THEN latency_ms END) AS max_rtt
+FROM probe_samples
+WHERE timestamp_utc >= @start AND timestamp_utc <= @end
+" + (hasHost ? "AND hostname = @host COLLATE NOCASE\n" : string.Empty) + @"
+GROUP BY hostname
+ORDER BY hostname;";
+                    command.Parameters.AddWithValue("@start", Format(rangeStartUtc));
+                    command.Parameters.AddWithValue("@end", Format(rangeEndUtc));
+                    if (hasHost)
+                    {
+                        command.Parameters.AddWithValue("@host", hostname.Trim());
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new HostAggregateRow
+                            {
+                                Hostname = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
+                                Alias = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                                Samples = reader.IsDBNull(2) ? 0 : reader.GetInt64(2),
+                                Ok = reader.IsDBNull(3) ? 0 : reader.GetInt64(3),
+                                Failed = reader.IsDBNull(4) ? 0 : reader.GetInt64(4),
+                                MinRttMs = reader.IsDBNull(5)
+                                    ? (double?)null
+                                    : Convert.ToDouble(reader.GetValue(5), CultureInfo.InvariantCulture),
+                                AvgRttMs = reader.IsDBNull(6)
+                                    ? (double?)null
+                                    : Convert.ToDouble(reader.GetValue(6), CultureInfo.InvariantCulture),
+                                MaxRttMs = reader.IsDBNull(7)
+                                    ? (double?)null
+                                    : Convert.ToDouble(reader.GetValue(7), CultureInfo.InvariantCulture)
+                            });
                         }
                     }
                 }

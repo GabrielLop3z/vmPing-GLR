@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitácora de disponibilidad - ejemplo vmPing API</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: #f3f4f6; color: #111827; }
+  header { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #fff; padding: 22px 28px; }
+  header h1 { margin: 0 0 4px; font-size: 24px; }
+  main { max-width: 1080px; margin: 22px auto; padding: 0 16px 40px; }
+  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+  label { font-size: 13px; font-weight: 600; color: #374151; }
+  input, textarea, button { font-size: 14px; }
+  input, textarea { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; margin-top: 4px; }
+  textarea { min-height: 90px; font-family: Consolas, monospace; }
+  button { padding: 9px 16px; border-radius: 8px; border: 0; background: #1d4ed8; color: #fff; font-weight: 600; cursor: pointer; }
+  button.secondary { background: #e5e7eb; color: #111827; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+  th { background: #f9fafb; color: #374151; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .up { background: #dcfce7; color: #166534; }
+  .down { background: #fee2e2; color: #991b1b; }
+  .wait { background: #fef3c7; color: #92400e; }
+  .muted { color: #6b7280; font-size: 12px; }
+  .ok { color: #166534; font-weight: 600; }
+  .bad { color: #991b1b; font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bitácora de disponibilidad</h1>
+  <div>Ejemplo de integración con la API de vmPing (ping real por equipo)</div>
+</header>
+<main>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>URL de la API</label>
+        <input id="apiUrl" value="http://127.0.0.1:8099">
+      </div>
+      <div>
+        <label>Clave API (si aplica)</label>
+        <input id="apiKey" placeholder="X-Api-Key">
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <label>Equipos (uno por línea, puede usar IP o IP:puerto)</label>
+      <textarea id="hosts">10.1.1.1
+10.1.1.50
+127.0.0.1:8099</textarea>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+      <button id="btnPing" onclick="pingAll()">Probar todos</button>
+      <button class="secondary" onclick="cargarStats()">Ver disponibilidad de hoy</button>
+      <button class="secondary" onclick="cargarEventos()">Ver caídas recientes</button>
+    </div>
+    <p class="muted" style="margin-bottom:0">Para usar este archivo desde el navegador, active <b>Permitir CORS</b> en Opciones → API. También puede servirlo desde el mismo equipo donde corre vmPing.</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 4px; font-size:18px">Resultado del ping</h2>
+    <div class="muted" id="metaPing">Sin ejecutar.</div>
+    <table>
+      <thead>
+        <tr><th>Equipo</th><th>Estado</th><th>IP resuelta</th><th>Latencia prom.</th><th>Enviados</th><th>Recibidos</th><th>Detalle</th></tr>
+      </thead>
+      <tbody id="tbodyPing"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 4px; font-size:18px">Disponibilidad del día</h2>
+    <div class="muted" id="metaStats">Sin consultar.</div>
+    <table>
+      <thead>
+        <tr><th>Equipo</th><th>Muestras</th><th>OK</th><th>Fallos</th><th>Disponibilidad</th><th>RTT prom.</th></tr>
+      </thead>
+      <tbody id="tbodyStats"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 4px; font-size:18px">Caídas / recuperaciones recientes</h2>
+    <div class="muted" id="metaEvents">Sin consultar.</div>
+    <table>
+      <thead>
+        <tr><th>Fecha local</th><th>Equipo</th><th>Estado anterior</th><th>Estado nuevo</th><th>Motivo</th></tr>
+      </thead>
+      <tbody id="tbodyEvents"></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function apiBase() {
+  return $('apiUrl').value.trim().replace(/\/+$/, '');
+}
+
+function headers() {
+  const key = $('apiKey').value.trim();
+  return key ? { 'X-Api-Key': key } : {};
+}
+
+async function getJson(path) {
+  const r = await fetch(apiBase() + path, { headers: headers() });
+  const text = await r.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+  if (!r.ok) {
+    throw new Error((data && data.error) ? data.error : ('HTTP ' + r.status));
+  }
+  return data;
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+async function pingAll() {
+  const button = $('btnPing');
+  button.disabled = true;
+  $('metaPing').textContent = 'Consultando...';
+  $('tbodyPing').innerHTML = '';
+
+  const hosts = $('hosts').value.split(/\r?\n/).map(h => h.trim()).filter(Boolean);
+  const started = Date.now();
+  let okCount = 0;
+
+  for (const host of hosts) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(host)}</td><td><span class="badge wait">Consultando</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
+    $('tbodyPing').appendChild(tr);
+
+    try {
+      const data = await getJson('/api/ping?host=' + encodeURIComponent(host) + '&count=2&timeout=2000');
+      const status = data.reachable ? '<span class="badge up">EN LÍNEA</span>' : '<span class="badge down">CAÍDO</span>';
+      if (data.reachable) okCount++;
+      tr.innerHTML = `
+        <td>${esc(host)}</td>
+        <td>${status}</td>
+        <td>${esc(data.resolved || '-')}</td>
+        <td>${data.rttAvgMs == null ? '-' : esc(data.rttAvgMs) + ' ms'}</td>
+        <td>${esc(data.sent)}</td>
+        <td>${esc(data.received)}</td>
+        <td class="${data.reachable ? 'ok' : 'bad'}">${esc(data.reachable ? (data.type === 'tcp' ? 'TCP ' + data.port : 'ICMP') : (data.error || 'Sin respuesta'))}</td>`;
+    } catch (error) {
+      tr.innerHTML = `<td>${esc(host)}</td><td><span class="badge down">ERROR</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td class="bad">${esc(error.message)}</td>`;
+    }
+  }
+
+  const seconds = ((Date.now() - started) / 1000).toFixed(1);
+  $('metaPing').innerHTML = `<b>${okCount}/${hosts.length}</b> en línea · ${seconds} s · ${new Date().toLocaleString()}`;
+  button.disabled = false;
+}
+
+async function cargarStats() {
+  $('metaStats').textContent = 'Consultando...';
+  $('tbodyStats').innerHTML = '';
+  try {
+    const data = await getJson('/api/stats?from=today&to=now');
+    const hosts = data.hosts || [];
+    $('metaStats').innerHTML = `${hosts.length} host(s) con datos hoy · ${new Date().toLocaleString()}`;
+    for (const h of hosts) {
+      const tr = document.createElement('tr');
+      const avail = h.availabilityPercent == null ? null : Number(h.availabilityPercent);
+      const cls = avail == null ? '' : (avail >= 99 ? 'ok' : 'bad');
+      tr.innerHTML = `
+        <td>${esc(h.alias || h.hostname)}<div class="muted">${esc(h.hostname)}</div></td>
+        <td>${esc(h.samples)}</td>
+        <td>${esc(h.ok)}</td>
+        <td>${esc(h.failed)}</td>
+        <td class="${cls}">${avail == null ? '-' : avail.toFixed(2) + ' %'}</td>
+        <td>${h.rttAvgMs == null ? '-' : esc(h.rttAvgMs) + ' ms'}</td>`;
+      $('tbodyStats').appendChild(tr);
+    }
+  } catch (error) {
+    $('metaStats').innerHTML = '<span class="bad">' + esc(error.message) + '</span>';
+  }
+}
+
+async function cargarEventos() {
+  $('metaEvents').textContent = 'Consultando...';
+  $('tbodyEvents').innerHTML = '';
+  try {
+    const data = await getJson('/api/events?from=-7d&limit=200');
+    const events = (data.events || []).slice().reverse();
+    $('metaEvents').innerHTML = `${events.length} evento(s) en 7 días · ${new Date().toLocaleString()}`;
+    for (const e of events) {
+      const tr = document.createElement('tr');
+      const isDown = /Down|Error|Stop/i.test(e.newStatus || '');
+      tr.innerHTML = `
+        <td>${esc(new Date(e.timestampLocal).toLocaleString())}</td>
+        <td>${esc(e.alias || e.hostname)}</td>
+        <td>${esc(e.oldStatus)}</td>
+        <td class="${isDown ? 'bad' : 'ok'}">${esc(e.newStatus)}</td>
+        <td>${esc(e.reason)}</td>`;
+      $('tbodyEvents').appendChild(tr);
+    }
+  } catch (error) {
+    $('metaEvents').innerHTML = '<span class="bad">' + esc(error.message) + '</span>';
+  }
+}
+</script>
+</body>
+</html>

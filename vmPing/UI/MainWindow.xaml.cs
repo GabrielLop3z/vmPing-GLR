@@ -52,6 +52,10 @@ namespace vmPing.UI
                 "app-start",
                 "vmPing",
                 $"version={typeof(App).Assembly.GetName().Version}; user={Environment.UserName}; machine={Environment.MachineName}");
+
+            ApiService.HostSnapshotProvider = GetApiHostSnapshots;
+            ApiService.Start();
+
             RefreshGuiState();
 
             _dashboardTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -64,6 +68,49 @@ namespace vmPing.UI
 
             // Set items source for main GUI ItemsControl.
             ProbeItemsControl.ItemsSource = _ProbeCollection;
+        }
+
+        /// <summary>
+        /// Construye la instantánea de hosts para la API. Se ejecuta siempre en el hilo de UI.
+        /// </summary>
+        private List<ApiHostSnapshot> GetApiHostSnapshots()
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                return Dispatcher.Invoke(new Func<List<ApiHostSnapshot>>(GetApiHostSnapshots));
+            }
+
+            var result = new List<ApiHostSnapshot>(_ProbeCollection.Count);
+            foreach (var probe in _ProbeCollection)
+            {
+                if (probe == null)
+                {
+                    continue;
+                }
+
+                var statistics = probe.Statistics;
+                var currentRtt = probe.LatencyHistory != null && probe.LatencyHistory.Count > 0
+                    ? probe.LatencyHistory[probe.LatencyHistory.Count - 1]
+                    : (int?)null;
+
+                result.Add(new ApiHostSnapshot
+                {
+                    Hostname = probe.Hostname ?? string.Empty,
+                    Alias = probe.Alias ?? string.Empty,
+                    Status = probe.Status.ToString(),
+                    IsActive = probe.IsActive,
+                    Sent = statistics?.Sent ?? 0,
+                    Received = statistics?.Received ?? 0,
+                    Lost = statistics?.Lost ?? 0,
+                    Error = statistics?.Error ?? 0,
+                    MinRttMs = statistics?.MinRtt ?? 0,
+                    AvgRttMs = statistics?.AvgRtt ?? 0,
+                    MaxRttMs = statistics?.MaxRtt ?? 0,
+                    CurrentRttMs = currentRtt
+                });
+            }
+
+            return result;
         }
 
         private void UpdateDashboard()
@@ -584,6 +631,11 @@ namespace vmPing.UI
         {
             var wnd = new DashboardWindow(_ProbeCollection) { Owner = this };
             wnd.Show();
+        }
+
+        private void Api_Click(object sender, RoutedEventArgs e)
+        {
+            new ApiWindow { Owner = this }.Show();
         }
 
         private void Export_Click(object sender, RoutedEventArgs e)
@@ -1606,6 +1658,7 @@ namespace vmPing.UI
             }
             else
             {
+                ApiService.Stop();
                 NotifyIcon?.Dispose();
             }
         }

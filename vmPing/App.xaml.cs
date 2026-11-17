@@ -40,6 +40,7 @@ namespace vmPing
 
         protected override void OnExit(ExitEventArgs e)
         {
+            ApiService.Stop();
             HistoryService.RecordAudit("app-stop", "vmPing", string.Empty);
             HistoryService.Shutdown();
             base.OnExit(e);

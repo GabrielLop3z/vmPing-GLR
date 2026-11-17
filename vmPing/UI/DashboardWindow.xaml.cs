@@ -374,9 +374,13 @@ namespace vmPing.UI
             {
                 var row = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal, Margin = new Thickness(0, 1, 0, 1) };
 
+                string displayName = !string.IsNullOrWhiteSpace(p.Alias)
+                    ? p.Alias
+                    : (!string.IsNullOrWhiteSpace(p.Hostname) ? p.Hostname : "(sin host)");
+
                 var hostLabel = new TextBlock
                 {
-                    Text = (p.Alias ?? p.Hostname).Length > 15 ? (p.Alias ?? p.Hostname).Substring(0, 14) + ".." : (p.Alias ?? p.Hostname),
+                    Text = displayName.Length > 15 ? displayName.Substring(0, 14) + ".." : displayName,
                     Width = 100,
                     FontSize = 10,
                     VerticalAlignment = VerticalAlignment.Center,

@@ -100,6 +100,13 @@ namespace vmPing.Classes
         public static string ReportFromAddress { get; set; }
         public static string ReportRecipients { get; set; }
 
+        // Local HTTP API (read-only monitoring data + on-demand ping).
+        public static bool ApiEnabled { get; set; } = false;
+        public static int ApiPort { get; set; } = 8099;
+        public static bool ApiListenLan { get; set; } = false;
+        public static string ApiKey { get; set; } = string.Empty;
+        public static bool ApiCorsEnabled { get; set; } = false;
+
         // Inventory (SNMP only; WMI was removed for security).
         public static bool InventorySnmpEnabled { get; set; } = true;
         public static string InventorySnmpCommunity { get; set; } = "public";

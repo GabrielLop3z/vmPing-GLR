@@ -821,6 +821,92 @@
                 </ScrollViewer>
             </TabItem>
 
+            <!-- Tab: Local HTTP API -->
+            <TabItem Header="API" Name="ApiTab">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <DockPanel Margin="20,0,20,20" LastChildFill="False">
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="API HTTP local"
+                                   Style="{StaticResource OptionHeaderTextStyle}"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Publica los datos de monitoreo (hosts, ping, historial SQLite e inventario) para bitácoras y otras aplicaciones. No requiere permisos de administrador."
+                                   Margin="0,12,0,8"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   Foreground="#6B7280"/>
+
+                        <CheckBox DockPanel.Dock="Top" Name="ApiEnabledCheck"
+                                  Content="Habilitar API HTTP"
+                                  Margin="0,8,0,8"/>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Puerto"/>
+                            <TextBox Name="ApiPortBox" Width="120"
+                                     ToolTip="Por defecto 8099. Rango permitido: 1024-65535."/>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Escuchar en"/>
+                            <ComboBox Name="ApiBindCombo" Width="300">
+                                <ComboBoxItem Content="Solo este equipo (127.0.0.1)"/>
+                                <ComboBoxItem Content="Red local (0.0.0.0)"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Width="190" Text="Clave API" VerticalAlignment="Center"/>
+                            <TextBox Name="ApiKeyBox" Width="300"
+                                     ToolTip="Se envía en la cabecera X-Api-Key o en el parámetro key."/>
+                            <Button Name="ApiGenerateKeyButton" Content="Generar" Width="90" Margin="8,0,0,0"
+                                    Click="ApiGenerateKey_Click"/>
+                        </StackPanel>
+
+                        <CheckBox DockPanel.Dock="Top" Name="ApiCorsCheck"
+                                  Content="Permitir CORS para navegadores (páginas web externas)"
+                                  Margin="0,12,0,4"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Importante: marque &quot;Guardar como predeterminados de vmPing&quot; antes de aceptar para conservar la configuración al reiniciar." 
+                                   Margin="0,12,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#B45309"/>
+
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Seguridad: si escucha en la red local, la clave API es obligatoria. Use una clave distinta por instalación y mantenga el puerto cerrado en el firewall salvo para los equipos de bitácora."
+                                   Margin="0,12,0,0"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+
+                        <TextBlock DockPanel.Dock="Top" Text="Ejemplos"
+                                   Margin="0,22,0,6"
+                                   Style="{StaticResource OptionSubHeaderTextStyle}"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="http://127.0.0.1:8099/api/hosts&#x0a;http://127.0.0.1:8099/api/ping?host=10.1.1.50&amp;count=2&#x0a;http://127.0.0.1:8099/api/stats?from=yesterday&amp;to=today&#x0a;http://127.0.0.1:8099/api/daily?host=10.1.1.50&amp;date=2026-11-16"
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="La documentación completa está en docs/API.md dentro de la carpeta de instalación del proyecto. Al abrir http://127.0.0.1:8099 en un navegador se muestra una página de prueba."
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   Width="520"
+                                   FontSize="11"
+                                   Foreground="#6B7280"/>
+                    </DockPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- Tab: Inventory -->
             <TabItem Header="Inventario" Name="InventoryTab">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

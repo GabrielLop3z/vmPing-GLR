@@ -38,6 +38,7 @@ namespace vmPing.UI
             PopulateLayoutOptions();
             PopulateInterfaceOptions();
             PopulateReportOptions();
+            PopulateApiOptions();
             PopulateInventoryOptions();
             PopulateAdOptions();
         }
@@ -228,6 +229,7 @@ namespace vmPing.UI
             if (SaveDisplayOptions() == false) return;
             if (SaveInterfaceOptions() == false) return;
             if (SaveReportOptions() == false) return;
+            if (SaveApiOptions() == false) return;
             if (SaveInventoryOptions() == false) return;
             if (SaveAdOptions() == false) return;
 
@@ -296,6 +298,60 @@ namespace vmPing.UI
             ApplicationOptions.ReportFromAddress = ReportFromAddressBox.Text?.Trim() ?? string.Empty;
             ApplicationOptions.ReportRecipients = ReportRecipientsBox.Text?.Trim() ?? string.Empty;
             return true;
+        }
+
+        private void PopulateApiOptions()
+        {
+            ApiEnabledCheck.IsChecked = ApplicationOptions.ApiEnabled;
+            ApiPortBox.Text = ApplicationOptions.ApiPort.ToString();
+            ApiBindCombo.SelectedIndex = ApplicationOptions.ApiListenLan ? 1 : 0;
+            ApiKeyBox.Text = ApplicationOptions.ApiKey ?? string.Empty;
+            ApiCorsCheck.IsChecked = ApplicationOptions.ApiCorsEnabled;
+        }
+
+        private bool SaveApiOptions()
+        {
+            if (!int.TryParse(ApiPortBox.Text, out var port) || port < 1024 || port > 65535)
+            {
+                ShowError("Ingrese un puerto válido para la API (1024-65535).", ApiTab, ApiPortBox);
+                return false;
+            }
+
+            var enabled = ApiEnabledCheck.IsChecked == true;
+            var listenLan = ApiBindCombo.SelectedIndex == 1;
+            var apiKey = ApiKeyBox.Text?.Trim() ?? string.Empty;
+
+            if (listenLan && string.IsNullOrWhiteSpace(apiKey))
+            {
+                ShowError("Para escuchar en la red local debe configurar una clave API.", ApiTab, ApiKeyBox);
+                return false;
+            }
+
+            ApplicationOptions.ApiEnabled = enabled;
+            ApplicationOptions.ApiPort = port;
+            ApplicationOptions.ApiListenLan = listenLan;
+            ApplicationOptions.ApiKey = apiKey;
+            ApplicationOptions.ApiCorsEnabled = ApiCorsCheck.IsChecked == true;
+
+            if (enabled)
+            {
+                if (!ApiService.Restart())
+                {
+                    ShowError("No se pudo iniciar la API: " + ApiService.LastError, ApiTab, ApiPortBox);
+                    return false;
+                }
+            }
+            else
+            {
+                ApiService.Stop();
+            }
+
+            return true;
+        }
+
+        private void ApiGenerateKey_Click(object sender, RoutedEventArgs e)
+        {
+            ApiKeyBox.Text = Guid.NewGuid().ToString("N").Substring(0, 24);
         }
 
         private void PopulateInventoryOptions()

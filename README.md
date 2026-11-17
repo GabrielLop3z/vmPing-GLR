@@ -31,6 +31,18 @@ Olvídate de abrir consolas por separado. Desde la misma interfaz:
 - **Alertas por Correo:** Configura avisos automáticos para cuando no estés frente a la pantalla.
 - **Registro de Eventos:** Log de texto para auditoría de caídas.
 
+### 🔌 API para bitácoras e integraciones
+- **API HTTP local** para que otras aplicaciones consulten hosts, estado, latencia y disponibilidad.
+- **Ping bajo demanda** por ICMP o TCP: ideal para bitácoras que necesitan validar una IP o un servicio.
+- **Historial persistente en SQLite** (`vmPing.db`): consulta días anteriores, disponibilidad por hora y caídas.
+- **Inventario de equipos** expuesto por API.
+- Documentación completa: [docs/API.md](docs/API.md) · Ejemplo listo para usar: [docs/ejemplo-bitacora.html](docs/ejemplo-bitacora.html)
+
+```text
+GET http://127.0.0.1:8099/api/ping?host=10.1.1.50&count=2
+GET http://127.0.0.1:8099/api/stats?from=yesterday&to=yesterday
+```
+
 ---
 
 ## 📥 Instalación
