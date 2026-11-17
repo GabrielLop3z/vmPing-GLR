@@ -1,6 +1,6 @@
 <item>
-    <version>1.8.9.8</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.8.9.8/vmPing.zip</url>
+    <version>1.9.0</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.0/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>- La pantalla principal muestra el nombre de la lista de favoritos cargada. - Corregido el timeline del Dashboard para mostrar hora, host y estado reales en lugar del nombre de la clase.</changelog>
+    <changelog>API HTTP local para bitacoras e integraciones: /api/ping bajo demanda (ICMP/TCP), hosts en vivo, historial SQLite por dia, disponibilidad por hora, eventos e inventario. Seguridad con clave API y CORS opcional. Nueva ventana Herramientas -> API / Integraciones y documentacion en docs/API.md.</changelog>
 </item>
