@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using vmPing.Classes;
+using Path = System.Windows.Shapes.Path;
 
 namespace vmPing.UI
 {
@@ -48,6 +52,8 @@ namespace vmPing.UI
             RefreshRttChart();
             RefreshHeatmap();
             RefreshTimeline();
+            RefreshInsights();
+            RefreshAnalysisCharts();
             lblFooter.Text = $"Sesion: {(DateTime.Now - _sessionStart):hh\\:mm\\:ss}  |  Actualizado: {DateTime.Now:HH:mm:ss}";
         }
 
@@ -135,6 +141,7 @@ namespace vmPing.UI
                     MinRtt = minRtt,
                     AvgRtt = avgRtt,
                     MaxRtt = maxRtt,
+                    P95Rtt = Percentile(okSamples.Select(s => (double)s.RttMs).ToList(), 95),
                     LossPct = lossPct,
                     DownEvents = downEvents,
                     Probe = p
@@ -483,10 +490,676 @@ namespace vmPing.UI
 
             eventList.ItemsSource = items;
         }
+        // ── Insights ──────────────────────────────────────────────────────
+        private void RefreshInsights()
+        {
+            // Session-wide latency samples (only successful pings).
+            var allRtts = _probes
+                .SelectMany(p => p.PingSamples)
+                .Where(s => s.Success && s.RttMs > 0)
+                .Select(s => (double)s.RttMs)
+                .ToList();
+
+            if (allRtts.Count > 0)
+            {
+                double p95 = Percentile(allRtts, 95);
+                double p50 = Percentile(allRtts, 50);
+                insightP95.Text = $"{p95:F0} ms";
+                insightP95Detail.Text = $"p50 {p50:F0} ms · {allRtts.Count} muestras";
+                insightP95.ToolTip = $"Latencia p95 de la sesion: {p95:F1} ms\np50: {p50:F1} ms\nMuestras validas: {allRtts.Count}";
+            }
+            else
+            {
+                insightP95.Text = "--";
+                insightP95Detail.Text = "Sin muestras";
+            }
+
+            // Most unstable host: highest packet loss, then highest p95.
+            var ranked = _probes
+                .Where(p => p.Statistics != null && p.Statistics.Sent > 0)
+                .Select(p =>
+                {
+                    var ok = p.PingSamples.Where(s => s.Success).Select(s => (double)s.RttMs).ToList();
+                    return new
+                    {
+                        Probe = p,
+                        Loss = 100.0 * p.Statistics.Lost / p.Statistics.Sent,
+                        P95 = Percentile(ok, 95),
+                        DownEvents = Probe.StatusChangeLog.Count(c => c.Hostname == p.Hostname && c.Status == ProbeStatus.Down)
+                    };
+                })
+                .OrderByDescending(x => x.Loss)
+                .ThenByDescending(x => x.P95)
+                .ThenByDescending(x => x.DownEvents)
+                .ToList();
+
+            var worst = ranked.FirstOrDefault();
+            if (worst != null && (worst.Loss > 0 || worst.P95 > 0))
+            {
+                insightWorstHost.Text = HostDisplayName(worst.Probe);
+                insightWorstHost.ToolTip = $"{worst.Probe.Hostname}\nPerdida: {worst.Loss:F1}%\np95: {worst.P95:F0} ms\nCaidas: {worst.DownEvents}";
+                insightWorstDetail.Text = worst.Loss > 0
+                    ? $"{worst.Loss:F1}% perdida · {worst.DownEvents} caida(s)"
+                    : $"p95 {worst.P95:F0} ms · sin perdidas";
+            }
+            else
+            {
+                insightWorstHost.Text = "--";
+                insightWorstDetail.Text = "Sin datos";
+            }
+
+            // Critical hour in the last 24 h (most down/error events).
+            var since = DateTime.Now.AddHours(-24);
+            var badEvents = Probe.StatusChangeLog
+                .Where(c => c.Timestamp >= since &&
+                            (c.Status == ProbeStatus.Down || c.Status == ProbeStatus.Error))
+                .ToList();
+
+            if (badEvents.Count > 0)
+            {
+                var peak = badEvents
+                    .GroupBy(c => c.Timestamp.Hour)
+                    .Select(g => new { Hour = g.Key, Count = g.Count() })
+                    .OrderByDescending(g => g.Count)
+                    .ThenBy(g => g.Hour)
+                    .First();
+
+                insightCriticalHour.Text = $"{peak.Hour:00}:00";
+                insightCriticalDetail.Text = $"{peak.Count} evento(s) entre {peak.Hour:00}:00 y {peak.Hour:00}:59";
+                insightCriticalHour.ToolTip = $"{badEvents.Count} eventos Down/Error en las ultimas 24 h.";
+            }
+            else
+            {
+                insightCriticalHour.Text = "--";
+                insightCriticalDetail.Text = "Sin caidas en 24 h";
+                insightCriticalHour.ToolTip = null;
+            }
+
+            // Latency trend: last 15 min vs previous 15 min.
+            DateTime now = DateTime.Now;
+            DateTime windowStart = now.AddMinutes(-15);
+            DateTime previousStart = now.AddMinutes(-30);
+
+            var current = _probes
+                .SelectMany(p => p.PingSamples)
+                .Where(s => s.Success && s.RttMs > 0 && s.Timestamp >= windowStart)
+                .Select(s => (double)s.RttMs)
+                .ToList();
+
+            var previous = _probes
+                .SelectMany(p => p.PingSamples)
+                .Where(s => s.Success && s.RttMs > 0 && s.Timestamp >= previousStart && s.Timestamp < windowStart)
+                .Select(s => (double)s.RttMs)
+                .ToList();
+
+            if (current.Count >= 3 && previous.Count >= 3)
+            {
+                double curAvg = current.Average();
+                double prevAvg = previous.Average();
+                double deltaPct = prevAvg > 0 ? 100.0 * (curAvg - prevAvg) / prevAvg : 0;
+
+                if (Math.Abs(deltaPct) < 3)
+                {
+                    insightTrend.Text = "→ estable";
+                    insightTrend.Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B));
+                }
+                else if (deltaPct > 0)
+                {
+                    insightTrend.Text = $"↑ {deltaPct:F0}%";
+                    insightTrend.Foreground = new SolidColorBrush(Color.FromRgb(0xDC, 0x26, 0x26));
+                }
+                else
+                {
+                    insightTrend.Text = $"↓ {Math.Abs(deltaPct):F0}%";
+                    insightTrend.Foreground = new SolidColorBrush(Color.FromRgb(0x16, 0xA3, 0x4A));
+                }
+
+                insightTrendDetail.Text = $"prev {prevAvg:F0} ms → ahora {curAvg:F0} ms";
+                insightTrend.ToolTip = $"Promedio ultimos 15 min: {curAvg:F1} ms ({current.Count} muestras)\nPromedio 15 min previos: {prevAvg:F1} ms ({previous.Count} muestras)";
+            }
+            else
+            {
+                insightTrend.Text = "--";
+                insightTrend.Foreground = new SolidColorBrush(Color.FromRgb(0x11, 0x18, 0x27));
+                insightTrendDetail.Text = "Sin datos suficientes";
+                insightTrend.ToolTip = "Se necesitan al menos 3 muestras en cada ventana de 15 minutos.";
+            }
+        }
+
+        // Sorts a copy of the values and returns the requested percentile (0-100).
+        private static double Percentile(List<double> values, double percentile)
+        {
+            if (values == null || values.Count == 0)
+            {
+                return 0;
+            }
+
+            var sorted = values.Where(v => !double.IsNaN(v) && !double.IsInfinity(v)).OrderBy(v => v).ToList();
+            if (sorted.Count == 0)
+            {
+                return 0;
+            }
+
+            if (sorted.Count == 1)
+            {
+                return sorted[0];
+            }
+
+            double position = (percentile / 100.0) * (sorted.Count - 1);
+            int lower = (int)Math.Floor(position);
+            int upper = (int)Math.Ceiling(position);
+
+            if (lower == upper)
+            {
+                return sorted[lower];
+            }
+
+            double fraction = position - lower;
+            return sorted[lower] + ((sorted[upper] - sorted[lower]) * fraction);
+        }
+
+        private static string HostDisplayName(Probe probe)
+        {
+            if (probe == null)
+            {
+                return "--";
+            }
+
+            if (!string.IsNullOrWhiteSpace(probe.Alias))
+            {
+                return probe.Alias;
+            }
+
+            return string.IsNullOrWhiteSpace(probe.Hostname) ? "(sin host)" : probe.Hostname;
+        }
+
+        // ── Analysis charts (Analisis tab) ────────────────────────────────
+        private void DashboardTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Tab content is not measured until it is selected, so charts must
+            // be redrawn when the Analisis tab becomes visible.
+            if (e.Source == DashboardTabs && DashboardTabs.SelectedIndex == 1)
+            {
+                Dispatcher.BeginInvoke(new Action(RefreshAnalysisCharts), DispatcherPriority.Loaded);
+            }
+        }
+
+        private void RefreshAnalysisCharts()
+        {
+            if (topLossCanvas == null || latencyCanvas == null || donutCanvas == null)
+            {
+                return;
+            }
+
+            if (DashboardTabs != null && DashboardTabs.SelectedIndex != 1)
+            {
+                return;
+            }
+
+            DrawTopLossChart();
+            DrawLatencyHistogram();
+            DrawAvailabilityDonut();
+        }
+
+        private void DrawTopLossChart()
+        {
+            var canvas = topLossCanvas;
+            canvas.Children.Clear();
+
+            double w = canvas.ActualWidth;
+            double h = canvas.ActualHeight;
+            if (w < 40 || h < 30)
+            {
+                return;
+            }
+
+            var data = _probes
+                .Where(p => p.Statistics != null && p.Statistics.Sent > 0)
+                .Select(p => new
+                {
+                    Name = HostDisplayName(p),
+                    Loss = 100.0 * p.Statistics.Lost / p.Statistics.Sent,
+                    Sent = p.Statistics.Sent,
+                    Lost = p.Statistics.Lost
+                })
+                .Where(x => x.Loss > 0)
+                .OrderByDescending(x => x.Loss)
+                .ThenByDescending(x => x.Lost)
+                .Take(6)
+                .ToList();
+
+            if (data.Count == 0)
+            {
+                AddChartMessage(canvas, w, h, "Sin perdidas de paquetes registradas");
+                return;
+            }
+
+            double labelW = Math.Min(96, w * 0.34);
+            double valueW = 44;
+            double barAreaW = Math.Max(20, w - labelW - valueW);
+            double rowH = h / data.Count;
+            double barH = Math.Min(16, Math.Max(8, rowH * 0.52));
+            double maxLoss = Math.Max(data.Max(x => x.Loss), 1);
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                var item = data[i];
+                double centerY = (rowH * i) + (rowH / 2);
+
+                var label = new TextBlock
+                {
+                    Text = Truncate(item.Name, 15),
+                    FontSize = 10,
+                    Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B)),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    ToolTip = $"{item.Name}\n{item.Lost} de {item.Sent} paquetes perdidos"
+                };
+                Canvas.SetLeft(label, 0);
+                Canvas.SetTop(label, centerY - 8);
+                label.Width = labelW - 6;
+                canvas.Children.Add(label);
+
+                var track = new Rectangle
+                {
+                    Height = barH,
+                    Width = barAreaW,
+                    RadiusX = 4,
+                    RadiusY = 4,
+                    Fill = new SolidColorBrush(Color.FromRgb(0xE2, 0xE8, 0xF0))
+                };
+                Canvas.SetLeft(track, labelW);
+                Canvas.SetTop(track, centerY - (barH / 2));
+                canvas.Children.Add(track);
+
+                double barW = Math.Max(3, barAreaW * (item.Loss / maxLoss));
+                var bar = new Rectangle
+                {
+                    Height = barH,
+                    Width = barW,
+                    RadiusX = 4,
+                    RadiusY = 4,
+                    Fill = LossBrush(item.Loss),
+                    ToolTip = $"{item.Name}\nPerdida: {item.Loss:F1}%\n{item.Lost} de {item.Sent} paquetes"
+                };
+                Canvas.SetLeft(bar, labelW);
+                Canvas.SetTop(bar, centerY - (barH / 2));
+                canvas.Children.Add(bar);
+
+                var value = new TextBlock
+                {
+                    Text = $"{item.Loss:F1}%",
+                    FontSize = 10,
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = LossBrush(item.Loss)
+                };
+                Canvas.SetLeft(value, labelW + barAreaW + 6);
+                Canvas.SetTop(value, centerY - 8);
+                canvas.Children.Add(value);
+            }
+        }
+
+        private void DrawLatencyHistogram()
+        {
+            var canvas = latencyCanvas;
+            canvas.Children.Clear();
+
+            double w = canvas.ActualWidth;
+            double h = canvas.ActualHeight;
+            if (w < 40 || h < 30)
+            {
+                return;
+            }
+
+            var rtts = _probes
+                .SelectMany(p => p.PingSamples)
+                .Where(s => s.Success && s.RttMs > 0)
+                .Select(s => (double)s.RttMs)
+                .ToList();
+
+            if (rtts.Count == 0)
+            {
+                AddChartMessage(canvas, w, h, "Sin muestras de latencia");
+                if (lblHistogramCaption != null)
+                {
+                    lblHistogramCaption.Text = "Muestras agrupadas por rango de RTT.";
+                }
+                return;
+            }
+
+            // Bucket edges in milliseconds.
+            double[] edges = { 0, 10, 25, 50, 100, 200, double.MaxValue };
+            string[] names = { "<10", "10-25", "25-50", "50-100", "100-200", "200+" };
+            var counts = new int[names.Length];
+
+            foreach (var rtt in rtts)
+            {
+                for (int i = 0; i < names.Length; i++)
+                {
+                    if (rtt >= edges[i] && rtt < edges[i + 1])
+                    {
+                        counts[i]++;
+                        break;
+                    }
+                }
+            }
+
+            double padBottom = 16;
+            double padTop = 14;
+            double chartH = Math.Max(10, h - padBottom - padTop);
+            double slotW = w / names.Length;
+            int maxCount = Math.Max(counts.Max(), 1);
+            double barW = Math.Max(6, slotW * 0.56);
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                double slotX = slotW * i;
+                double barH = chartH * ((double)counts[i] / maxCount);
+                double barX = slotX + ((slotW - barW) / 2);
+                double barY = padTop + chartH - barH;
+
+                if (counts[i] > 0)
+                {
+                    var bar = new Rectangle
+                    {
+                        Width = barW,
+                        Height = Math.Max(2, barH),
+                        RadiusX = 3,
+                        RadiusY = 3,
+                        Fill = new LinearGradientBrush(
+                            Color.FromRgb(0x60, 0xA5, 0xFA),
+                            Color.FromRgb(0x25, 0x63, 0xEB),
+                            90),
+                        ToolTip = $"{names[i]} ms: {counts[i]} muestras"
+                    };
+                    Canvas.SetLeft(bar, barX);
+                    Canvas.SetTop(bar, barY);
+                    canvas.Children.Add(bar);
+
+                    var count = new TextBlock
+                    {
+                        Text = counts[i].ToString(),
+                        FontSize = 9,
+                        Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B))
+                    };
+                    Canvas.SetLeft(count, barX + (barW / 2) - 6);
+                    Canvas.SetTop(count, Math.Max(0, barY - 13));
+                    canvas.Children.Add(count);
+                }
+
+                var label = new TextBlock
+                {
+                    Text = names[i],
+                    FontSize = 8,
+                    Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8))
+                };
+                Canvas.SetLeft(label, slotX + 2);
+                Canvas.SetTop(label, h - padBottom + 2);
+                canvas.Children.Add(label);
+            }
+
+            if (lblHistogramCaption != null)
+            {
+                double p50 = Percentile(rtts, 50);
+                double p95 = Percentile(rtts, 95);
+                lblHistogramCaption.Text = $"{rtts.Count} muestras · p50 {p50:F0} ms · p95 {p95:F0} ms";
+            }
+        }
+
+        private void DrawAvailabilityDonut()
+        {
+            var canvas = donutCanvas;
+            canvas.Children.Clear();
+
+            double w = canvas.ActualWidth;
+            double h = canvas.ActualHeight;
+            if (w < 40 || h < 40)
+            {
+                return;
+            }
+
+            double sent = _probes.Sum(p => p.Statistics?.Sent ?? 0);
+            double lost = _probes.Sum(p => p.Statistics?.Lost ?? 0);
+            double received = Math.Max(0, sent - lost);
+
+            if (sent <= 0)
+            {
+                AddChartMessage(canvas, w, h, "Sin trafico");
+                if (lblDonutCaption != null)
+                {
+                    lblDonutCaption.Text = "Recibidos vs. perdidos.";
+                }
+                return;
+            }
+
+            double cx = w / 2;
+            double cy = h / 2 - 2;
+            double radius = Math.Max(16, (Math.Min(w, h) / 2) - 14);
+            double thickness = Math.Max(8, radius * 0.30);
+
+            double okPct = 100.0 * received / sent;
+            double lostPct = 100.0 - okPct;
+
+            if (lost <= 0)
+            {
+                var ring = new Ellipse
+                {
+                    Width = radius * 2,
+                    Height = radius * 2,
+                    Stroke = new SolidColorBrush(Color.FromRgb(0x16, 0xA3, 0x4A)),
+                    StrokeThickness = thickness,
+                    ToolTip = $"Recibidos: {received:F0} de {sent:F0}"
+                };
+                Canvas.SetLeft(ring, cx - radius);
+                Canvas.SetTop(ring, cy - radius);
+                canvas.Children.Add(ring);
+            }
+            else
+            {
+                double sweepOk = 360.0 * (received / sent);
+                canvas.Children.Add(CreateArc(cx, cy, radius, thickness, -90,
+                    Math.Max(0.01, sweepOk), new SolidColorBrush(Color.FromRgb(0x16, 0xA3, 0x4A))));
+                canvas.Children.Add(CreateArc(cx, cy, radius, thickness, -90 + sweepOk,
+                    Math.Max(0.01, 360.0 - sweepOk), new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44))));
+            }
+
+            var centerLabel = new TextBlock
+            {
+                Text = $"{okPct:F1}%",
+                FontSize = Math.Max(12, radius * 0.34),
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(Color.FromRgb(0x11, 0x18, 0x27)),
+                Width = radius * 1.3,
+                TextAlignment = TextAlignment.Center
+            };
+            Canvas.SetLeft(centerLabel, cx - (radius * 0.65));
+            Canvas.SetTop(centerLabel, cy - (radius * 0.46));
+            canvas.Children.Add(centerLabel);
+
+            var subLabel = new TextBlock
+            {
+                Text = $"{received:F0} / {sent:F0}",
+                FontSize = 9,
+                Foreground = new SolidColorBrush(Color.FromRgb(0x64, 0x74, 0x8B)),
+                Width = radius * 1.3,
+                TextAlignment = TextAlignment.Center
+            };
+            Canvas.SetLeft(subLabel, cx - (radius * 0.65));
+            Canvas.SetTop(subLabel, cy + (radius * 0.12));
+            canvas.Children.Add(subLabel);
+
+            if (lblDonutCaption != null)
+            {
+                lblDonutCaption.Text = $"{lost:F0} perdidos · {lostPct:F1}% de perdida";
+            }
+
+            canvas.ToolTip = $"Recibidos: {received:F0}\nPerdidos: {lost:F0}\nEnviados: {sent:F0}";
+        }
+
+        private static Path CreateArc(double cx, double cy, double radius, double thickness,
+            double startAngle, double sweepAngle, Brush brush)
+        {
+            Point start = PointOnCircle(cx, cy, radius, startAngle);
+            Point end = PointOnCircle(cx, cy, radius, startAngle + sweepAngle);
+
+            var figure = new PathFigure
+            {
+                StartPoint = start,
+                IsClosed = false,
+                IsFilled = false
+            };
+            figure.Segments.Add(new ArcSegment(
+                end,
+                new Size(radius, radius),
+                0,
+                sweepAngle > 180,
+                SweepDirection.Clockwise,
+                true));
+
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
+
+            return new Path
+            {
+                Data = geometry,
+                Stroke = brush,
+                StrokeThickness = thickness,
+                StrokeStartLineCap = PenLineCap.Flat,
+                StrokeEndLineCap = PenLineCap.Flat
+            };
+        }
+
+        private static Point PointOnCircle(double cx, double cy, double radius, double angleDegrees)
+        {
+            double radians = Math.PI * angleDegrees / 180.0;
+            return new Point(cx + (radius * Math.Cos(radians)), cy + (radius * Math.Sin(radians)));
+        }
+
+        private static void AddChartMessage(Canvas canvas, double w, double h, string message)
+        {
+            var text = new TextBlock
+            {
+                Text = message,
+                FontSize = 11,
+                Foreground = new SolidColorBrush(Color.FromRgb(0x94, 0xA3, 0xB8)),
+                Width = Math.Max(60, w - 8),
+                TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.Wrap
+            };
+            Canvas.SetLeft(text, 4);
+            Canvas.SetTop(text, Math.Max(0, (h / 2) - 10));
+            canvas.Children.Add(text);
+        }
+
+        private static Brush LossBrush(double lossPct)
+        {
+            if (lossPct >= 10)
+            {
+                return new SolidColorBrush(Color.FromRgb(0xDC, 0x26, 0x26));
+            }
+
+            if (lossPct >= 2)
+            {
+                return new SolidColorBrush(Color.FromRgb(0xEA, 0x58, 0x0C));
+            }
+
+            return new SolidColorBrush(Color.FromRgb(0xF5, 0x9E, 0x0B));
+        }
+
+        private static string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value) || value.Length <= maxLength)
+            {
+                return value ?? string.Empty;
+            }
+
+            return value.Substring(0, Math.Max(0, maxLength - 2)) + "..";
+        }
+
         private void BtnPause_Click(object sender, RoutedEventArgs e)
         {
             _isPaused = !_isPaused;
             btnPause.Content = _isPaused ? "Reanudar" : "Pausar";
+        }
+
+        // ── CSV export (BI friendly) ──────────────────────────────────────
+        private void BtnExportCsv_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Exportar datos del Dashboard a CSV",
+                Filter = "CSV (*.csv)|*.csv|Todos los archivos (*.*)|*.*",
+                FileName = $"vmPing_Dashboard_{DateTime.Now:yyyyMMdd_HHmmss}.csv",
+                FilterIndex = 1,
+                AddExtension = true,
+                DefaultExt = ".csv"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("hostname,alias,estado,enviados,recibidos,perdidos,perdida_pct,rtt_actual_ms,rtt_min_ms,rtt_avg_ms,rtt_max_ms,rtt_p95_ms,caidas,muestras");
+
+                foreach (var p in _probes)
+                {
+                    var ok = p.PingSamples.Where(s => s.Success).Select(s => (double)s.RttMs).ToList();
+                    double sent = p.Statistics?.Sent ?? 0;
+                    double lost = p.Statistics?.Lost ?? 0;
+                    double received = Math.Max(0, sent - lost);
+                    double lossPct = sent > 0 ? (100.0 * lost / sent) : 0;
+                    double minRtt = ok.Count > 0 ? ok.Min() : 0;
+                    double avgRtt = ok.Count > 0 ? ok.Average() : 0;
+                    double maxRtt = ok.Count > 0 ? ok.Max() : 0;
+                    double p95 = Percentile(ok, 95);
+                    int currentRtt = p.LatencyHistory.Count > 0 ? p.LatencyHistory.Last() : 0;
+                    int downEvents = Probe.StatusChangeLog.Count(c => c.Hostname == p.Hostname && c.Status == ProbeStatus.Down);
+
+                    sb.AppendLine(string.Join(",",
+                        CsvField(p.Hostname),
+                        CsvField(p.Alias),
+                        CsvField(StatusToShort(p.Status)),
+                        Number(sent),
+                        Number(received),
+                        Number(lost),
+                        Number(lossPct),
+                        Number(currentRtt),
+                        Number(minRtt),
+                        Number(avgRtt),
+                        Number(maxRtt),
+                        Number(p95),
+                        Number(downEvents),
+                        Number(p.PingSamples.Count)));
+                }
+
+                File.WriteAllText(dialog.FileName, sb.ToString(), new UTF8Encoding(true));
+
+                Util.ShowInfo($"Datos exportados correctamente:\n{dialog.FileName}\n\n{_probes.Count} host(s) incluidos.");
+            }
+            catch (Exception ex)
+            {
+                Util.ShowError($"No se pudo exportar el CSV: {ex.Message}");
+            }
+        }
+
+        private static string Number(double value)
+        {
+            return value.ToString("0.##", CultureInfo.InvariantCulture);
+        }
+
+        private static string CsvField(string value)
+        {
+            value = value ?? string.Empty;
+
+            if (value.IndexOfAny(new[] { ',', '"', '\n', '\r', ';' }) >= 0)
+            {
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
+
+            return value;
         }
 
         private void BtnExportHtml_Click(object sender, RoutedEventArgs e)
@@ -506,6 +1179,7 @@ namespace vmPing.UI
             public double MinRtt { get; set; }
             public double AvgRtt { get; set; }
             public double MaxRtt { get; set; }
+            public double P95Rtt { get; set; }
             public double LossPct { get; set; }
             public int DownEvents { get; set; }
             public Probe Probe { get; set; }

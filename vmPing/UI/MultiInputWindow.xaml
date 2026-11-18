@@ -74,7 +74,8 @@
                 <TextBlock>
                     Type a list of addresses to ping.<LineBreak/>
                     Enter one per line or comma separated.<LineBreak/><LineBreak/>
-                    If you have a text file containing hosts,<LineBreak/>drag and drop it here.
+                    Import/export CSV files with <Bold>host,alias</Bold><LineBreak/>to keep the aliases, or plain text lists.<LineBreak/>
+                    Drag and drop a file here to import it.
                 </TextBlock>
             </Label>
         </DockPanel>
@@ -93,26 +94,41 @@
                  Drop="MultiAddress_Drop"/>
 
         <!-- Buttons section -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,9,0,0">
-            <Button Style="{StaticResource ButtonStandardStyle}"
-                    Content="_Import..."
-                    Width="85"
-                    Margin="0,0,9,0"
-                    Click="Import_Click"/>
-            <Button Style="{StaticResource ButtonStandardStyle}"
-                    Content="_Export..."
-                    Width="85"
-                    Margin="0,0,9,0"
-                    Click="Export_Click"/>
-            <Button Style="{StaticResource ButtonStandardStyle}"
-                    Content="OK"
-                    Width="85"
-                    Click="OK_Click"/>
-            <Button Style="{StaticResource ButtonStandardStyle}"
-                    Content="Cancel"
-                    Width="85"
-                    Margin="9,0,0,0"
-                    IsCancel="True"/>
-        </StackPanel>
+        <Grid Grid.Row="2" Margin="0,9,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="lblStatus"
+                       Grid.Column="0"
+                       VerticalAlignment="Center"
+                       FontSize="11"
+                       Foreground="#4B5563"
+                       TextTrimming="CharacterEllipsis"
+                       Margin="0,0,8,0"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource ButtonStandardStyle}"
+                        Content="_Import..."
+                        Width="85"
+                        Margin="0,0,9,0"
+                        Click="Import_Click"/>
+                <Button Style="{StaticResource ButtonStandardStyle}"
+                        Content="_Export..."
+                        Width="85"
+                        Margin="0,0,9,0"
+                        Click="Export_Click"/>
+                <Button Style="{StaticResource ButtonStandardStyle}"
+                        Content="OK"
+                        Width="85"
+                        Click="OK_Click"/>
+                <Button Style="{StaticResource ButtonStandardStyle}"
+                        Content="Cancel"
+                        Width="85"
+                        Margin="9,0,0,0"
+                        IsCancel="True"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

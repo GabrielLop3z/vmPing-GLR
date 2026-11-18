@@ -513,6 +513,18 @@ namespace vmPing.UI
             };
             if (wnd.ShowDialog() == true)
             {
+                // Persist aliases imported from a CSV and refresh the in-memory map
+                // before the new probes are created.
+                if (wnd.ImportedAliases.Count > 0)
+                {
+                    foreach (var pair in wnd.ImportedAliases)
+                    {
+                        Alias.Add(pair.Key, pair.Value);
+                    }
+
+                    LoadAliases();
+                }
+
                 RemoveAllProbes();
 
                 // The probe set was replaced entirely, so it is no longer bound to a loaded favorite.

@@ -1,6 +1,6 @@
 <item>
-    <version>1.9.1</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.1/vmPing.zip</url>
+    <version>1.9.2</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.2/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>Modal de detalle de equipo responsivo: ahora se ajusta al tamano de la ventana y nunca excede la pantalla. Cabecera y tarjetas se adaptan al ancho, el cuerpo se desplaza en ventanas pequenas y el historial aprovecha el espacio disponible.</changelog>
+    <changelog>Exportar e importar hosts en CSV conservando el alias (host,alias), con deteccion de encabezado y soporte de ; o tabulador. Dashboard renovado: tira de insights con p95 de latencia, host mas inestable, hora critica de 24 h y tendencia de 15 min; nueva pestana Analisis con top de perdidas de paquetes, histograma de latencia y dona de disponibilidad; columna p95 en la tabla y exportacion CSV lista para BI.</changelog>
 </item>
