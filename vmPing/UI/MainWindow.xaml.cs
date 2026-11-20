@@ -1390,6 +1390,9 @@ namespace vmPing.UI
             };
             manageFavoritesWindow.ShowDialog();
             LoadFavorites();
+            // The favorites file may include aliases; refresh the in-memory map
+            // and the currently displayed probes.
+            LoadAliases();
         }
 
         private void ManageAliases_Click(object sender, RoutedEventArgs e)

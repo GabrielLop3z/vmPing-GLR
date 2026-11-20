@@ -1,6 +1,6 @@
 <item>
-    <version>1.9.2</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.2/vmPing.zip</url>
+    <version>1.9.3</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.3/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>Exportar e importar hosts en CSV conservando el alias (host,alias), con deteccion de encabezado y soporte de ; o tabulador. Dashboard renovado: tira de insights con p95 de latencia, host mas inestable, hora critica de 24 h y tendencia de 15 min; nueva pestana Analisis con top de perdidas de paquetes, histograma de latencia y dona de disponibilidad; columna p95 en la tabla y exportacion CSV lista para BI.</changelog>
+    <changelog>Exportar todo en Favoritos ahora incluye los alias y la importacion los restaura; Administrar alias exporta todos los alias cuando no hay seleccion. Ventana API / Integraciones: el boton Cerrar y Esc cierran la ventana, el estado se refresca al recuperar el foco y se confirma al copiar la URL. La API devuelve 404 para hosts desconocidos en /api/hosts/{host} en lugar de mezclar datos de otros equipos.</changelog>
 </item>

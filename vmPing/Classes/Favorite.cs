@@ -264,6 +264,7 @@ namespace vmPing.Classes
 
         public static string Export(System.Collections.IEnumerable titles)
         {
+            var aliases = Alias.GetAll();
             var xd = new XDocument(new XElement("vmping_favorites"));
             var root = xd.Root;
 
@@ -276,7 +277,12 @@ namespace vmPing.Classes
 
                 foreach (var host in fav.Hostnames)
                 {
-                    favoriteElement.Add(new XElement("host", host));
+                    var hostElement = new XElement("host", host);
+                    if (aliases.TryGetValue(host.ToLowerInvariant(), out string alias) && !string.IsNullOrWhiteSpace(alias))
+                    {
+                        hostElement.Add(new XAttribute("alias", alias));
+                    }
+                    favoriteElement.Add(hostElement);
                 }
                 root.Add(favoriteElement);
             }
@@ -300,11 +306,24 @@ namespace vmPing.Classes
                     int.TryParse(columnCountStr, out int columnCount);
                     if (columnCount <= 0) columnCount = 2;
 
-                    var hostnames = favNode.Descendants("host").Select(h => h.Value.Trim()).Where(h => !string.IsNullOrEmpty(h)).ToList();
+                    var hostNodes = favNode.Descendants("host").ToList();
+                    var hostnames = hostNodes.Select(h => h.Value.Trim()).Where(h => !string.IsNullOrEmpty(h)).ToList();
 
                     if (!string.IsNullOrWhiteSpace(title) && hostnames.Count > 0)
                     {
                         Save(title, hostnames, columnCount);
+
+                        // Restore aliases bundled in the export (new in v1.9.3).
+                        foreach (var hostNode in hostNodes)
+                        {
+                            var hostname = hostNode.Value.Trim();
+                            var alias = hostNode.Attribute("alias")?.Value?.Trim();
+                            if (!string.IsNullOrEmpty(hostname) && !string.IsNullOrWhiteSpace(alias))
+                            {
+                                Alias.Add(hostname, alias);
+                            }
+                        }
+
                         count++;
                     }
                 }

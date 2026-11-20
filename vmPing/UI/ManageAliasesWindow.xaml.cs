@@ -153,7 +153,17 @@ namespace vmPing.UI
 
         private void Export_Click(object sender, RoutedEventArgs e)
         {
-            if (Aliases.SelectedItems.Count == 0) return;
+            // Export the selection, or every alias when nothing is selected.
+            var allAliases = Alias.GetAll().ToList();
+            var selected = Aliases.SelectedItems.Count > 0
+                ? Aliases.SelectedItems.Cast<KeyValuePair<string, string>>().ToList()
+                : allAliases;
+
+            if (selected.Count == 0)
+            {
+                Util.ShowInfo("No hay alias para exportar.");
+                return;
+            }
 
             var saveFileDialog = new SaveFileDialog
             {
@@ -166,9 +176,9 @@ namespace vmPing.UI
             {
                 try
                 {
-                    string content = Alias.Export(Aliases.SelectedItems);
+                    string content = Alias.Export(selected);
                     System.IO.File.WriteAllText(saveFileDialog.FileName, content);
-                    Util.ShowInfo("Aliases exported successfully.");
+                    Util.ShowInfo($"Se exportaron {selected.Count} alias.");
                 }
                 catch (Exception ex)
                 {

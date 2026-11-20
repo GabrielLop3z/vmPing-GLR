@@ -160,7 +160,7 @@ namespace vmPing.UI
                     if (count >= 0)
                     {
                         RefreshFavoriteList();
-                        Util.ShowInfo($"Se importaron {count} lista(s) de favoritos. Las listas existentes con el mismo nombre fueron reemplazadas.");
+                        Util.ShowInfo($"Se importaron {count} lista(s) de favoritos, con sus alias si el archivo los incluía. Las listas existentes con el mismo nombre fueron reemplazadas.");
                     }
                     else
                     {
@@ -217,7 +217,7 @@ namespace vmPing.UI
                 {
                     string content = Favorite.Export(titleList);
                     System.IO.File.WriteAllText(saveFileDialog.FileName, content);
-                    Util.ShowInfo($"Se exportaron {titleList.Count} lista(s) de favoritos.");
+                    Util.ShowInfo($"Se exportaron {titleList.Count} lista(s) de favoritos (con alias cuando existen).");
                 }
                 catch (Exception ex)
                 {

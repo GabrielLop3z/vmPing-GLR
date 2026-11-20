@@ -4,6 +4,7 @@
         Title="API HTTP - vmPing GLR"
         Height="600" Width="820"
         WindowStartupLocation="CenterOwner"
+        KeyDown="Window_KeyDown"
         Background="{DynamicResource Theme.Window.Background}"
         Foreground="{DynamicResource Theme.Window.Foreground}">
     <Grid Margin="20">
@@ -68,7 +69,12 @@
             </DockPanel>
         </Border>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <Grid Grid.Row="3" Margin="0,15,0,0">
+            <TextBlock x:Name="lblCopyFeedback" VerticalAlignment="Center" HorizontalAlignment="Left"
+                       FontSize="12" FontWeight="SemiBold" Opacity="0"
+                       Foreground="{DynamicResource Theme.Status.Up.Foreground}"
+                       Text="URL copiada al portapapeles"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Copiar URL" Padding="14,7" Margin="0,0,8,0"
                     Background="{DynamicResource Theme.Accent}" Foreground="White"
                     FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"
@@ -81,9 +87,10 @@
                     Background="{DynamicResource Theme.Card.Background}" Foreground="{DynamicResource Theme.Text.Primary}"
                     BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1" Cursor="Hand"
                     Click="BtnRefresh_Click"/>
-            <Button Content="Cerrar" Padding="14,7" IsDefault="True" IsCancel="True"
+            <Button Content="Cerrar" Padding="14,7" Click="BtnClose_Click"
                     Background="{DynamicResource Theme.Card.Background}" Foreground="{DynamicResource Theme.Text.Primary}"
                     BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1" Cursor="Hand"/>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

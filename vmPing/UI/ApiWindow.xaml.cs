@@ -1,16 +1,37 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 using vmPing.Classes;
 
 namespace vmPing.UI
 {
     public partial class ApiWindow : Window
     {
+        private readonly DispatcherTimer _copyFeedbackTimer;
+
         public ApiWindow()
         {
             InitializeComponent();
             Topmost = ApplicationOptions.IsAlwaysOnTopEnabled;
+
+            _copyFeedbackTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2.5) };
+            _copyFeedbackTimer.Tick += (s, e) =>
+            {
+                _copyFeedbackTimer.Stop();
+                lblCopyFeedback.Opacity = 0;
+            };
+
+            RefreshStatus();
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            // The API can be started or stopped from the Options window while
+            // this window is open, so refresh whenever it regains focus.
             RefreshStatus();
         }
 
@@ -68,7 +89,18 @@ namespace vmPing.UI
                 return;
             }
 
-            Clipboard.SetText(ApiService.LocalUrl);
+            try
+            {
+                Clipboard.SetText(ApiService.LocalUrl);
+                lblCopyFeedback.Opacity = 1;
+                _copyFeedbackTimer.Stop();
+                _copyFeedbackTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo copiar la URL: " + ex.Message, "API HTTP",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void BtnOpen_Click(object sender, RoutedEventArgs e)
@@ -94,6 +126,20 @@ namespace vmPing.UI
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             RefreshStatus();
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                e.Handled = true;
+                Close();
+            }
         }
     }
 }

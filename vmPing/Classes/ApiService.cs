@@ -765,6 +765,14 @@ namespace vmPing.Classes
                 ? snapshot.Hostname
                 : knownHosts.FirstOrDefault(h => string.Equals(h, host, StringComparison.OrdinalIgnoreCase));
 
+            // Without a live probe or historical data there is nothing to show.
+            // Checking before querying also avoids QuerySamples(null) returning
+            // samples for every host.
+            if (snapshot == null && databaseHost == null)
+            {
+                return Error(404, $"No hay datos para el host '{host}'.");
+            }
+
             var range = ResolveRange(values, DateTime.UtcNow.AddHours(-24), DateTime.UtcNow);
             var sampleLimit = GetInt(values, 100, 1, 5000, "samples", "limit");
             var eventLimit = GetInt(values, 50, 1, 2000, "events");
@@ -772,7 +780,7 @@ namespace vmPing.Classes
             var samples = HistoryService.QuerySamples(databaseHost, range.StartUtc, range.EndUtc, sampleLimit);
             var events = HistoryService.QueryStatusChanges(databaseHost, range.StartUtc, range.EndUtc, eventLimit);
 
-            if (snapshot == null && databaseHost == null && samples.Count == 0 && events.Count == 0)
+            if (snapshot == null && samples.Count == 0 && events.Count == 0)
             {
                 return Error(404, $"No hay datos para el host '{host}'.");
             }
