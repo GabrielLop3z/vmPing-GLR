@@ -35,6 +35,25 @@ namespace vmPing.UI
             RefreshStatus();
         }
 
+        private string BrowseUrl
+        {
+            get
+            {
+                var url = ApiService.LocalUrl;
+                return string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey)
+                    ? url
+                    : url + "?key=" + Uri.EscapeDataString(ApplicationOptions.ApiKey);
+            }
+        }
+
+        private void ShowCopyFeedback(string message)
+        {
+            lblCopyFeedback.Text = message;
+            lblCopyFeedback.Opacity = 1;
+            _copyFeedbackTimer.Stop();
+            _copyFeedbackTimer.Start();
+        }
+
         private void RefreshStatus()
         {
             var running = ApiService.IsRunning;
@@ -53,9 +72,11 @@ namespace vmPing.UI
                     : "Solo este equipo (127.0.0.1)")
                 : "-";
 
-            lblKey.Text = string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey)
-                ? "(sin clave — solo acceso local)"
-                : new string('•', Math.Min(16, ApplicationOptions.ApiKey.Length));
+            var hasKey = !string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey);
+            lblKey.Text = hasKey
+                ? new string('•', Math.Min(16, ApplicationOptions.ApiKey.Length))
+                : "(sin clave — solo acceso local)";
+            btnCopyKey.Visibility = hasKey ? Visibility.Visible : Visibility.Collapsed;
 
             lblDatabase.Text = string.IsNullOrWhiteSpace(HistoryService.DatabasePath)
                 ? "Sin inicializar"
@@ -76,8 +97,9 @@ namespace vmPing.UI
                 "Ejemplo:" + Environment.NewLine +
                 "curl \"http://127.0.0.1:8099/api/ping?host=10.1.1.50&count=2\"" + Environment.NewLine +
                 Environment.NewLine +
-                "Si la clave API está configurada, agregue la cabecera:" + Environment.NewLine +
-                "X-Api-Key: <su clave>   (o el parámetro ?key=<su clave>)";
+                "Si la clave API está configurada, use X-Api-Key: <su clave> (o ?key=<su clave>)." + Environment.NewLine +
+                "Los botones Copiar URL y Abrir en navegador incluyen la clave automáticamente." + Environment.NewLine +
+                "No comparta esa URL: revela su clave API.";
         }
 
         private void BtnCopy_Click(object sender, RoutedEventArgs e)
@@ -91,14 +113,33 @@ namespace vmPing.UI
 
             try
             {
-                Clipboard.SetText(ApiService.LocalUrl);
-                lblCopyFeedback.Opacity = 1;
-                _copyFeedbackTimer.Stop();
-                _copyFeedbackTimer.Start();
+                Clipboard.SetText(BrowseUrl);
+                ShowCopyFeedback(!string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey)
+                    ? "URL con clave copiada al portapapeles"
+                    : "URL copiada al portapapeles");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("No se pudo copiar la URL: " + ex.Message, "API HTTP",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void BtnCopyKey_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(ApplicationOptions.ApiKey))
+            {
+                return;
+            }
+
+            try
+            {
+                Clipboard.SetText(ApplicationOptions.ApiKey);
+                ShowCopyFeedback("Clave copiada al portapapeles");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo copiar la clave: " + ex.Message, "API HTTP",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -114,7 +155,7 @@ namespace vmPing.UI
 
             try
             {
-                Process.Start(new ProcessStartInfo(ApiService.LocalUrl) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(BrowseUrl) { UseShellExecute = true });
             }
             catch (Exception ex)
             {

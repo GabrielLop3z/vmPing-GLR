@@ -1,6 +1,6 @@
 <item>
-    <version>1.9.3</version>
-    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.3/vmPing.zip</url>
+    <version>1.9.4</version>
+    <url>https://github.com/GabrielLop3z/vmPing-GLR/releases/download/v1.9.4/vmPing.zip</url>
     <mandatory>false</mandatory>
-    <changelog>Exportar todo en Favoritos ahora incluye los alias y la importacion los restaura; Administrar alias exporta todos los alias cuando no hay seleccion. Ventana API / Integraciones: el boton Cerrar y Esc cierran la ventana, el estado se refresca al recuperar el foco y se confirma al copiar la URL. La API devuelve 404 para hosts desconocidos en /api/hosts/{host} en lugar de mezclar datos de otros equipos.</changelog>
+    <changelog>Correccion del error 401 No autorizado al abrir o copiar la URL desde API / Integraciones: ahora Copiar URL y Abrir en navegador incluyen automaticamente la clave API configurada (?key=). Se agrego el boton Copiar clave y la pagina de inicio de la API mantiene la clave en sus enlaces y en la prueba de ping.</changelog>
 </item>

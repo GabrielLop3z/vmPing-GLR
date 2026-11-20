@@ -1501,12 +1501,20 @@ pre{background:#111827;color:#e5e7eb;padding:12px;border-radius:8px;overflow:aut
 </main>
 <script>
 const BASE = location.origin;
+const PARAMS = new URLSearchParams(location.search);
+const APIKEY = PARAMS.get('key') || PARAMS.get('apikey') || '';
+const KEYQ = APIKEY ? '&key=' + encodeURIComponent(APIKEY) : '';
+if (APIKEY) {
+  document.querySelectorAll(""a[href^='/api/']"").forEach(function (a) {
+    a.href += (a.href.indexOf('?') >= 0 ? '&' : '?') + 'key=' + encodeURIComponent(APIKEY);
+  });
+}
 async function probar(){
   const host = document.getElementById('host').value.trim() || '127.0.0.1';
   const out = document.getElementById('out');
   out.textContent = 'Consultando...';
   try {
-    const r = await fetch(BASE + '/api/ping?host=' + encodeURIComponent(host) + '&amp;count=1');
+    const r = await fetch(BASE + '/api/ping?host=' + encodeURIComponent(host) + '&count=1' + KEYQ);
     out.textContent = JSON.stringify(await r.json(), null, 2);
   } catch (e) {
     out.textContent = 'Error: ' + e;

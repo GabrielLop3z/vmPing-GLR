@@ -48,7 +48,15 @@
                 <TextBlock Grid.Row="2" Grid.Column="1" x:Name="lblLanUrl" Text="-" Margin="0,0,0,4"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Clave API:" FontWeight="SemiBold" Margin="0,0,10,4"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="lblKey" Text="-" Margin="0,0,0,4"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,4">
+                    <TextBlock x:Name="lblKey" Text="-" VerticalAlignment="Center"/>
+                    <Button x:Name="btnCopyKey" Content="Copiar clave" Padding="8,2" Margin="10,0,0,0"
+                            Visibility="Collapsed" Cursor="Hand" Click="BtnCopyKey_Click"
+                            ToolTip="Copia la clave para usarla en X-Api-Key o ?key=."
+                            Background="{DynamicResource Theme.Card.Background}"
+                            Foreground="{DynamicResource Theme.Text.Primary}"
+                            BorderBrush="{DynamicResource Theme.Card.Border}" BorderThickness="1"/>
+                </StackPanel>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Base de datos:" FontWeight="SemiBold" Margin="0,0,10,0"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" x:Name="lblDatabase" Text="-" TextWrapping="Wrap"/>
